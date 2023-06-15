@@ -133,7 +133,7 @@ func (suite *leaderServerTestSuite) TestCheckClusterID() {
 	defer cancel()
 	cfgs := NewTestMultiConfig(assertutil.CheckerWithNilAssert(suite.Require()), 2)
 	for i, cfg := range cfgs {
-		cfg.DataDir = fmt.Sprintf("/tmp/test_pd_check_clusterID_%d", i)
+		cfg.DataDir = fmt.Sprintf("/tmp/test_tm_check_clusterID_%d", i)
 		// Clean up before testing.
 		testutil.CleanServer(cfg.DataDir)
 	}

@@ -790,12 +790,12 @@ func (c *RaftCluster) GetReplicationConfig() *config.ReplicationConfig {
 }
 
 // GetPDServerConfig returns tm server configurations.
-func (c *RaftCluster) GetPDServerConfig() *config.PDServerConfig {
+func (c *RaftCluster) GetPDServerConfig() *config.TMServerConfig {
 	return c.opt.GetPDServerConfig()
 }
 
 // SetPDServerConfig sets the TM configuration.
-func (c *RaftCluster) SetPDServerConfig(cfg *config.PDServerConfig) {
+func (c *RaftCluster) SetPDServerConfig(cfg *config.TMServerConfig) {
 	c.opt.SetPDServerConfig(cfg)
 }
 

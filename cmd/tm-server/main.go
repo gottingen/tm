@@ -189,7 +189,7 @@ func start(cmd *cobra.Command, args []string, services ...string) {
 	if len(services) != 0 {
 		versioninfo.Log(server.APIServiceMode)
 	} else {
-		versioninfo.Log(server.PDMode)
+		versioninfo.Log(server.TMMode)
 	}
 
 	for _, msg := range cfg.WarningMsgs {

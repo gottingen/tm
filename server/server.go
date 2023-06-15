@@ -95,13 +95,13 @@ const (
 
 	recoveringMarkPath = "cluster/markers/snapshot-recovering"
 
-	// PDMode represents that server is in TM mode.
-	PDMode = "TM"
+	// TMMode represents that server is in TM mode.
+	TMMode = "TM"
 	// APIServiceMode represents that server is in API service mode.
 	APIServiceMode = "API service"
 
 	// maxRetryTimesGetServicePrimary is the max retry times for getting primary addr.
-	// Note: it need to be less than client.defaultPDTimeout
+	// Note: it need to be less than client.defaultTMTimeout
 	maxRetryTimesGetServicePrimary = 25
 	// retryIntervalGetServicePrimary is the retry interval for getting primary addr.
 	retryIntervalGetServicePrimary = 100 * time.Millisecond
@@ -210,7 +210,7 @@ type Server struct {
 	tsoProtoFactory *tsoutil.TSOProtoFactory
 	// pdProtoFactory is the abstract factory for creating tso
 	// related data structures defined in the TM grpc service
-	pdProtoFactory *tsoutil.PDProtoFactory
+	pdProtoFactory *tsoutil.TMProtoFactory
 
 	serviceRateLimiter *ratelimit.Limiter
 	serviceLabels      map[string][]apiutil.AccessPath
@@ -235,7 +235,7 @@ type HandlerBuilder func(context.Context, *Server) (http.Handler, apiutil.APISer
 func CreateServer(ctx context.Context, cfg *config.Config, services []string, legacyServiceBuilders ...HandlerBuilder) (*Server, error) {
 	var mode string
 	if len(services) == 0 {
-		mode = PDMode
+		mode = TMMode
 	} else {
 		mode = APIServiceMode
 	}
@@ -432,7 +432,7 @@ func (s *Server) startServer(ctx context.Context) error {
 	s.storage = storage.NewCoreStorage(defaultStorage, regionStorage)
 	s.tsoDispatcher = tsoutil.NewTSODispatcher(tsoProxyHandleDuration, tsoProxyBatchSize)
 	s.tsoProtoFactory = &tsoutil.TSOProtoFactory{}
-	s.pdProtoFactory = &tsoutil.PDProtoFactory{}
+	s.pdProtoFactory = &tsoutil.TMProtoFactory{}
 	if !s.IsAPIServiceMode() {
 		s.tsoAllocatorManager = tso.NewAllocatorManager(s.ctx, mcs.DefaultKeyspaceGroupID, s.member, s.rootPath, s.storage, s, false)
 		// When disabled the Local TSO, we should clean up the Local TSO Allocator's meta info written in etcd if it exists.
@@ -895,7 +895,7 @@ func (s *Server) GetConfig() *config.Config {
 	cfg := s.cfg.Clone()
 	cfg.Schedule = *s.persistOptions.GetScheduleConfig().Clone()
 	cfg.Replication = *s.persistOptions.GetReplicationConfig().Clone()
-	cfg.PDServerCfg = *s.persistOptions.GetPDServerConfig().Clone()
+	cfg.TMServerCfg = *s.persistOptions.GetPDServerConfig().Clone()
 	cfg.ReplicationMode = *s.persistOptions.GetReplicationModeConfig()
 	cfg.LabelProperty = s.persistOptions.GetLabelPropertyConfig().Clone()
 	cfg.ClusterVersion = *s.persistOptions.GetClusterVersion()
@@ -1108,12 +1108,12 @@ func (s *Server) SetRateLimitConfig(cfg config.RateLimitConfig) error {
 }
 
 // GetPDServerConfig gets the balance config information.
-func (s *Server) GetPDServerConfig() *config.PDServerConfig {
+func (s *Server) GetPDServerConfig() *config.TMServerConfig {
 	return s.persistOptions.GetPDServerConfig().Clone()
 }
 
 // SetPDServerConfig sets the server config.
-func (s *Server) SetPDServerConfig(cfg config.PDServerConfig) error {
+func (s *Server) SetPDServerConfig(cfg config.TMServerConfig) error {
 	switch cfg.DashboardAddress {
 	case "auto":
 	case "none":

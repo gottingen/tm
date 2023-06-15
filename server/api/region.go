@@ -53,9 +53,9 @@ type MetaPeer struct {
 	IsLearner bool `json:"is_learner,omitempty"`
 }
 
-// PDPeerStats is api compatible with *pdpb.PeerStats.
+// TMPeerStats is api compatible with *pdpb.PeerStats.
 // NOTE: This type is exported by HTTP API. Please pay more attention when modifying it.
-type PDPeerStats struct {
+type TMPeerStats struct {
 	*pdpb.PeerStats
 	Peer MetaPeer `json:"peer"`
 }
@@ -82,18 +82,18 @@ func fromPeerSlice(peers []*metapb.Peer) []MetaPeer {
 	return slice
 }
 
-func fromPeerStats(peer *pdpb.PeerStats) PDPeerStats {
-	return PDPeerStats{
+func fromPeerStats(peer *pdpb.PeerStats) TMPeerStats {
+	return TMPeerStats{
 		PeerStats: peer,
 		Peer:      fromPeer(peer.Peer),
 	}
 }
 
-func fromPeerStatsSlice(peers []*pdpb.PeerStats) []PDPeerStats {
+func fromPeerStatsSlice(peers []*pdpb.PeerStats) []TMPeerStats {
 	if peers == nil {
 		return nil
 	}
-	slice := make([]PDPeerStats, len(peers))
+	slice := make([]TMPeerStats, len(peers))
 	for i, peer := range peers {
 		slice[i] = fromPeerStats(peer)
 	}
@@ -110,7 +110,7 @@ type RegionInfo struct {
 	Peers       []MetaPeer          `json:"peers,omitempty"`
 
 	Leader          MetaPeer      `json:"leader,omitempty"`
-	DownPeers       []PDPeerStats `json:"down_peers,omitempty"`
+	DownPeers       []TMPeerStats `json:"down_peers,omitempty"`
 	PendingPeers    []MetaPeer    `json:"pending_peers,omitempty"`
 	CPUUsage        uint64        `json:"cpu_usage"`
 	WrittenBytes    uint64        `json:"written_bytes"`
@@ -183,7 +183,7 @@ func InitRegion(r *core.RegionInfo, s *RegionInfo) *RegionInfo {
 // Adjust is only used in testing, in order to compare the data from json deserialization.
 func (r *RegionInfo) Adjust() {
 	for _, peer := range r.DownPeers {
-		// Since api.PDPeerStats uses the api.MetaPeer type variable Peer to overwrite PeerStats.Peer,
+		// Since api.TMPeerStats uses the api.MetaPeer type variable Peer to overwrite PeerStats.Peer,
 		// it needs to be restored after deserialization to be completely consistent with the original.
 		peer.PeerStats.Peer = peer.Peer.Peer
 	}

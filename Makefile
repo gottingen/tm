@@ -195,7 +195,7 @@ failpoint-disable: install-tools
 
 PACKAGE_DIRECTORIES := $(subst $(TM-PKG)/,,$(PACKAGES))
 TEST_PKGS := $(filter $(shell find . -iname "*_test.go" -exec dirname {} \; | \
-                     sort -u | sed -e "s/^\./github.com\/tikv\/tm/"),$(PACKAGES))
+                     sort -u | sed -e "s/^\./github.com\/gottingen\/tm/"),$(PACKAGES))
 BASIC_TEST_PKGS := $(filter-out $(TM-PKG)/tests%,$(TEST_PKGS))
 
 SUBMODULES := $(filter $(shell find . -iname "go.mod" -exec dirname {} \;),\

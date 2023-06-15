@@ -19,7 +19,7 @@ import "github.com/prometheus/client_golang/prometheus"
 var (
 	cmdDuration = prometheus.NewHistogramVec(
 		prometheus.HistogramOpts{
-			Namespace: "pd_client",
+			Namespace: "tm_client",
 			Subsystem: "cmd",
 			Name:      "handle_cmds_duration_seconds",
 			Help:      "Bucketed histogram of processing time (s) of handled success cmds.",
@@ -28,7 +28,7 @@ var (
 
 	cmdFailedDuration = prometheus.NewHistogramVec(
 		prometheus.HistogramOpts{
-			Namespace: "pd_client",
+			Namespace: "tm_client",
 			Subsystem: "cmd",
 			Name:      "handle_failed_cmds_duration_seconds",
 			Help:      "Bucketed histogram of processing time (s) of failed handled cmds.",
@@ -37,7 +37,7 @@ var (
 
 	requestDuration = prometheus.NewHistogramVec(
 		prometheus.HistogramOpts{
-			Namespace: "pd_client",
+			Namespace: "tm_client",
 			Subsystem: "request",
 			Name:      "handle_requests_duration_seconds",
 			Help:      "Bucketed histogram of processing time (s) of handled requests.",
@@ -46,7 +46,7 @@ var (
 
 	tsoBestBatchSize = prometheus.NewHistogram(
 		prometheus.HistogramOpts{
-			Namespace: "pd_client",
+			Namespace: "tm_client",
 			Subsystem: "request",
 			Name:      "handle_tso_best_batch_size",
 			Help:      "Bucketed histogram of the best batch size of handled requests.",
@@ -55,7 +55,7 @@ var (
 
 	tsoBatchSize = prometheus.NewHistogram(
 		prometheus.HistogramOpts{
-			Namespace: "pd_client",
+			Namespace: "tm_client",
 			Subsystem: "request",
 			Name:      "handle_tso_batch_size",
 			Help:      "Bucketed histogram of the batch size of handled requests.",
@@ -64,7 +64,7 @@ var (
 
 	tsoBatchSendLatency = prometheus.NewHistogram(
 		prometheus.HistogramOpts{
-			Namespace: "pd_client",
+			Namespace: "tm_client",
 			Subsystem: "request",
 			Name:      "tso_batch_send_latency",
 			Buckets:   prometheus.ExponentialBuckets(1, 2, 34), // 1ns ~ 8s
@@ -73,7 +73,7 @@ var (
 
 	requestForwarded = prometheus.NewGaugeVec(
 		prometheus.GaugeOpts{
-			Namespace: "pd_client",
+			Namespace: "tm_client",
 			Subsystem: "request",
 			Name:      "forwarded_status",
 			Help:      "The status to indicate if the request is forwarded",

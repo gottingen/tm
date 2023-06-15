@@ -35,7 +35,7 @@ import (
 	"github.com/gottingen/tm/server/api"
 	"github.com/gottingen/tm/server/config"
 	"github.com/gottingen/tm/tests"
-	"github.com/gottingen/tm/tests/pdctl"
+	"github.com/gottingen/tm/tests/tmctl"
 	"github.com/pingcap/failpoint"
 	"github.com/pingcap/kvproto/pkg/metapb"
 	"github.com/pingcap/kvproto/pkg/pdpb"
@@ -403,7 +403,7 @@ func (suite *middlewareTestSuite) TestAuditPrometheusBackend() {
 	defer resp.Body.Close()
 	content, _ := io.ReadAll(resp.Body)
 	output := string(content)
-	suite.Contains(output, "pd_service_audit_handling_seconds_count{component=\"anonymous\",ip=\"127.0.0.1\",method=\"HTTP\",service=\"GetTrend\"} 1")
+	suite.Contains(output, "tm_service_audit_handling_seconds_count{component=\"anonymous\",ip=\"127.0.0.1\",method=\"HTTP\",service=\"GetTrend\"} 1")
 
 	// resign to test persist config
 	oldLeaderName := leader.GetServer().Name()
@@ -429,7 +429,7 @@ func (suite *middlewareTestSuite) TestAuditPrometheusBackend() {
 	defer resp.Body.Close()
 	content, _ = io.ReadAll(resp.Body)
 	output = string(content)
-	suite.Contains(output, "pd_service_audit_handling_seconds_count{component=\"anonymous\",ip=\"127.0.0.1\",method=\"HTTP\",service=\"GetTrend\"} 2")
+	suite.Contains(output, "tm_service_audit_handling_seconds_count{component=\"anonymous\",ip=\"127.0.0.1\",method=\"HTTP\",service=\"GetTrend\"} 2")
 
 	input = map[string]interface{}{
 		"enable-audit": "false",
@@ -444,7 +444,7 @@ func (suite *middlewareTestSuite) TestAuditPrometheusBackend() {
 }
 
 func (suite *middlewareTestSuite) TestAuditLocalLogBackend() {
-	tempStdoutFile, _ := os.CreateTemp("/tmp", "pd_tests")
+	tempStdoutFile, _ := os.CreateTemp("/tmp", "tm_tests")
 	cfg := &log.Config{}
 	cfg.File.Filename = tempStdoutFile.Name()
 	cfg.Level = "info"
@@ -714,12 +714,12 @@ func TestRemovingProgress(t *testing.T) {
 	}
 
 	for _, store := range stores {
-		pdctl.MustPutStore(re, leader.GetServer(), store)
+		tmctl.MustPutStore(re, leader.GetServer(), store)
 	}
-	pdctl.MustPutRegion(re, cluster, 1000, 1, []byte("a"), []byte("b"), core.SetApproximateSize(60))
-	pdctl.MustPutRegion(re, cluster, 1001, 2, []byte("c"), []byte("d"), core.SetApproximateSize(30))
-	pdctl.MustPutRegion(re, cluster, 1002, 1, []byte("e"), []byte("f"), core.SetApproximateSize(50))
-	pdctl.MustPutRegion(re, cluster, 1003, 2, []byte("g"), []byte("h"), core.SetApproximateSize(40))
+	tmctl.MustPutRegion(re, cluster, 1000, 1, []byte("a"), []byte("b"), core.SetApproximateSize(60))
+	tmctl.MustPutRegion(re, cluster, 1001, 2, []byte("c"), []byte("d"), core.SetApproximateSize(30))
+	tmctl.MustPutRegion(re, cluster, 1002, 1, []byte("e"), []byte("f"), core.SetApproximateSize(50))
+	tmctl.MustPutRegion(re, cluster, 1003, 2, []byte("g"), []byte("h"), core.SetApproximateSize(40))
 
 	// no store removing
 	output := sendRequest(re, leader.GetAddr()+"/tm/api/v1/stores/progress?action=removing", http.MethodGet, http.StatusNotFound)
@@ -741,8 +741,8 @@ func TestRemovingProgress(t *testing.T) {
 	re.Equal(math.MaxFloat64, p.LeftSeconds)
 
 	// update size
-	pdctl.MustPutRegion(re, cluster, 1000, 1, []byte("a"), []byte("b"), core.SetApproximateSize(20))
-	pdctl.MustPutRegion(re, cluster, 1001, 2, []byte("c"), []byte("d"), core.SetApproximateSize(10))
+	tmctl.MustPutRegion(re, cluster, 1000, 1, []byte("a"), []byte("b"), core.SetApproximateSize(20))
+	tmctl.MustPutRegion(re, cluster, 1001, 2, []byte("c"), []byte("d"), core.SetApproximateSize(10))
 
 	// is not prepared
 	time.Sleep(2 * time.Second)
@@ -849,10 +849,10 @@ func TestPreparingProgress(t *testing.T) {
 	}
 
 	for _, store := range stores {
-		pdctl.MustPutStore(re, leader.GetServer(), store)
+		tmctl.MustPutStore(re, leader.GetServer(), store)
 	}
 	for i := 0; i < 100; i++ {
-		pdctl.MustPutRegion(re, cluster, uint64(i+1), uint64(i)%3+1, []byte(fmt.Sprintf("p%d", i)), []byte(fmt.Sprintf("%d", i+1)), core.SetApproximateSize(10))
+		tmctl.MustPutRegion(re, cluster, uint64(i+1), uint64(i)%3+1, []byte(fmt.Sprintf("p%d", i)), []byte(fmt.Sprintf("%d", i+1)), core.SetApproximateSize(10))
 	}
 	// no store preparing
 	output := sendRequest(re, leader.GetAddr()+"/tm/api/v1/stores/progress?action=preparing", http.MethodGet, http.StatusNotFound)
@@ -879,8 +879,8 @@ func TestPreparingProgress(t *testing.T) {
 	re.Equal(math.MaxFloat64, p.LeftSeconds)
 
 	// update size
-	pdctl.MustPutRegion(re, cluster, 1000, 4, []byte(fmt.Sprintf("%d", 1000)), []byte(fmt.Sprintf("%d", 1001)), core.SetApproximateSize(10))
-	pdctl.MustPutRegion(re, cluster, 1001, 5, []byte(fmt.Sprintf("%d", 1001)), []byte(fmt.Sprintf("%d", 1002)), core.SetApproximateSize(40))
+	tmctl.MustPutRegion(re, cluster, 1000, 4, []byte(fmt.Sprintf("%d", 1000)), []byte(fmt.Sprintf("%d", 1001)), core.SetApproximateSize(10))
+	tmctl.MustPutRegion(re, cluster, 1001, 5, []byte(fmt.Sprintf("%d", 1001)), []byte(fmt.Sprintf("%d", 1002)), core.SetApproximateSize(40))
 	time.Sleep(2 * time.Second)
 	output = sendRequest(re, leader.GetAddr()+"/tm/api/v1/stores/progress?action=preparing", http.MethodGet, http.StatusOK)
 	re.NoError(json.Unmarshal(output, &p))

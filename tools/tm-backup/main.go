@@ -21,7 +21,7 @@ import (
 	"strings"
 	"time"
 
-	"github.com/gottingen/tm/tools/tm-backup/pdbackup"
+	"github.com/gottingen/tm/tools/tm-backup/tmbackup"
 	"go.etcd.io/etcd/clientv3"
 	"go.etcd.io/etcd/pkg/transport"
 )
@@ -65,9 +65,9 @@ func main() {
 	})
 	checkErr(err)
 
-	backInfo, err := pdbackup.GetBackupInfo(client, *pdAddr)
+	backInfo, err := tmbackup.GetBackupInfo(client, *pdAddr)
 	checkErr(err)
-	pdbackup.OutputToFile(backInfo, f)
+	tmbackup.OutputToFile(backInfo, f)
 	fmt.Println("tm backup successful! dump file is:", *filePath)
 }
 

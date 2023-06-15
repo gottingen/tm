@@ -282,7 +282,7 @@ func (suite *transferRegionOperatorTestSuite) TestTransferRegionWithPlacementRul
 			placementRuleEnable: true,
 			rules: []*placement.Rule{
 				{
-					GroupID:  "pd1",
+					GroupID:  "tm1",
 					ID:       "test1",
 					Index:    1,
 					Override: true,
@@ -306,7 +306,7 @@ func (suite *transferRegionOperatorTestSuite) TestTransferRegionWithPlacementRul
 			placementRuleEnable: true,
 			rules: []*placement.Rule{
 				{
-					GroupID:  "pd1",
+					GroupID:  "tm1",
 					ID:       "test1",
 					Index:    1,
 					Override: true,
@@ -335,7 +335,7 @@ func (suite *transferRegionOperatorTestSuite) TestTransferRegionWithPlacementRul
 			placementRuleEnable: true,
 			rules: []*placement.Rule{
 				{
-					GroupID: "pd1",
+					GroupID: "tm1",
 					ID:      "test1",
 					Role:    placement.Voter,
 					Count:   1,
@@ -348,7 +348,7 @@ func (suite *transferRegionOperatorTestSuite) TestTransferRegionWithPlacementRul
 					},
 				},
 				{
-					GroupID: "pd1",
+					GroupID: "tm1",
 					ID:      "test2",
 					Role:    placement.Follower,
 					Count:   1,

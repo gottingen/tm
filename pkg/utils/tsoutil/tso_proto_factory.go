@@ -31,8 +31,8 @@ type ProtoFactory interface {
 type TSOProtoFactory struct {
 }
 
-// PDProtoFactory is the abstract factory for creating tso related data structures defined in the TM grpc service
-type PDProtoFactory struct {
+// TMProtoFactory is the abstract factory for creating tso related data structures defined in the TM grpc service
+type TMProtoFactory struct {
 }
 
 func (s *TSOProtoFactory) createForwardStream(ctx context.Context, clientConn *grpc.ClientConn) (stream, context.CancelFunc, error) {
@@ -44,7 +44,7 @@ func (s *TSOProtoFactory) createForwardStream(ctx context.Context, clientConn *g
 	return &tsoStream{forwardStream}, cancel, err
 }
 
-func (s *PDProtoFactory) createForwardStream(ctx context.Context, clientConn *grpc.ClientConn) (stream, context.CancelFunc, error) {
+func (s *TMProtoFactory) createForwardStream(ctx context.Context, clientConn *grpc.ClientConn) (stream, context.CancelFunc, error) {
 	done := make(chan struct{})
 	cctx, cancel := context.WithCancel(ctx)
 	go checkStream(cctx, cancel, done)

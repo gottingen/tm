@@ -44,10 +44,10 @@ func TestTsLessEqual(t *testing.T) {
 func TestUpdateURLs(t *testing.T) {
 	re := require.New(t)
 	members := []*pdpb.Member{
-		{Name: "pd4", ClientUrls: []string{"tmp://pd4"}},
-		{Name: "pd1", ClientUrls: []string{"tmp://pd1"}},
-		{Name: "pd3", ClientUrls: []string{"tmp://pd3"}},
-		{Name: "pd2", ClientUrls: []string{"tmp://pd2"}},
+		{Name: "tm4", ClientUrls: []string{"tmp://tm4"}},
+		{Name: "tm1", ClientUrls: []string{"tmp://tm1"}},
+		{Name: "tm3", ClientUrls: []string{"tmp://tm3"}},
+		{Name: "tm2", ClientUrls: []string{"tmp://tm2"}},
 	}
 	getURLs := func(ms []*pdpb.Member) (urls []string) {
 		for _, m := range ms {

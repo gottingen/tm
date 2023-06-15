@@ -322,32 +322,32 @@ func TestRangeGap(t *testing.T) {
 func TestGroupConfig(t *testing.T) {
 	re := require.New(t)
 	_, manager := newTestManager(t, false)
-	pd1 := &RuleGroup{ID: "tm"}
-	re.Equal(pd1, manager.GetRuleGroup("tm"))
+	tm1 := &RuleGroup{ID: "tm"}
+	re.Equal(tm1, manager.GetRuleGroup("tm"))
 
 	// update group tm
-	pd2 := &RuleGroup{ID: "tm", Index: 100, Override: true}
-	err := manager.SetRuleGroup(pd2)
+	tm2 := &RuleGroup{ID: "tm", Index: 100, Override: true}
+	err := manager.SetRuleGroup(tm2)
 	re.NoError(err)
-	re.Equal(pd2, manager.GetRuleGroup("tm"))
+	re.Equal(tm2, manager.GetRuleGroup("tm"))
 
 	// new group g without config
 	err = manager.SetRule(&Rule{GroupID: "g", ID: "1", Role: "voter", Count: 1})
 	re.NoError(err)
 	g1 := &RuleGroup{ID: "g"}
 	re.Equal(g1, manager.GetRuleGroup("g"))
-	re.Equal([]*RuleGroup{g1, pd2}, manager.GetRuleGroups())
+	re.Equal([]*RuleGroup{g1, tm2}, manager.GetRuleGroups())
 
 	// update group g
 	g2 := &RuleGroup{ID: "g", Index: 2, Override: true}
 	err = manager.SetRuleGroup(g2)
 	re.NoError(err)
-	re.Equal([]*RuleGroup{g2, pd2}, manager.GetRuleGroups())
+	re.Equal([]*RuleGroup{g2, tm2}, manager.GetRuleGroups())
 
 	// delete tm group, restore to default config
 	err = manager.DeleteRuleGroup("tm")
 	re.NoError(err)
-	re.Equal([]*RuleGroup{pd1, g2}, manager.GetRuleGroups())
+	re.Equal([]*RuleGroup{tm1, g2}, manager.GetRuleGroups())
 
 	// delete rule, the group is removed too
 	err = manager.DeleteRule("tm", "default")

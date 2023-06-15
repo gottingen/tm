@@ -434,7 +434,7 @@ type TestCluster struct {
 
 // ConfigOption is used to define customize settings in test.
 // You can use serverName to customize a config for a certain
-// server. Usually, the server name will be like `pd1`, `pd2`
+// server. Usually, the server name will be like `tm1`, `tm2`
 // and so on, which determined by the number of servers you set.
 type ConfigOption func(conf *config.Config, serverName string)
 

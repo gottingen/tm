@@ -102,7 +102,7 @@ type Config struct {
 
 	Replication ReplicationConfig `toml:"replication" json:"replication"`
 
-	PDServerCfg PDServerConfig `toml:"tm-server" json:"tm-server"`
+	TMServerCfg TMServerConfig `toml:"tm-server" json:"tm-server"`
 
 	ClusterVersion semver.Version `toml:"cluster-version" json:"cluster-version"`
 
@@ -476,7 +476,7 @@ func (c *Config) Adjust(meta *toml.MetaData, reloading bool) error {
 		return err
 	}
 
-	if err := c.PDServerCfg.adjust(configMetaData.Child("tm-server")); err != nil {
+	if err := c.TMServerCfg.adjust(configMetaData.Child("tm-server")); err != nil {
 		return err
 	}
 
@@ -1054,9 +1054,9 @@ func (c *ReplicationConfig) adjust(meta *configutil.ConfigMetaData) error {
 	return c.Validate()
 }
 
-// PDServerConfig is the configuration for tm server.
+// TMServerConfig is the configuration for tm server.
 // NOTE: This type is exported by HTTP API. Please pay more attention when modifying it.
-type PDServerConfig struct {
+type TMServerConfig struct {
 	// UseRegionStorage enables the independent region storage.
 	UseRegionStorage bool `toml:"use-region-storage" json:"use-region-storage,string"`
 	// MaxResetTSGap is the max gap to reset the TSO.
@@ -1088,7 +1088,7 @@ type PDServerConfig struct {
 	GCTunerThreshold float64 `toml:"gc-tuner-threshold" json:"gc-tuner-threshold"`
 }
 
-func (c *PDServerConfig) adjust(meta *configutil.ConfigMetaData) error {
+func (c *TMServerConfig) adjust(meta *configutil.ConfigMetaData) error {
 	configutil.AdjustDuration(&c.MaxResetTSGap, defaultMaxResetTSGap)
 	if !meta.IsDefined("use-region-storage") {
 		c.UseRegionStorage = defaultUseRegionStorage
@@ -1142,7 +1142,7 @@ func (c *PDServerConfig) adjust(meta *configutil.ConfigMetaData) error {
 	return c.Validate()
 }
 
-func (c *PDServerConfig) migrateConfigurationFromFile(meta *configutil.ConfigMetaData) error {
+func (c *TMServerConfig) migrateConfigurationFromFile(meta *configutil.ConfigMetaData) error {
 	oldName, newName := "trace-region-flow", "flow-round-by-digit"
 	defineOld, defineNew := meta.IsDefined(oldName), meta.IsDefined(newName)
 	switch {
@@ -1159,7 +1159,7 @@ func (c *PDServerConfig) migrateConfigurationFromFile(meta *configutil.ConfigMet
 }
 
 // MigrateDeprecatedFlags updates new flags according to deprecated flags.
-func (c *PDServerConfig) MigrateDeprecatedFlags() {
+func (c *TMServerConfig) MigrateDeprecatedFlags() {
 	if !c.TraceRegionFlow {
 		c.FlowRoundByDigit = math.MaxInt8
 	}
@@ -1168,7 +1168,7 @@ func (c *PDServerConfig) MigrateDeprecatedFlags() {
 }
 
 // Clone returns a cloned TM server config.
-func (c *PDServerConfig) Clone() *PDServerConfig {
+func (c *TMServerConfig) Clone() *TMServerConfig {
 	runtimeServices := append(c.RuntimeServices[:0:0], c.RuntimeServices...)
 	cfg := *c
 	cfg.RuntimeServices = runtimeServices
@@ -1176,7 +1176,7 @@ func (c *PDServerConfig) Clone() *PDServerConfig {
 }
 
 // Validate is used to validate if some tm-server configurations are right.
-func (c *PDServerConfig) Validate() error {
+func (c *TMServerConfig) Validate() error {
 	switch c.DashboardAddress {
 	case "auto":
 	case "none":

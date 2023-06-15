@@ -186,7 +186,7 @@ leader-schedule-limit = 0
 	re.True(cfg.PreVote)
 	re.Equal("info", cfg.Log.Level)
 	re.Equal(uint64(0), cfg.Schedule.MaxMergeRegionKeys)
-	re.Equal("http://127.0.0.1:9090", cfg.PDServerCfg.MetricStorage)
+	re.Equal("http://127.0.0.1:9090", cfg.TMServerCfg.MetricStorage)
 
 	re.Equal(defaultTSOUpdatePhysicalInterval, cfg.TSOUpdatePhysicalInterval.Duration)
 
@@ -265,7 +265,7 @@ disable-remove-extra-replica = true
 enable-remove-extra-replica = false
 `)
 	re.NoError(err)
-	re.Equal(math.MaxInt8, cfg.PDServerCfg.FlowRoundByDigit)
+	re.Equal(math.MaxInt8, cfg.TMServerCfg.FlowRoundByDigit)
 	re.True(cfg.Schedule.EnableReplaceOfflineReplica)
 	re.False(cfg.Schedule.EnableRemoveDownReplica)
 	re.False(cfg.Schedule.EnableMakeUpReplica)
@@ -344,7 +344,7 @@ dashboard-address = "foo"
 		err = cfg.Adjust(&meta, false)
 		re.Equal(test.hasErr, err != nil)
 		if !test.hasErr {
-			re.Equal(test.dashboardAddress, cfg.PDServerCfg.DashboardAddress)
+			re.Equal(test.dashboardAddress, cfg.TMServerCfg.DashboardAddress)
 		}
 	}
 }
@@ -461,7 +461,7 @@ func TestConfigClone(t *testing.T) {
 	replication.adjust(emptyConfigMetaData)
 	re.Equal(replication, replication.Clone())
 
-	pdServer := &PDServerConfig{}
+	pdServer := &TMServerConfig{}
 	pdServer.adjust(emptyConfigMetaData)
 	re.Equal(pdServer, pdServer.Clone())
 

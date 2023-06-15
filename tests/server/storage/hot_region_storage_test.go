@@ -25,7 +25,7 @@ import (
 	"github.com/gottingen/tm/pkg/utils/testutil"
 	"github.com/gottingen/tm/server/config"
 	"github.com/gottingen/tm/tests"
-	"github.com/gottingen/tm/tests/pdctl"
+	"github.com/gottingen/tm/tests/tmctl"
 	"github.com/pingcap/kvproto/pkg/metapb"
 	"github.com/pingcap/kvproto/pkg/pdpb"
 	"github.com/stretchr/testify/require"
@@ -63,17 +63,17 @@ func TestHotRegionStorage(t *testing.T) {
 	leaderServer := cluster.GetServer(cluster.GetLeader())
 	re.NoError(leaderServer.BootstrapCluster())
 	for _, store := range stores {
-		pdctl.MustPutStore(re, leaderServer.GetServer(), store)
+		tmctl.MustPutStore(re, leaderServer.GetServer(), store)
 	}
 	defer cluster.Destroy()
 	startTime := time.Now().Unix()
-	pdctl.MustPutRegion(re, cluster, 1, 1, []byte("a"), []byte("b"), core.SetWrittenBytes(3000000000),
+	tmctl.MustPutRegion(re, cluster, 1, 1, []byte("a"), []byte("b"), core.SetWrittenBytes(3000000000),
 		core.SetReportInterval(uint64(startTime-statistics.RegionHeartBeatReportInterval), uint64(startTime)))
-	pdctl.MustPutRegion(re, cluster, 2, 2, []byte("c"), []byte("d"), core.SetWrittenBytes(6000000000),
+	tmctl.MustPutRegion(re, cluster, 2, 2, []byte("c"), []byte("d"), core.SetWrittenBytes(6000000000),
 		core.SetReportInterval(uint64(startTime-statistics.RegionHeartBeatReportInterval), uint64(startTime)))
-	pdctl.MustPutRegion(re, cluster, 3, 1, []byte("e"), []byte("f"),
+	tmctl.MustPutRegion(re, cluster, 3, 1, []byte("e"), []byte("f"),
 		core.SetReportInterval(uint64(startTime-statistics.RegionHeartBeatReportInterval), uint64(startTime)))
-	pdctl.MustPutRegion(re, cluster, 4, 2, []byte("g"), []byte("h"),
+	tmctl.MustPutRegion(re, cluster, 4, 2, []byte("g"), []byte("h"),
 		core.SetReportInterval(uint64(startTime-statistics.RegionHeartBeatReportInterval), uint64(startTime)))
 	storeStats := []*pdpb.StoreStats{
 		{
@@ -171,11 +171,11 @@ func TestHotRegionStorageReservedDayConfigChange(t *testing.T) {
 	leaderServer := cluster.GetServer(cluster.GetLeader())
 	re.NoError(leaderServer.BootstrapCluster())
 	for _, store := range stores {
-		pdctl.MustPutStore(re, leaderServer.GetServer(), store)
+		tmctl.MustPutStore(re, leaderServer.GetServer(), store)
 	}
 	defer cluster.Destroy()
 	startTime := time.Now().Unix()
-	pdctl.MustPutRegion(re, cluster, 1, 1, []byte("a"), []byte("b"), core.SetWrittenBytes(3000000000),
+	tmctl.MustPutRegion(re, cluster, 1, 1, []byte("a"), []byte("b"), core.SetWrittenBytes(3000000000),
 		core.SetReportInterval(uint64(startTime-statistics.RegionHeartBeatReportInterval), uint64(startTime)))
 	var iter storage.HotRegionStorageIterator
 	var next *storage.HistoryHotRegion
@@ -196,7 +196,7 @@ func TestHotRegionStorageReservedDayConfigChange(t *testing.T) {
 	schedule.HotRegionsReservedDays = 0
 	leaderServer.GetServer().SetScheduleConfig(schedule)
 	time.Sleep(3 * interval)
-	pdctl.MustPutRegion(re, cluster, 2, 2, []byte("c"), []byte("d"), core.SetWrittenBytes(6000000000),
+	tmctl.MustPutRegion(re, cluster, 2, 2, []byte("c"), []byte("d"), core.SetWrittenBytes(6000000000),
 		core.SetReportInterval(uint64(time.Now().Unix()-statistics.WriteReportInterval), uint64(time.Now().Unix())))
 	time.Sleep(10 * interval)
 	hotRegionStorage := leaderServer.GetServer().GetHistoryHotRegionStorage()
@@ -263,11 +263,11 @@ func TestHotRegionStorageWriteIntervalConfigChange(t *testing.T) {
 	leaderServer := cluster.GetServer(cluster.GetLeader())
 	re.NoError(leaderServer.BootstrapCluster())
 	for _, store := range stores {
-		pdctl.MustPutStore(re, leaderServer.GetServer(), store)
+		tmctl.MustPutStore(re, leaderServer.GetServer(), store)
 	}
 	defer cluster.Destroy()
 	startTime := time.Now().Unix()
-	pdctl.MustPutRegion(re, cluster, 1, 1, []byte("a"), []byte("b"),
+	tmctl.MustPutRegion(re, cluster, 1, 1, []byte("a"), []byte("b"),
 		core.SetWrittenBytes(3000000000),
 		core.SetReportInterval(uint64(startTime-statistics.WriteReportInterval), uint64(startTime)))
 	var iter storage.HotRegionStorageIterator
@@ -289,7 +289,7 @@ func TestHotRegionStorageWriteIntervalConfigChange(t *testing.T) {
 	schedule.HotRegionsWriteInterval.Duration = 20 * interval
 	leaderServer.GetServer().SetScheduleConfig(schedule)
 	time.Sleep(3 * interval)
-	pdctl.MustPutRegion(re, cluster, 2, 2, []byte("c"), []byte("d"), core.SetWrittenBytes(6000000000),
+	tmctl.MustPutRegion(re, cluster, 2, 2, []byte("c"), []byte("d"), core.SetWrittenBytes(6000000000),
 		core.SetReportInterval(uint64(time.Now().Unix()-statistics.WriteReportInterval), uint64(time.Now().Unix())))
 	time.Sleep(10 * interval)
 	// it cant get new hot region because wait time smaller than hot region write interval

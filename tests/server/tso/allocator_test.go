@@ -40,9 +40,9 @@ func TestAllocatorLeader(t *testing.T) {
 	defer cancel()
 	// There will be three Local TSO Allocator leaders elected
 	dcLocationConfig := map[string]string{
-		"pd2": "dc-1",
-		"pd4": "dc-2",
-		"pd6": "leader", /* Test dc-location name is same as the special key */
+		"tm2": "dc-1",
+		"tm4": "dc-2",
+		"tm6": "leader", /* Test dc-location name is same as the special key */
 	}
 	dcLocationNum := len(dcLocationConfig)
 	cluster, err := tests.NewTestCluster(ctx, dcLocationNum*2, func(conf *config.Config, serverName string) {
@@ -113,9 +113,9 @@ func TestPriorityAndDifferentLocalTSO(t *testing.T) {
 	ctx, cancel := context.WithCancel(context.Background())
 	defer cancel()
 	dcLocationConfig := map[string]string{
-		"pd1": "dc-1",
-		"pd2": "dc-2",
-		"pd3": "dc-3",
+		"tm1": "dc-1",
+		"tm2": "dc-2",
+		"tm3": "dc-3",
 	}
 	dcLocationNum := len(dcLocationConfig)
 	cluster, err := tests.NewTestCluster(ctx, dcLocationNum, func(conf *config.Config, serverName string) {
@@ -132,13 +132,13 @@ func TestPriorityAndDifferentLocalTSO(t *testing.T) {
 	time.Sleep(time.Second * 5)
 
 	// Join a new dc-location
-	pd4, err := cluster.Join(ctx, func(conf *config.Config, serverName string) {
+	tm4, err := cluster.Join(ctx, func(conf *config.Config, serverName string) {
 		conf.EnableLocalTSO = true
 		conf.Labels[config.ZoneLabel] = "dc-4"
 	})
 	re.NoError(err)
-	re.NoError(pd4.Run())
-	dcLocationConfig["pd4"] = "dc-4"
+	re.NoError(tm4.Run())
+	dcLocationConfig["tm4"] = "dc-4"
 	cluster.CheckClusterDCLocation()
 	re.NotEqual("", cluster.WaitAllocatorLeader(
 		"dc-4",
@@ -150,15 +150,15 @@ func TestPriorityAndDifferentLocalTSO(t *testing.T) {
 	cluster.WaitAllLeaders(re, dcLocationConfig)
 
 	// Before the priority is checked, we may have allocators typology like this:
-	// pd1: dc-1, dc-2 and dc-3 allocator leader
-	// pd2: None
-	// pd3: None
-	// pd4: dc-4 allocator leader
+	// tm1: dc-1, dc-2 and dc-3 allocator leader
+	// tm2: None
+	// tm3: None
+	// tm4: dc-4 allocator leader
 	// After the priority is checked, we should have allocators typology like this:
-	// pd1: dc-1 allocator leader
-	// pd2: dc-2 allocator leader
-	// pd3: dc-3 allocator leader
-	// pd4: dc-4 allocator leader
+	// tm1: dc-1 allocator leader
+	// tm2: dc-2 allocator leader
+	// tm3: dc-3 allocator leader
+	// tm4: dc-4 allocator leader
 	wg := sync.WaitGroup{}
 	wg.Add(len(dcLocationConfig))
 	for serverName, dcLocation := range dcLocationConfig {

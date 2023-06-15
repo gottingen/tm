@@ -58,7 +58,7 @@ func NewPersistOptions(cfg *Config) *PersistOptions {
 	o := &PersistOptions{}
 	o.schedule.Store(&cfg.Schedule)
 	o.replication.Store(&cfg.Replication)
-	o.pdServerConfig.Store(&cfg.PDServerCfg)
+	o.pdServerConfig.Store(&cfg.TMServerCfg)
 	o.replicationMode.Store(&cfg.ReplicationMode)
 	o.labelProperty.Store(cfg.LabelProperty)
 	o.SetClusterVersion(&cfg.ClusterVersion)
@@ -87,12 +87,12 @@ func (o *PersistOptions) SetReplicationConfig(cfg *ReplicationConfig) {
 }
 
 // GetPDServerConfig returns tm server configurations.
-func (o *PersistOptions) GetPDServerConfig() *PDServerConfig {
-	return o.pdServerConfig.Load().(*PDServerConfig)
+func (o *PersistOptions) GetPDServerConfig() *TMServerConfig {
+	return o.pdServerConfig.Load().(*TMServerConfig)
 }
 
 // SetPDServerConfig sets the TM configuration.
-func (o *PersistOptions) SetPDServerConfig(cfg *PDServerConfig) {
+func (o *PersistOptions) SetPDServerConfig(cfg *TMServerConfig) {
 	o.pdServerConfig.Store(cfg)
 }
 
@@ -730,7 +730,7 @@ func (o *PersistOptions) Persist(storage endpoint.ConfigStorage) error {
 	cfg := &Config{
 		Schedule:        *o.GetScheduleConfig(),
 		Replication:     *o.GetReplicationConfig(),
-		PDServerCfg:     *o.GetPDServerConfig(),
+		TMServerCfg:     *o.GetPDServerConfig(),
 		ReplicationMode: *o.GetReplicationModeConfig(),
 		LabelProperty:   o.GetLabelPropertyConfig(),
 		ClusterVersion:  *o.GetClusterVersion(),
@@ -753,11 +753,11 @@ func (o *PersistOptions) Reload(storage endpoint.ConfigStorage) error {
 		return err
 	}
 	o.adjustScheduleCfg(&cfg.Schedule)
-	cfg.PDServerCfg.MigrateDeprecatedFlags()
+	cfg.TMServerCfg.MigrateDeprecatedFlags()
 	if isExist {
 		o.schedule.Store(&cfg.Schedule)
 		o.replication.Store(&cfg.Replication)
-		o.pdServerConfig.Store(&cfg.PDServerCfg)
+		o.pdServerConfig.Store(&cfg.TMServerCfg)
 		o.replicationMode.Store(&cfg.ReplicationMode)
 		o.labelProperty.Store(cfg.LabelProperty)
 		o.SetClusterVersion(&cfg.ClusterVersion)

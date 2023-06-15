@@ -155,7 +155,7 @@ func (h *confHandler) updateConfig(cfg *config.Config, key string, value interfa
 		}
 		return h.updateReplicationModeConfig(cfg, kp[1:], value)
 	case "tm-server":
-		return h.updatePDServerConfig(cfg, kp[len(kp)-1], value)
+		return h.updateTMServerConfig(cfg, kp[len(kp)-1], value)
 	case "log":
 		return h.updateLogLevel(kp, value)
 	case "cluster-version":
@@ -219,8 +219,8 @@ func (h *confHandler) updateReplicationModeConfig(config *config.Config, key []s
 	return err
 }
 
-func (h *confHandler) updatePDServerConfig(config *config.Config, key string, value interface{}) error {
-	updated, found, err := jsonutil.AddKeyValue(&config.PDServerCfg, key, value)
+func (h *confHandler) updateTMServerConfig(config *config.Config, key string, value interface{}) error {
+	updated, found, err := jsonutil.AddKeyValue(&config.TMServerCfg, key, value)
 	if err != nil {
 		return err
 	}
@@ -230,7 +230,7 @@ func (h *confHandler) updatePDServerConfig(config *config.Config, key string, va
 	}
 
 	if updated {
-		err = h.svr.SetPDServerConfig(config.PDServerCfg)
+		err = h.svr.SetPDServerConfig(config.TMServerCfg)
 	}
 	return err
 }
@@ -477,7 +477,7 @@ func (h *confHandler) SetReplicationModeConfig(w http.ResponseWriter, r *http.Re
 // @Tags     config
 // @Summary  Get TM server config.
 // @Produce  json
-// @Success  200  {object}  config.PDServerConfig
+// @Success  200  {object}  config.TMServerConfig
 // @Router   /config/tm-server [get]
 func (h *confHandler) GetPDServerConfig(w http.ResponseWriter, r *http.Request) {
 	h.rd.JSON(w, http.StatusOK, h.svr.GetPDServerConfig())

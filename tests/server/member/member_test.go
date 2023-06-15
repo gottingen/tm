@@ -47,9 +47,9 @@ func TestMemberDelete(t *testing.T) {
 	ctx, cancel := context.WithCancel(context.Background())
 	defer cancel()
 	dcLocationConfig := map[string]string{
-		"pd1": "dc-1",
-		"pd2": "dc-2",
-		"pd3": "dc-3",
+		"tm1": "dc-1",
+		"tm2": "dc-2",
+		"tm3": "dc-3",
 	}
 	dcLocationNum := len(dcLocationConfig)
 	cluster, err := tests.NewTestCluster(ctx, dcLocationNum, func(conf *config.Config, serverName string) {
@@ -160,7 +160,7 @@ func TestLeaderPriority(t *testing.T) {
 
 	cluster.WaitLeader()
 
-	leader1, err := cluster.GetServer("pd1").GetEtcdLeader()
+	leader1, err := cluster.GetServer("tm1").GetEtcdLeader()
 	re.NoError(err)
 	server1 := cluster.GetServer(leader1)
 	addr := server1.GetConfig().ClientUrls

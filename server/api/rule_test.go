@@ -52,9 +52,9 @@ func (suite *ruleTestSuite) SetupSuite() {
 	suite.urlPrefix = fmt.Sprintf("%s%s/api/v1/config", addr, apiPrefix)
 
 	mustBootstrapCluster(re, suite.svr)
-	PDServerCfg := suite.svr.GetConfig().PDServerCfg
-	PDServerCfg.KeyType = "raw"
-	err := suite.svr.SetPDServerConfig(PDServerCfg)
+	TMServerCfg := suite.svr.GetConfig().TMServerCfg
+	TMServerCfg.KeyType = "raw"
+	err := suite.svr.SetPDServerConfig(TMServerCfg)
 	suite.NoError(err)
 	suite.NoError(tu.CheckPostJSON(testDialClient, suite.urlPrefix, []byte(`{"enable-placement-rules":"true"}`), tu.StatusOK(re)))
 }

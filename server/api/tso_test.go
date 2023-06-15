@@ -59,7 +59,7 @@ func (suite *tsoTestSuite) TestTransferAllocator() {
 		_, err := suite.svr.GetTSOAllocatorManager().GetAllocator("dc-1")
 		return err == nil
 	}, tu.WithWaitFor(15*time.Second), tu.WithTickInterval(3*time.Second))
-	addr := suite.urlPrefix + "/tso/allocator/transfer/pd1?dcLocation=dc-1"
+	addr := suite.urlPrefix + "/tso/allocator/transfer/tm1?dcLocation=dc-1"
 	err := tu.CheckPostJSON(testDialClient, addr, nil, tu.StatusOK(re))
 	suite.NoError(err)
 }

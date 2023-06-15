@@ -38,7 +38,7 @@ func TestCamelCaseToSnakeCase(t *testing.T) {
 		{"SnakeTest", "snake_test"},
 		{"SnakeID", "snake_id"},
 		{"SnakeIDGoogle", "snake_id_google"},
-		{"GetPDMembers", "get_pd_members"},
+		{"GetTMMembers", "get_tm_members"},
 		{"LinuxMOTD", "linux_motd"},
 		{"OMGWTFBBQ", "omgwtfbbq"},
 		{"omg_wtf_bbq", "omg_wtf_bbq"},

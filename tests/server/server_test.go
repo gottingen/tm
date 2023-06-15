@@ -82,7 +82,7 @@ func TestClusterID(t *testing.T) {
 	err = cluster.RunInitialServers()
 	re.NoError(err)
 
-	clusterID := cluster.GetServer("pd1").GetClusterID()
+	clusterID := cluster.GetServer("tm1").GetClusterID()
 	for _, s := range cluster.GetServers() {
 		re.Equal(clusterID, s.GetClusterID())
 	}
@@ -103,7 +103,7 @@ func TestClusterID(t *testing.T) {
 	re.NoError(err)
 	err = cluster2.RunInitialServers()
 	re.NoError(err)
-	clusterID2 := cluster2.GetServer("pd1").GetClusterID()
+	clusterID2 := cluster2.GetServer("tm1").GetClusterID()
 	re.NotEqual(clusterID, clusterID2)
 }
 

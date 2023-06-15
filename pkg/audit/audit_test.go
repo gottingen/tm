@@ -85,8 +85,8 @@ func TestPrometheusHistogramBackend(t *testing.T) {
 	defer resp.Body.Close()
 	content, _ := io.ReadAll(resp.Body)
 	output := string(content)
-	re.Contains(output, "pd_service_audit_handling_seconds_test_count{component=\"user1\",ip=\"localhost\",method=\"HTTP\",service=\"test\"} 2")
-	re.Contains(output, "pd_service_audit_handling_seconds_test_count{component=\"user2\",ip=\"localhost\",method=\"HTTP\",service=\"test\"} 1")
+	re.Contains(output, "tm_service_audit_handling_seconds_test_count{component=\"user1\",ip=\"localhost\",method=\"HTTP\",service=\"test\"} 2")
+	re.Contains(output, "tm_service_audit_handling_seconds_test_count{component=\"user2\",ip=\"localhost\",method=\"HTTP\",service=\"test\"} 1")
 }
 
 func TestLocalLogBackendUsingFile(t *testing.T) {
@@ -138,7 +138,7 @@ func BenchmarkLocalLogAuditUsingFile(b *testing.B) {
 
 func initLog() string {
 	cfg := &log.Config{}
-	f, _ := os.CreateTemp("/tmp", "pd_tests")
+	f, _ := os.CreateTemp("/tmp", "tm_tests")
 	fname := f.Name()
 	f.Close()
 	cfg.File.Filename = fname

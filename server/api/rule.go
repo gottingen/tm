@@ -87,7 +87,7 @@ func (h *ruleHandler) SetAllRules(w http.ResponseWriter, r *http.Request) {
 			return
 		}
 	}
-	if err := cluster.GetRuleManager().SetKeyType(h.svr.GetConfig().PDServerCfg.KeyType).
+	if err := cluster.GetRuleManager().SetKeyType(h.svr.GetConfig().TMServerCfg.KeyType).
 		SetRules(rules); err != nil {
 		if errs.ErrRuleContent.Equal(err) || errs.ErrHexDecodingString.Equal(err) {
 			h.rd.JSON(w, http.StatusBadRequest, err.Error())
@@ -246,7 +246,7 @@ func (h *ruleHandler) SetRule(w http.ResponseWriter, r *http.Request) {
 		h.rd.JSON(w, http.StatusBadRequest, err.Error())
 		return
 	}
-	if err := cluster.GetRuleManager().SetKeyType(h.svr.GetConfig().PDServerCfg.KeyType).
+	if err := cluster.GetRuleManager().SetKeyType(h.svr.GetConfig().TMServerCfg.KeyType).
 		SetRule(&rule); err != nil {
 		if errs.ErrRuleContent.Equal(err) || errs.ErrHexDecodingString.Equal(err) {
 			h.rd.JSON(w, http.StatusBadRequest, err.Error())
@@ -322,7 +322,7 @@ func (h *ruleHandler) BatchRules(w http.ResponseWriter, r *http.Request) {
 	if err := apiutil.ReadJSONRespondError(h.rd, w, r.Body, &opts); err != nil {
 		return
 	}
-	if err := cluster.GetRuleManager().SetKeyType(h.svr.GetConfig().PDServerCfg.KeyType).
+	if err := cluster.GetRuleManager().SetKeyType(h.svr.GetConfig().TMServerCfg.KeyType).
 		Batch(opts); err != nil {
 		if errs.ErrRuleContent.Equal(err) || errs.ErrHexDecodingString.Equal(err) {
 			h.rd.JSON(w, http.StatusBadRequest, err.Error())
@@ -465,7 +465,7 @@ func (h *ruleHandler) SetPlacementRules(w http.ResponseWriter, r *http.Request) 
 		return
 	}
 	_, partial := r.URL.Query()["partial"]
-	if err := cluster.GetRuleManager().SetKeyType(h.svr.GetConfig().PDServerCfg.KeyType).
+	if err := cluster.GetRuleManager().SetKeyType(h.svr.GetConfig().TMServerCfg.KeyType).
 		SetAllGroupBundles(groups, !partial); err != nil {
 		if errs.ErrRuleContent.Equal(err) || errs.ErrHexDecodingString.Equal(err) {
 			h.rd.JSON(w, http.StatusBadRequest, err.Error())
@@ -549,7 +549,7 @@ func (h *ruleHandler) SetPlacementRuleByGroup(w http.ResponseWriter, r *http.Req
 		h.rd.JSON(w, http.StatusBadRequest, fmt.Sprintf("group id %s does not match request URI %s", group.ID, groupID))
 		return
 	}
-	if err := cluster.GetRuleManager().SetKeyType(h.svr.GetConfig().PDServerCfg.KeyType).
+	if err := cluster.GetRuleManager().SetKeyType(h.svr.GetConfig().TMServerCfg.KeyType).
 		SetGroupBundle(group); err != nil {
 		if errs.ErrRuleContent.Equal(err) || errs.ErrHexDecodingString.Equal(err) {
 			h.rd.JSON(w, http.StatusBadRequest, err.Error())

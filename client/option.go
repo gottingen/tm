@@ -23,7 +23,7 @@ import (
 )
 
 const (
-	defaultPDTimeout                             = 3 * time.Second
+	defaultTMTimeout                             = 3 * time.Second
 	maxInitClusterRetries                        = 100
 	defaultMaxTSOBatchWaitInterval time.Duration = 0
 	defaultEnableTSOFollowerProxy                = false
@@ -61,7 +61,7 @@ type option struct {
 // newOption creates a new TM client option with the default values set.
 func newOption() *option {
 	co := &option{
-		timeout:                  defaultPDTimeout,
+		timeout:                  defaultTMTimeout,
 		maxRetryTimes:            maxInitClusterRetries,
 		enableTSOFollowerProxyCh: make(chan struct{}, 1),
 	}

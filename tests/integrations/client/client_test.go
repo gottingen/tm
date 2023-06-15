@@ -213,9 +213,9 @@ func TestTSOAllocatorLeader(t *testing.T) {
 	ctx, cancel := context.WithCancel(context.Background())
 	defer cancel()
 	dcLocationConfig := map[string]string{
-		"pd1": "dc-1",
-		"pd2": "dc-2",
-		"pd3": "dc-3",
+		"tm1": "dc-1",
+		"tm2": "dc-2",
+		"tm3": "dc-3",
 	}
 	dcLocationNum := len(dcLocationConfig)
 	cluster, err := tests.NewTestCluster(ctx, dcLocationNum, func(conf *config.Config, serverName string) {
@@ -377,9 +377,9 @@ func TestGlobalAndLocalTSO(t *testing.T) {
 	ctx, cancel := context.WithCancel(context.Background())
 	defer cancel()
 	dcLocationConfig := map[string]string{
-		"pd1": "dc-1",
-		"pd2": "dc-2",
-		"pd3": "dc-3",
+		"tm1": "dc-1",
+		"tm2": "dc-2",
+		"tm3": "dc-3",
 	}
 	dcLocationNum := len(dcLocationConfig)
 	cluster, err := tests.NewTestCluster(ctx, dcLocationNum, func(conf *config.Config, serverName string) {
@@ -396,14 +396,14 @@ func TestGlobalAndLocalTSO(t *testing.T) {
 	time.Sleep(time.Second * 5)
 
 	// Join a new dc-location
-	pd4, err := cluster.Join(ctx, func(conf *config.Config, serverName string) {
+	tm4, err := cluster.Join(ctx, func(conf *config.Config, serverName string) {
 		conf.EnableLocalTSO = true
 		conf.Labels[config.ZoneLabel] = "dc-4"
 	})
 	re.NoError(err)
-	err = pd4.Run()
+	err = tm4.Run()
 	re.NoError(err)
-	dcLocationConfig["pd4"] = "dc-4"
+	dcLocationConfig["tm4"] = "dc-4"
 	cluster.CheckClusterDCLocation()
 	cluster.WaitAllLeaders(re, dcLocationConfig)
 

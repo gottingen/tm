@@ -525,7 +525,7 @@ func newMetaStore(storeID uint64, addr, version string, state metapb.StoreState,
 	return &metapb.Store{Id: storeID, Address: addr, Version: version, State: state, DeployPath: deployPath}
 }
 
-func TestGetPDMembers(t *testing.T) {
+func TestGetTMMembers(t *testing.T) {
 	re := require.New(t)
 	ctx, cancel := context.WithCancel(context.Background())
 	defer cancel()

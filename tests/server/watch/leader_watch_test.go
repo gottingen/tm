@@ -42,30 +42,30 @@ func TestWatcher(t *testing.T) {
 	err = cluster.RunInitialServers()
 	re.NoError(err)
 	cluster.WaitLeader()
-	pd1 := cluster.GetServer(cluster.GetLeader())
-	re.NotNil(pd1)
+	tm1 := cluster.GetServer(cluster.GetLeader())
+	re.NotNil(tm1)
 
-	pd2, err := cluster.Join(ctx)
+	tm2, err := cluster.Join(ctx)
 	re.NoError(err)
-	err = pd2.Run()
+	err = tm2.Run()
 	re.NoError(err)
 	cluster.WaitLeader()
 
 	time.Sleep(5 * time.Second)
-	pd3, err := cluster.Join(ctx)
+	tm3, err := cluster.Join(ctx)
 	re.NoError(err)
 	re.NoError(failpoint.Enable("github.com/gottingen/tm/server/delayWatcher", `pause`))
-	err = pd3.Run()
+	err = tm3.Run()
 	re.NoError(err)
 	time.Sleep(200 * time.Millisecond)
-	re.Equal(pd1.GetConfig().Name, pd3.GetLeader().GetName())
-	err = pd1.Stop()
+	re.Equal(tm1.GetConfig().Name, tm3.GetLeader().GetName())
+	err = tm1.Stop()
 	re.NoError(err)
 	cluster.WaitLeader()
-	re.Equal(pd2.GetConfig().Name, pd2.GetLeader().GetName())
+	re.Equal(tm2.GetConfig().Name, tm2.GetLeader().GetName())
 	re.NoError(failpoint.Disable("github.com/gottingen/tm/server/delayWatcher"))
 	testutil.Eventually(re, func() bool {
-		return pd3.GetLeader().GetName() == pd2.GetConfig().Name
+		return tm3.GetLeader().GetName() == tm2.GetConfig().Name
 	})
 }
 
@@ -80,18 +80,18 @@ func TestWatcherCompacted(t *testing.T) {
 	err = cluster.RunInitialServers()
 	re.NoError(err)
 	cluster.WaitLeader()
-	pd1 := cluster.GetServer(cluster.GetLeader())
-	re.NotNil(pd1)
-	client := pd1.GetEtcdClient()
+	tm1 := cluster.GetServer(cluster.GetLeader())
+	re.NotNil(tm1)
+	client := tm1.GetEtcdClient()
 	_, err = client.Put(context.Background(), "test", "v")
 	re.NoError(err)
 	// wait compaction
 	time.Sleep(2 * time.Second)
-	pd2, err := cluster.Join(ctx)
+	tm2, err := cluster.Join(ctx)
 	re.NoError(err)
-	err = pd2.Run()
+	err = tm2.Run()
 	re.NoError(err)
 	testutil.Eventually(re, func() bool {
-		return pd2.GetLeader().GetName() == pd1.GetConfig().Name
+		return tm2.GetLeader().GetName() == tm1.GetConfig().Name
 	})
 }
