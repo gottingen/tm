@@ -42,9 +42,9 @@ type tsoKeyspaceGroupManagerTestSuite struct {
 	ctx    context.Context
 	cancel context.CancelFunc
 
-	// The PD cluster.
+	// The TM cluster.
 	cluster *tests.TestCluster
-	// pdLeaderServer is the leader server of the PD cluster.
+	// pdLeaderServer is the leader server of the TM cluster.
 	pdLeaderServer *tests.TestServer
 	// tsoServer is the TSO service provider.
 	tsoServer        *tso.Server

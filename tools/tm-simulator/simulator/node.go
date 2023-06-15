@@ -78,7 +78,7 @@ func NewNode(s *cases.Store, pdAddr string, config *SimConfig) (*Node, error) {
 		err                      error
 	)
 
-	// Client should wait if PD server is not ready.
+	// Client should wait if TM server is not ready.
 	for i := 0; i < maxInitClusterRetries; i++ {
 		client, receiveRegionHeartbeatCh, err = NewClient(pdAddr, tag)
 		if err == nil {

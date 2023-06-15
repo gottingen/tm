@@ -9,7 +9,7 @@ RUN apk add --no-cache \
     g++ \
     binutils-gold
 
-# Install jq for pd-ctl
+# Install jq for tm-ctl
 RUN cd / && \
     wget https://github.com/stedolan/jq/releases/download/jq-1.6/jq-linux64 -O jq && \
     chmod +x jq
@@ -29,9 +29,9 @@ RUN make
 
 FROM alpine:3.17
 
-COPY --from=builder /go/src/github.com/gottingen/tm/bin/pd-server /pd-server
-COPY --from=builder /go/src/github.com/gottingen/tm/bin/pd-ctl /pd-ctl
-COPY --from=builder /go/src/github.com/gottingen/tm/bin/pd-recover /pd-recover
+COPY --from=builder /go/src/github.com/gottingen/tm/bin/tm-server /tm-server
+COPY --from=builder /go/src/github.com/gottingen/tm/bin/tm-ctl /tm-ctl
+COPY --from=builder /go/src/github.com/gottingen/tm/bin/tm-recover /tm-recover
 COPY --from=builder /jq /usr/local/bin/jq
 
 RUN apk add --no-cache \
@@ -39,4 +39,4 @@ RUN apk add --no-cache \
 
 EXPOSE 2379 2380
 
-ENTRYPOINT ["/pd-server"]
+ENTRYPOINT ["/tm-server"]

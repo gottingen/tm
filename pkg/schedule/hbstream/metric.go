@@ -20,7 +20,7 @@ var (
 	// TODO: pre-allocate gauge metrics
 	heartbeatStreamCounter = prometheus.NewCounterVec(
 		prometheus.CounterOpts{
-			Namespace: "pd",
+			Namespace: "tm",
 			Subsystem: "hbstream",
 			Name:      "region_message",
 			Help:      "Counter of message hbstream sent.",

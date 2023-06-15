@@ -75,7 +75,7 @@ var (
 		return errors.Errorf("plugin is not found: %s", pluginPath)
 	}
 
-	schedulerConfigPrefix = "pd/api/v1/scheduler-config"
+	schedulerConfigPrefix = "tm/api/v1/scheduler-config"
 )
 
 // Handler is a helper to export methods to handle API/RPC requests.
@@ -195,7 +195,7 @@ func (h *Handler) GetHotReadRegions() *statistics.StoreHotPeersInfos {
 	return c.GetHotReadRegions()
 }
 
-// GetHotRegionsWriteInterval gets interval for PD to store Hot Region information..
+// GetHotRegionsWriteInterval gets interval for TM to store Hot Region information..
 func (h *Handler) GetHotRegionsWriteInterval() time.Duration {
 	return h.opt.GetHotRegionsWriteInterval()
 }

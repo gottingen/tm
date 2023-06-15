@@ -48,11 +48,11 @@ func newPprofHandler(svr *server.Server, rd *render.Render) *pprofHandler {
 }
 
 // @Tags     debug
-// @Summary  debug zip of PD servers.
+// @Summary  debug zip of TM servers.
 // @Produce  application/octet-stream
 // @Router   /debug/pprof/zip [get]
 func (h *pprofHandler) PProfZip(w http.ResponseWriter, r *http.Request) {
-	w.Header().Set("Content-Disposition", fmt.Sprintf(`attachment; filename="pd_debug"`+time.Now().Format("20060102_150405")+".zip"))
+	w.Header().Set("Content-Disposition", fmt.Sprintf(`attachment; filename="tm_debug"`+time.Now().Format("20060102_150405")+".zip"))
 
 	// dump goroutine/heap/mutex
 	items := []struct {
@@ -128,10 +128,10 @@ func (h *pprofHandler) PProfZip(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 	versions, err := json.Marshal(&version{
-		Version:   versioninfo.PDReleaseVersion,
-		Branch:    versioninfo.PDGitBranch,
-		BuildTime: versioninfo.PDBuildTS,
-		Hash:      versioninfo.PDGitHash,
+		Version:   versioninfo.TMReleaseVersion,
+		Branch:    versioninfo.TMGitBranch,
+		BuildTime: versioninfo.TMBuildTS,
+		Hash:      versioninfo.TMGitHash,
 	})
 	if err != nil {
 		log.Error("json marshal version failed", zap.Error(err))
@@ -146,63 +146,63 @@ func (h *pprofHandler) PProfZip(w http.ResponseWriter, r *http.Request) {
 }
 
 // @Tags     debug
-// @Summary  debug profile of PD servers.
+// @Summary  debug profile of TM servers.
 // @Router   /debug/pprof/profile [get]
 func (h *pprofHandler) PProfProfile(w http.ResponseWriter, r *http.Request) {
 	pp.Profile(w, r)
 }
 
 // @Tags     debug
-// @Summary  debug trace of PD servers.
+// @Summary  debug trace of TM servers.
 // @Router   /debug/pprof/trace [get]
 func (h *pprofHandler) PProfTrace(w http.ResponseWriter, r *http.Request) {
 	pp.Trace(w, r)
 }
 
 // @Tags     debug
-// @Summary  debug symbol of PD servers.
+// @Summary  debug symbol of TM servers.
 // @Router   /debug/pprof/symbol [get]
 func (h *pprofHandler) PProfSymbol(w http.ResponseWriter, r *http.Request) {
 	pp.Symbol(w, r)
 }
 
 // @Tags     debug
-// @Summary  debug heap of PD servers.
+// @Summary  debug heap of TM servers.
 // @Router   /debug/pprof/heap [get]
 func (h *pprofHandler) PProfHeap(w http.ResponseWriter, r *http.Request) {
 	pp.Handler("heap").ServeHTTP(w, r)
 }
 
 // @Tags     debug
-// @Summary  debug mutex of PD servers.
+// @Summary  debug mutex of TM servers.
 // @Router   /debug/pprof/mutex [get]
 func (h *pprofHandler) PProfMutex(w http.ResponseWriter, r *http.Request) {
 	pp.Handler("mutex").ServeHTTP(w, r)
 }
 
 // @Tags     debug
-// @Summary  debug allocs of PD servers.
+// @Summary  debug allocs of TM servers.
 // @Router   /debug/pprof/allocs [get]
 func (h *pprofHandler) PProfAllocs(w http.ResponseWriter, r *http.Request) {
 	pp.Handler("allocs").ServeHTTP(w, r)
 }
 
 // @Tags     debug
-// @Summary  debug block of PD servers.
+// @Summary  debug block of TM servers.
 // @Router   /debug/pprof/block [get]
 func (h *pprofHandler) PProfBlock(w http.ResponseWriter, r *http.Request) {
 	pp.Handler("block").ServeHTTP(w, r)
 }
 
 // @Tags     debug
-// @Summary  debug goroutine of PD servers.
+// @Summary  debug goroutine of TM servers.
 // @Router   /debug/pprof/goroutine [get]
 func (h *pprofHandler) PProfGoroutine(w http.ResponseWriter, r *http.Request) {
 	pp.Handler("goroutine").ServeHTTP(w, r)
 }
 
 // @Tags     debug
-// @Summary  debug threadcreate of PD servers.
+// @Summary  debug threadcreate of TM servers.
 // @Router   /debug/pprof/threadcreate [get]
 func (h *pprofHandler) PProfThreadcreate(w http.ResponseWriter, r *http.Request) {
 	pp.Handler("threadcreate").ServeHTTP(w, r)

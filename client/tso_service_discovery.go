@@ -12,7 +12,7 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-package pd
+package tm
 
 import (
 	"context"
@@ -279,7 +279,7 @@ func (c *tsoServiceDiscovery) switchPrimary(addrs []string) error {
 		log.Warn("[tso] failed to connect primary", zap.String("primary", addr), errs.ZapError(err))
 		return err
 	}
-	// Set PD primary and Global TSO Allocator (which is also the PD primary)
+	// Set TM primary and Global TSO Allocator (which is also the TM primary)
 	c.primary.Store(addr)
 	// Run callbacks
 	if c.globalAllocPrimariesUpdatedCb != nil {

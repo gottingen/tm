@@ -25,7 +25,7 @@ import (
 	"testing"
 	"time"
 
-	pd "github.com/gottingen/tm/client"
+	tm "github.com/gottingen/tm/client"
 	"github.com/gottingen/tm/client/resource_group/controller"
 	"github.com/gottingen/tm/pkg/mcs/resource_manager/server"
 	"github.com/gottingen/tm/pkg/utils/testutil"
@@ -49,7 +49,7 @@ type resourceManagerClientTestSuite struct {
 	ctx        context.Context
 	clean      context.CancelFunc
 	cluster    *tests.TestCluster
-	client     pd.Client
+	client     tm.Client
 	initGroups []*rmpb.ResourceGroup
 }
 
@@ -71,7 +71,7 @@ func (suite *resourceManagerClientTestSuite) SetupSuite() {
 	err = suite.cluster.RunInitialServers()
 	re.NoError(err)
 
-	suite.client, err = pd.NewClientWithContext(suite.ctx, suite.cluster.GetConfig().GetClientURLs(), pd.SecurityOption{})
+	suite.client, err = tm.NewClientWithContext(suite.ctx, suite.cluster.GetConfig().GetClientURLs(), tm.SecurityOption{})
 	re.NoError(err)
 	leader := suite.cluster.GetServer(suite.cluster.WaitLeader())
 	suite.waitLeader(suite.client, leader.GetAddr())
@@ -131,8 +131,8 @@ func (suite *resourceManagerClientTestSuite) SetupSuite() {
 	}
 }
 
-func (suite *resourceManagerClientTestSuite) waitLeader(cli pd.Client, leaderAddr string) {
-	innerCli, ok := cli.(interface{ GetServiceDiscovery() pd.ServiceDiscovery })
+func (suite *resourceManagerClientTestSuite) waitLeader(cli tm.Client, leaderAddr string) {
+	innerCli, ok := cli.(interface{ GetServiceDiscovery() tm.ServiceDiscovery })
 	suite.True(ok)
 	suite.NotNil(innerCli)
 	testutil.Eventually(suite.Require(), func() bool {

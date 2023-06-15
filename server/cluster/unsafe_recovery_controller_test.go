@@ -1712,10 +1712,10 @@ func TestSplitPaused(t *testing.T) {
 	re.NoError(recoveryController.RemoveFailedStores(failedStores, 60, false))
 	askSplitReq := &pdpb.AskSplitRequest{}
 	_, err := cluster.HandleAskSplit(askSplitReq)
-	re.Equal("[PD:unsaferecovery:ErrUnsafeRecoveryIsRunning]unsafe recovery is running", err.Error())
+	re.Equal("[TM:unsaferecovery:ErrUnsafeRecoveryIsRunning]unsafe recovery is running", err.Error())
 	askBatchSplitReq := &pdpb.AskBatchSplitRequest{}
 	_, err = cluster.HandleAskBatchSplit(askBatchSplitReq)
-	re.Equal("[PD:unsaferecovery:ErrUnsafeRecoveryIsRunning]unsafe recovery is running", err.Error())
+	re.Equal("[TM:unsaferecovery:ErrUnsafeRecoveryIsRunning]unsafe recovery is running", err.Error())
 }
 
 func TestEpochComparsion(t *testing.T) {

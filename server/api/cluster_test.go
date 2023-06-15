@@ -57,7 +57,7 @@ func (suite *clusterTestSuite) TestCluster() {
 	suite.svr.GetPersistOptions().SetPlacementRuleEnabled(true)
 	suite.svr.GetPersistOptions().GetReplicationConfig().LocationLabels = []string{"host"}
 	rm := suite.svr.GetRaftCluster().GetRuleManager()
-	rule := rm.GetRule("pd", "default")
+	rule := rm.GetRule("tm", "default")
 	rule.LocationLabels = []string{"host"}
 	rule.Count = 1
 	rm.SetRule(rule)
@@ -81,7 +81,7 @@ func (suite *clusterTestSuite) TestCluster() {
 
 	c1.MaxPeerCount = 6
 	suite.Equal(c2, c1)
-	suite.Equal(int(r.MaxReplicas), suite.svr.GetRaftCluster().GetRuleManager().GetRule("pd", "default").Count)
+	suite.Equal(int(r.MaxReplicas), suite.svr.GetRaftCluster().GetRuleManager().GetRule("tm", "default").Count)
 }
 
 func (suite *clusterTestSuite) testGetClusterStatus() {

@@ -127,7 +127,7 @@ func (m *MergeChecker) Check(region *core.RegionInfo) []*operator.Operator {
 		return nil
 	}
 
-	// when pd just started, it will load region meta from region storage,
+	// when tm just started, it will load region meta from region storage,
 	if region.GetLeader() == nil {
 		mergeCheckerSkipUninitRegionCounter.Inc()
 		return nil

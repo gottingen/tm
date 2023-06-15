@@ -88,14 +88,14 @@ func (m *RuleManager) Initialize(maxReplica int, locationLabels []string) error 
 			defaultRules = append(defaultRules,
 				[]*Rule{
 					{
-						GroupID:        "pd",
+						GroupID:        "tm",
 						ID:             "default",
 						Role:           Voter,
 						Count:          maxReplica - witnessCount,
 						LocationLabels: locationLabels,
 					},
 					{
-						GroupID:        "pd",
+						GroupID:        "tm",
 						ID:             "witness",
 						Role:           Voter,
 						Count:          witnessCount,
@@ -106,7 +106,7 @@ func (m *RuleManager) Initialize(maxReplica int, locationLabels []string) error 
 			)
 		} else {
 			defaultRules = append(defaultRules, &Rule{
-				GroupID:        "pd",
+				GroupID:        "tm",
 				ID:             "default",
 				Role:           Voter,
 				Count:          maxReplica,
@@ -440,7 +440,7 @@ func (m *RuleManager) savePatch(p *ruleConfig) error {
 	// 1. in case that half of rules applied, error.. we have to cancel persisted rules
 	// but that may fail too, causing memory/disk inconsistency
 	// either rely a transaction API, or clients to request again until success
-	// 2. in case that PD is suddenly down in the loop, inconsistency again
+	// 2. in case that TM is suddenly down in the loop, inconsistency again
 	// now we can only rely clients to request again
 	var err error
 	for key, r := range p.rules {

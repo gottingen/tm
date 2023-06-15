@@ -363,19 +363,19 @@ func (suite *storeTestSuite) TestUrlStoreFilter() {
 		want []*metapb.Store
 	}{
 		{
-			u:    "http://localhost:2379/pd/api/v1/stores",
+			u:    "http://localhost:2379/tm/api/v1/stores",
 			want: suite.stores[:3],
 		},
 		{
-			u:    "http://localhost:2379/pd/api/v1/stores?state=2",
+			u:    "http://localhost:2379/tm/api/v1/stores?state=2",
 			want: suite.stores[3:],
 		},
 		{
-			u:    "http://localhost:2379/pd/api/v1/stores?state=0",
+			u:    "http://localhost:2379/tm/api/v1/stores?state=0",
 			want: suite.stores[:2],
 		},
 		{
-			u:    "http://localhost:2379/pd/api/v1/stores?state=2&state=1",
+			u:    "http://localhost:2379/tm/api/v1/stores?state=2&state=1",
 			want: suite.stores[2:],
 		},
 	}
@@ -388,12 +388,12 @@ func (suite *storeTestSuite) TestUrlStoreFilter() {
 		suite.Equal(testCase.want, f.filter(suite.stores))
 	}
 
-	u, err := url.Parse("http://localhost:2379/pd/api/v1/stores?state=foo")
+	u, err := url.Parse("http://localhost:2379/tm/api/v1/stores?state=foo")
 	suite.NoError(err)
 	_, err = newStoreStateFilter(u)
 	suite.Error(err)
 
-	u, err = url.Parse("http://localhost:2379/pd/api/v1/stores?state=999999")
+	u, err = url.Parse("http://localhost:2379/tm/api/v1/stores?state=999999")
 	suite.NoError(err)
 	_, err = newStoreStateFilter(u)
 	suite.Error(err)

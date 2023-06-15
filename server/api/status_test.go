@@ -26,9 +26,9 @@ import (
 func checkStatusResponse(re *require.Assertions, body []byte) {
 	got := status{}
 	re.NoError(json.Unmarshal(body, &got))
-	re.Equal(versioninfo.PDBuildTS, got.BuildTS)
-	re.Equal(versioninfo.PDGitHash, got.GitHash)
-	re.Equal(versioninfo.PDReleaseVersion, got.Version)
+	re.Equal(versioninfo.TMBuildTS, got.BuildTS)
+	re.Equal(versioninfo.TMGitHash, got.GitHash)
+	re.Equal(versioninfo.TMReleaseVersion, got.Version)
 }
 
 func TestStatus(t *testing.T) {

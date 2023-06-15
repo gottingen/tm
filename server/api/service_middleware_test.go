@@ -187,7 +187,7 @@ func (suite *rateLimitConfigTestSuite) TestUpdateRateLimitConfig() {
 	// test path but no label matched
 	input = make(map[string]interface{})
 	input["type"] = "path"
-	input["path"] = "/pd/api/v1/test"
+	input["path"] = "/tm/api/v1/test"
 	jsonBody, err = json.Marshal(input)
 	suite.NoError(err)
 	err = tu.CheckPostJSON(testDialClient, urlPrefix, jsonBody,
@@ -207,7 +207,7 @@ func (suite *rateLimitConfigTestSuite) TestUpdateRateLimitConfig() {
 	// change concurrency
 	input = make(map[string]interface{})
 	input["type"] = "path"
-	input["path"] = "/pd/api/v1/health"
+	input["path"] = "/tm/api/v1/health"
 	input["method"] = http.MethodGet
 	input["concurrency"] = 100
 	jsonBody, err = json.Marshal(input)
@@ -225,7 +225,7 @@ func (suite *rateLimitConfigTestSuite) TestUpdateRateLimitConfig() {
 	// change qps
 	input = make(map[string]interface{})
 	input["type"] = "path"
-	input["path"] = "/pd/api/v1/health"
+	input["path"] = "/tm/api/v1/health"
 	input["method"] = http.MethodGet
 	input["qps"] = 100
 	jsonBody, err = json.Marshal(input)
@@ -236,7 +236,7 @@ func (suite *rateLimitConfigTestSuite) TestUpdateRateLimitConfig() {
 
 	input = make(map[string]interface{})
 	input["type"] = "path"
-	input["path"] = "/pd/api/v1/health"
+	input["path"] = "/tm/api/v1/health"
 	input["method"] = http.MethodGet
 	input["qps"] = 0.3
 	jsonBody, err = json.Marshal(input)
@@ -256,7 +256,7 @@ func (suite *rateLimitConfigTestSuite) TestUpdateRateLimitConfig() {
 	// change both
 	input = make(map[string]interface{})
 	input["type"] = "path"
-	input["path"] = "/pd/api/v1/debug/pprof/profile"
+	input["path"] = "/tm/api/v1/debug/pprof/profile"
 	input["qps"] = 100
 	input["concurrency"] = 100
 	jsonBody, err = json.Marshal(input)

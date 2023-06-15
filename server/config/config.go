@@ -47,7 +47,7 @@ import (
 	"go.uber.org/zap"
 )
 
-// Config is the pd server configuration.
+// Config is the tm server configuration.
 // NOTE: This type is exported by HTTP API. Please pay more attention when modifying it.
 type Config struct {
 	ClientUrls          string `toml:"client-urls" json:"client-urls"`
@@ -64,7 +64,7 @@ type Config struct {
 	InitialClusterState string `toml:"initial-cluster-state" json:"initial-cluster-state"`
 	InitialClusterToken string `toml:"initial-cluster-token" json:"initial-cluster-token"`
 
-	// Join to an existing pd cluster, a string of endpoints.
+	// Join to an existing tm cluster, a string of endpoints.
 	Join string `toml:"join" json:"join"`
 
 	// LeaderLease time, if leader doesn't update its TTL
@@ -91,9 +91,9 @@ type Config struct {
 	TSOUpdatePhysicalInterval typeutil.Duration `toml:"tso-update-physical-interval" json:"tso-update-physical-interval"`
 
 	// EnableLocalTSO is used to enable the Local TSO Allocator feature,
-	// which allows the PD server to generate Local TSO for certain DC-level transactions.
-	// To make this feature meaningful, user has to set the "zone" label for the PD server
-	// to indicate which DC this PD belongs to.
+	// which allows the TM server to generate Local TSO for certain DC-level transactions.
+	// To make this feature meaningful, user has to set the "zone" label for the TM server
+	// to indicate which DC this TM belongs to.
 	EnableLocalTSO bool `toml:"enable-local-tso" json:"enable-local-tso"`
 
 	Metric metricutil.MetricConfig `toml:"metric" json:"metric"`
@@ -102,15 +102,15 @@ type Config struct {
 
 	Replication ReplicationConfig `toml:"replication" json:"replication"`
 
-	PDServerCfg PDServerConfig `toml:"pd-server" json:"pd-server"`
+	TMServerCfg TMServerConfig `toml:"tm-server" json:"tm-server"`
 
 	ClusterVersion semver.Version `toml:"cluster-version" json:"cluster-version"`
 
-	// Labels indicates the labels set for **this** PD server. The labels describe some specific properties
-	// like `zone`/`rack`/`host`. Currently, labels won't affect the PD server except for some special
+	// Labels indicates the labels set for **this** TM server. The labels describe some specific properties
+	// like `zone`/`rack`/`host`. Currently, labels won't affect the TM server except for some special
 	// label keys. Now we have following special keys:
-	// 1. 'zone' is a special key that indicates the DC location of this PD server. If it is set, the value for this
-	// will be used to determine which DC's Local TSO service this PD will provide with if EnableLocalTSO is true.
+	// 1. 'zone' is a special key that indicates the DC location of this TM server. If it is set, the value for this
+	// will be used to determine which DC's Local TSO service this TM will provide with if EnableLocalTSO is true.
 	Labels map[string]string `toml:"labels" json:"labels"`
 
 	// QuotaBackendBytes Raise alarms when backend size exceeds the given quota. 0 means use the default quota.
@@ -178,11 +178,11 @@ const (
 	// then 150MB can fit for store reports that have about 300k regions which is something of a huge amount of region on one TiKV.
 	defaultMaxRequestBytes = uint(150 * units.MiB) // 150MB
 
-	defaultName                = "pd"
+	defaultName                = "tm"
 	defaultClientUrls          = "http://127.0.0.1:2379"
 	defaultPeerUrls            = "http://127.0.0.1:2380"
 	defaultInitialClusterState = embed.ClusterStateFlagNew
-	defaultInitialClusterToken = "pd-cluster"
+	defaultInitialClusterToken = "tm-cluster"
 
 	// etcd use 100ms for heartbeat and 1s for election timeout.
 	// We can enlarge both a little to reduce the network aggression.
@@ -242,7 +242,7 @@ const (
 
 // Special keys for Labels
 const (
-	// ZoneLabel is the name of the key which indicates DC location of this PD server.
+	// ZoneLabel is the name of the key which indicates DC location of this TM server.
 	ZoneLabel = "zone"
 )
 
@@ -388,7 +388,7 @@ func (c *Config) Validate() error {
 	return nil
 }
 
-// Adjust is used to adjust the PD configurations.
+// Adjust is used to adjust the TM configurations.
 func (c *Config) Adjust(meta *toml.MetaData, reloading bool) error {
 	configMetaData := configutil.NewConfigMetadata(meta)
 	if err := configMetaData.CheckUndecoded(); err != nil {
@@ -417,7 +417,7 @@ func (c *Config) Adjust(meta *toml.MetaData, reloading bool) error {
 
 	if len(c.InitialCluster) == 0 {
 		// The advertise peer urls may be http://127.0.0.1:2380,http://127.0.0.1:2381
-		// so the initial cluster is pd=http://127.0.0.1:2380,pd=http://127.0.0.1:2381
+		// so the initial cluster is tm=http://127.0.0.1:2380,tm=http://127.0.0.1:2381
 		items := strings.Split(c.AdvertisePeerUrls, ",")
 
 		sep := ""
@@ -476,7 +476,7 @@ func (c *Config) Adjust(meta *toml.MetaData, reloading bool) error {
 		return err
 	}
 
-	if err := c.PDServerCfg.adjust(configMetaData.Child("pd-server")); err != nil {
+	if err := c.TMServerCfg.adjust(configMetaData.Child("tm-server")); err != nil {
 		return err
 	}
 
@@ -646,9 +646,9 @@ type ScheduleConfig struct {
 	SchedulersPayload map[string]interface{} `toml:"schedulers-payload" json:"schedulers-payload"`
 
 	// StoreLimitMode can be auto or manual, when set to auto,
-	// PD tries to change the store limit values according to
+	// TM tries to change the store limit values according to
 	// the load state of the cluster dynamically. User can
-	// overwrite the auto-tuned value by pd-ctl, when the value
+	// overwrite the auto-tuned value by tm-ctl, when the value
 	// is overwritten, the value is fixed until it is deleted.
 	// Default: manual
 	StoreLimitMode string `toml:"store-limit-mode" json:"store-limit-mode"`
@@ -1007,8 +1007,8 @@ type ReplicationConfig struct {
 	// Example:
 	// location-labels = ["zone", "rack", "host"]
 	// isolation-level = "zone"
-	// With configuration like above, PD ensure that all replicas be placed in different zones.
-	// Even if a zone is down, PD will not try to make up replicas in other zone
+	// With configuration like above, TM ensure that all replicas be placed in different zones.
+	// Even if a zone is down, TM will not try to make up replicas in other zone
 	// because other zones already have replicas on it.
 	IsolationLevel string `toml:"isolation-level" json:"isolation-level"`
 }
@@ -1054,9 +1054,9 @@ func (c *ReplicationConfig) adjust(meta *configutil.ConfigMetaData) error {
 	return c.Validate()
 }
 
-// PDServerConfig is the configuration for pd server.
+// TMServerConfig is the configuration for tm server.
 // NOTE: This type is exported by HTTP API. Please pay more attention when modifying it.
-type PDServerConfig struct {
+type TMServerConfig struct {
 	// UseRegionStorage enables the independent region storage.
 	UseRegionStorage bool `toml:"use-region-storage" json:"use-region-storage,string"`
 	// MaxResetTSGap is the max gap to reset the TSO.
@@ -1067,7 +1067,7 @@ type PDServerConfig struct {
 	// RuntimeServices is the running the running extension services.
 	RuntimeServices typeutil.StringSlice `toml:"runtime-services" json:"runtime-services"`
 	// MetricStorage is the cluster metric storage.
-	// Currently we use prometheus as metric storage, we may use PD/TiKV as metric storage later.
+	// Currently we use prometheus as metric storage, we may use TM/TiKV as metric storage later.
 	MetricStorage string `toml:"metric-storage" json:"metric-storage"`
 	// There are some values supported: "auto", "none", or a specific address, default: "auto"
 	DashboardAddress string `toml:"dashboard-address" json:"dashboard-address"`
@@ -1088,7 +1088,7 @@ type PDServerConfig struct {
 	GCTunerThreshold float64 `toml:"gc-tuner-threshold" json:"gc-tuner-threshold"`
 }
 
-func (c *PDServerConfig) adjust(meta *configutil.ConfigMetaData) error {
+func (c *TMServerConfig) adjust(meta *configutil.ConfigMetaData) error {
 	configutil.AdjustDuration(&c.MaxResetTSGap, defaultMaxResetTSGap)
 	if !meta.IsDefined("use-region-storage") {
 		c.UseRegionStorage = defaultUseRegionStorage
@@ -1142,7 +1142,7 @@ func (c *PDServerConfig) adjust(meta *configutil.ConfigMetaData) error {
 	return c.Validate()
 }
 
-func (c *PDServerConfig) migrateConfigurationFromFile(meta *configutil.ConfigMetaData) error {
+func (c *TMServerConfig) migrateConfigurationFromFile(meta *configutil.ConfigMetaData) error {
 	oldName, newName := "trace-region-flow", "flow-round-by-digit"
 	defineOld, defineNew := meta.IsDefined(oldName), meta.IsDefined(newName)
 	switch {
@@ -1159,7 +1159,7 @@ func (c *PDServerConfig) migrateConfigurationFromFile(meta *configutil.ConfigMet
 }
 
 // MigrateDeprecatedFlags updates new flags according to deprecated flags.
-func (c *PDServerConfig) MigrateDeprecatedFlags() {
+func (c *TMServerConfig) MigrateDeprecatedFlags() {
 	if !c.TraceRegionFlow {
 		c.FlowRoundByDigit = math.MaxInt8
 	}
@@ -1167,16 +1167,16 @@ func (c *PDServerConfig) MigrateDeprecatedFlags() {
 	c.TraceRegionFlow = false
 }
 
-// Clone returns a cloned PD server config.
-func (c *PDServerConfig) Clone() *PDServerConfig {
+// Clone returns a cloned TM server config.
+func (c *TMServerConfig) Clone() *TMServerConfig {
 	runtimeServices := append(c.RuntimeServices[:0:0], c.RuntimeServices...)
 	cfg := *c
 	cfg.RuntimeServices = runtimeServices
 	return &cfg
 }
 
-// Validate is used to validate if some pd-server configurations are right.
-func (c *PDServerConfig) Validate() error {
+// Validate is used to validate if some tm-server configurations are right.
+func (c *TMServerConfig) Validate() error {
 	switch c.DashboardAddress {
 	case "auto":
 	case "none":

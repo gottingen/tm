@@ -77,12 +77,12 @@ func TestError(t *testing.T) {
 	lg := newZapTestLogger(conf)
 	log.ReplaceGlobals(lg.Logger, nil)
 
-	rfc := `[error="[PD:member:ErrEtcdLeaderNotFound]etcd leader not found`
+	rfc := `[error="[TM:member:ErrEtcdLeaderNotFound]etcd leader not found`
 	log.Error("test", zap.Error(ErrEtcdLeaderNotFound.FastGenByArgs()))
 	re.Contains(lg.Message(), rfc)
 	err := errors.New("test error")
 	log.Error("test", ZapError(ErrEtcdLeaderNotFound, err))
-	rfc = `[error="[PD:member:ErrEtcdLeaderNotFound]test error`
+	rfc = `[error="[TM:member:ErrEtcdLeaderNotFound]test error`
 	re.Contains(lg.Message(), rfc)
 }
 

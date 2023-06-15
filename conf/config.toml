@@ -1,6 +1,6 @@
-# PD Configuration.
+# TM Configuration.
 
-## Human-readable name for this pd member.
+## Human-readable name for this tm member.
 # name = ""
 ## path to the data directory, default: "default.${name}".
 # data-dir = ""
@@ -17,7 +17,7 @@
 # initial-cluster = ""
 # initial-cluster-state = "new"
 ## Set different tokens to prevent communication between PDs in different clusters.
-# initial-cluster-token = "pd-cluster"
+# initial-cluster-token = "tm-cluster"
 ## starts a new cluster even if previously started; unsafe.
 # force-new-cluster = false
 
@@ -37,10 +37,10 @@
 # redact-info-log = false
 
 [security.encryption]
-## Encryption method to use for PD data. One of "plaintext", "aes128-ctr", "aes192-ctr" and "aes256-ctr".
+## Encryption method to use for TM data. One of "plaintext", "aes128-ctr", "aes192-ctr" and "aes256-ctr".
 ## Defaults to "plaintext" if not set.
 # data-encryption-method = "plaintext"
-## Specifies how often PD rotates data encryption key. Default is 7 days.
+## Specifies how often TM rotates data encryption key. Default is 7 days.
 # data-key-rotation-period = "168h"
 
 ## Specifies master key if encryption is enabled. There are three types of master key:
@@ -98,9 +98,9 @@
 ## maximum number of old log files to retain
 # max-backups = 0
 
-[pd-server]
+[tm-server]
 ## The metric storage is the cluster metric storage. This is use for query metric data.
-## Currently we use prometheus as metric storage, we may use PD/TiKV as metric storage later.
+## Currently we use prometheus as metric storage, we may use TM/TiKV as metric storage later.
 ## For usability, recommended to temporarily set it to the prometheus address, eg: http://127.0.0.1:9090
 # metric-storage = ""
 ## There are some values supported: "auto", "none", or a specific address, default: "auto".
@@ -113,7 +113,7 @@
 # max-merge-region-keys = 200000
 ## Controls the time interval between the split and merge operations on the same Region.
 # split-merge-interval = "1h"
-## When PD fails to receive the heartbeat from a store after the specified period of time,
+## When TM fails to receive the heartbeat from a store after the specified period of time,
 ## it adds replicas at other nodes.
 # max-store-down-time = "30m"
 ## Controls the time interval between write hot regions info into leveldb
@@ -134,12 +134,12 @@
 ## There are some policies supported: ["count", "size"], default: "count"
 # leader-schedule-policy = "count"
 ## When the score difference between the leader or Region of the two stores is
-## less than specified multiple times of the Region size, it is considered in balance by PD.
-## If it equals 0.0, PD will automatically adjust it.
+## less than specified multiple times of the Region size, it is considered in balance by TM.
+## If it equals 0.0, TM will automatically adjust it.
 # tolerant-size-ratio = 0.0
 ## The threshold ratio above which the capacity of the store is insufficient.
 ## If the space occupancy ratio of a store exceeds this threshold value,
-## PD avoids migrating data to this store as much as possible.
+## TM avoids migrating data to this store as much as possible.
 # low-space-ratio = 0.8
 
 ## The default version of balance Region score calculation.
@@ -171,8 +171,8 @@
 ## Example:
 ## location-labels = ["zone", "rack", "host"]
 ## isolation-level = "zone"
-## With configuration like above, PD ensures that all replicas be placed in different zones.
-## Even if a zone is down, PD will not try to make up replicas in other zone
+## With configuration like above, TM ensures that all replicas be placed in different zones.
+## Even if a zone is down, TM will not try to make up replicas in other zone
 ## because other zones already have replicas on it.
 # isolation-level = ""
 
@@ -180,7 +180,7 @@
 # enable-placement-rules = true
 
 [dashboard]
-## Configurations below are for the TiDB Dashboard embedded in the PD.
+## Configurations below are for the TiDB Dashboard embedded in the TM.
 
 ## The path of the CA certificate used to verify the TiDB server in TLS.
 # tidb-cacert-path = ""
@@ -202,7 +202,7 @@
 # enable-telemetry = false
 
 [keyspaces]
-## pre-alloc is used to pre-allocate keyspaces during pd bootstrap.
+## pre-alloc is used to pre-allocate keyspaces during tm bootstrap.
 ## Its value should be a list of strings, denotting the name of the keyspaces.
 ## Example:
 ## pre-alloc = ["admin", "user1", "user2"]

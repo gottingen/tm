@@ -359,7 +359,7 @@ func (t *timestampOracle) getTS(leadership *election.Leadership, count uint32, s
 		}
 		// In case lease expired after the first check.
 		if !leadership.Check() {
-			return pdpb.Timestamp{}, errs.ErrGenerateTimestamp.FastGenByArgs("not the pd or local tso allocator leader anymore")
+			return pdpb.Timestamp{}, errs.ErrGenerateTimestamp.FastGenByArgs("not the tm or local tso allocator leader anymore")
 		}
 		resp.SuffixBits = uint32(suffixBits)
 		return resp, nil

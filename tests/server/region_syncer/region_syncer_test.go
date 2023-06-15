@@ -51,7 +51,7 @@ func TestRegionSyncer(t *testing.T) {
 	re.NoError(failpoint.Enable("github.com/gottingen/tm/pkg/storage/regionStorageFastFlush", `return(true)`))
 	re.NoError(failpoint.Enable("github.com/gottingen/tm/server/syncer/noFastExitSync", `return(true)`))
 
-	cluster, err := tests.NewTestCluster(ctx, 3, func(conf *config.Config, serverName string) { conf.PDServerCfg.UseRegionStorage = true })
+	cluster, err := tests.NewTestCluster(ctx, 3, func(conf *config.Config, serverName string) { conf.TMServerCfg.UseRegionStorage = true })
 	defer cluster.Destroy()
 	re.NoError(err)
 
@@ -159,7 +159,7 @@ func TestFullSyncWithAddMember(t *testing.T) {
 	re := require.New(t)
 	ctx, cancel := context.WithCancel(context.Background())
 	defer cancel()
-	cluster, err := tests.NewTestCluster(ctx, 1, func(conf *config.Config, serverName string) { conf.PDServerCfg.UseRegionStorage = true })
+	cluster, err := tests.NewTestCluster(ctx, 1, func(conf *config.Config, serverName string) { conf.TMServerCfg.UseRegionStorage = true })
 	defer cluster.Destroy()
 	re.NoError(err)
 
@@ -178,23 +178,23 @@ func TestFullSyncWithAddMember(t *testing.T) {
 	}
 	// ensure flush to region storage
 	time.Sleep(3 * time.Second)
-	// restart pd1
+	// restart tm1
 	err = leaderServer.Stop()
 	re.NoError(err)
 	err = leaderServer.Run()
 	re.NoError(err)
-	re.Equal("pd1", cluster.WaitLeader())
+	re.Equal("tm1", cluster.WaitLeader())
 
-	// join new PD
-	pd2, err := cluster.Join(ctx)
+	// join new TM
+	tm2, err := cluster.Join(ctx)
 	re.NoError(err)
-	re.NoError(pd2.Run())
-	re.Equal("pd1", cluster.WaitLeader())
+	re.NoError(tm2.Run())
+	re.Equal("tm1", cluster.WaitLeader())
 	// waiting for synchronization to complete
 	time.Sleep(3 * time.Second)
 	re.NoError(cluster.ResignLeader())
-	re.Equal("pd2", cluster.WaitLeader())
-	loadRegions := pd2.GetServer().GetRaftCluster().GetRegions()
+	re.Equal("tm2", cluster.WaitLeader())
+	loadRegions := tm2.GetServer().GetRaftCluster().GetRegions()
 	re.Len(loadRegions, regionLen)
 }
 
@@ -203,7 +203,7 @@ func TestPrepareChecker(t *testing.T) {
 	ctx, cancel := context.WithCancel(context.Background())
 	defer cancel()
 	re.NoError(failpoint.Enable("github.com/gottingen/tm/server/cluster/changeCoordinatorTicker", `return(true)`))
-	cluster, err := tests.NewTestCluster(ctx, 1, func(conf *config.Config, serverName string) { conf.PDServerCfg.UseRegionStorage = true })
+	cluster, err := tests.NewTestCluster(ctx, 1, func(conf *config.Config, serverName string) { conf.TMServerCfg.UseRegionStorage = true })
 	defer cluster.Destroy()
 	re.NoError(err)
 
@@ -225,16 +225,16 @@ func TestPrepareChecker(t *testing.T) {
 	time.Sleep(3 * time.Second)
 	re.True(leaderServer.GetRaftCluster().IsPrepared())
 
-	// join new PD
-	pd2, err := cluster.Join(ctx)
+	// join new TM
+	tm2, err := cluster.Join(ctx)
 	re.NoError(err)
-	err = pd2.Run()
+	err = tm2.Run()
 	re.NoError(err)
 	// waiting for synchronization to complete
 	time.Sleep(3 * time.Second)
 	err = cluster.ResignLeader()
 	re.NoError(err)
-	re.Equal("pd2", cluster.WaitLeader())
+	re.Equal("tm2", cluster.WaitLeader())
 	leaderServer = cluster.GetServer(cluster.GetLeader())
 	rc = leaderServer.GetServer().GetRaftCluster()
 	for _, region := range regions {

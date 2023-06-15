@@ -337,10 +337,10 @@ func ReadJSONRespondError(rd *render.Render, w http.ResponseWriter, body io.Read
 }
 
 const (
-	// CorePath the core group, is at REST path `/pd/api/v1`.
-	CorePath = "/pd/api/v1"
-	// ExtensionsPath the named groups are REST at `/pd/apis/{GROUP_NAME}/{Version}`.
-	ExtensionsPath = "/pd/apis"
+	// CorePath the core group, is at REST path `/tm/api/v1`.
+	CorePath = "/tm/api/v1"
+	// ExtensionsPath the named groups are REST at `/tm/apis/{GROUP_NAME}/{Version}`.
+	ExtensionsPath = "/tm/apis"
 )
 
 // APIServiceGroup used to register the HTTP REST API.

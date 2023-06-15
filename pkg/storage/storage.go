@@ -27,7 +27,7 @@ import (
 	"go.etcd.io/etcd/clientv3"
 )
 
-// Storage is the interface for the backend storage of the PD.
+// Storage is the interface for the backend storage of the TM.
 type Storage interface {
 	// Introducing the kv.Base here is to provide
 	// the basic key-value read/write ability for the Storage.

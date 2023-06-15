@@ -35,7 +35,7 @@ import (
 
 const (
 	groupLabelKey                  = "group"
-	autoScalingGroupLabelKeyPrefix = "pd-auto-scaling"
+	autoScalingGroupLabelKeyPrefix = "tm-auto-scaling"
 	resourceTypeLabelKey           = "resource-type"
 	milliCores                     = 1000
 )
@@ -52,7 +52,7 @@ var (
 	MaxScaleInStep uint64 = 1
 )
 
-func calculate(rc *cluster.RaftCluster, cfg *config.PDServerConfig, strategy *Strategy) []*Plan {
+func calculate(rc *cluster.RaftCluster, cfg *config.TMServerConfig, strategy *Strategy) []*Plan {
 	var plans []*Plan
 
 	client, err := promClient.NewClient(promClient.Config{

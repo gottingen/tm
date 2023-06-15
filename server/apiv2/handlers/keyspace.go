@@ -57,7 +57,7 @@ type CreateKeyspaceParams struct {
 //	@Produce	json
 //	@Success	200	{object}	KeyspaceMeta
 //	@Failure	400	{string}	string	"The input is invalid."
-//	@Failure	500	{string}	string	"PD server failed to proceed the request."
+//	@Failure	500	{string}	string	"TM server failed to proceed the request."
 //	@Router		/keyspaces [post]
 func CreateKeyspace(c *gin.Context) {
 	svr := c.MustGet(middlewares.ServerContextKey).(*server.Server)
@@ -88,7 +88,7 @@ func CreateKeyspace(c *gin.Context) {
 //	@Param		name	path	string	true	"Keyspace Name"
 //	@Produce	json
 //	@Success	200	{object}	KeyspaceMeta
-//	@Failure	500	{string}	string	"PD server failed to proceed the request."
+//	@Failure	500	{string}	string	"TM server failed to proceed the request."
 //	@Router		/keyspaces/{name} [get]
 func LoadKeyspace(c *gin.Context) {
 	svr := c.MustGet(middlewares.ServerContextKey).(*server.Server)
@@ -109,7 +109,7 @@ func LoadKeyspace(c *gin.Context) {
 //	@Param		id	path	string	true	"Keyspace id"
 //	@Produce	json
 //	@Success	200	{object}	KeyspaceMeta
-//	@Failure	500	{string}	string	"PD server failed to proceed the request."
+//	@Failure	500	{string}	string	"TM server failed to proceed the request."
 //	@Router		/keyspaces/id/{id} [get]
 func LoadKeyspaceByID(c *gin.Context) {
 	id, err := strconv.ParseUint(c.Param("id"), 10, 64)
@@ -182,7 +182,7 @@ type LoadAllKeyspacesResponse struct {
 //	@Produce	json
 //	@Success	200	{object}	LoadAllKeyspacesResponse
 //	@Failure	400	{string}	string	"The input is invalid."
-//	@Failure	500	{string}	string	"PD server failed to proceed the request."
+//	@Failure	500	{string}	string	"TM server failed to proceed the request."
 //	@Router		/keyspaces [get]
 func LoadAllKeyspaces(c *gin.Context) {
 	svr := c.MustGet(middlewares.ServerContextKey).(*server.Server)
@@ -242,7 +242,7 @@ type UpdateConfigParams struct {
 //	@Produce	json
 //	@Success	200	{object}	KeyspaceMeta
 //	@Failure	400	{string}	string	"The input is invalid."
-//	@Failure	500	{string}	string	"PD server failed to proceed the request."
+//	@Failure	500	{string}	string	"TM server failed to proceed the request."
 //
 // Router /keyspaces/{name}/config [patch]
 func UpdateKeyspaceConfig(c *gin.Context) {
@@ -299,7 +299,7 @@ type UpdateStateParam struct {
 //	@Produce	json
 //	@Success	200	{object}	KeyspaceMeta
 //	@Failure	400	{string}	string	"The input is invalid."
-//	@Failure	500	{string}	string	"PD server failed to proceed the request."
+//	@Failure	500	{string}	string	"TM server failed to proceed the request."
 //
 // Router /keyspaces/{name}/state [put]
 func UpdateKeyspaceState(c *gin.Context) {

@@ -547,7 +547,7 @@ var (
 	storeUnhealthyDuration  = 10 * time.Minute
 )
 
-// IsDisconnected checks if a store is disconnected, which means PD misses
+// IsDisconnected checks if a store is disconnected, which means TM misses
 // tikv's store heartbeat for a short time, maybe caused by process restart or
 // temporary network failure.
 func (s *StoreInfo) IsDisconnected() bool {

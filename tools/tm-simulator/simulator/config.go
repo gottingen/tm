@@ -20,7 +20,6 @@ import (
 	"time"
 
 	"github.com/BurntSushi/toml"
-	"github.com/docker/go-units"
 	"github.com/gottingen/tm/pkg/schedule/placement"
 	"github.com/gottingen/tm/pkg/utils/configutil"
 	"github.com/gottingen/tm/pkg/utils/tempurl"
@@ -66,8 +65,8 @@ type SimConfig struct {
 type RaftStore struct {
 	Capacity                typeutil.ByteSize `toml:"capacity" json:"capacity"`
 	ExtraUsedSpace          typeutil.ByteSize `toml:"extra-used-space" json:"extra-used-space"`
-	RegionHeartBeatInterval typeutil.Duration `toml:"pd-heartbeat-tick-interval" json:"pd-heartbeat-tick-interval"`
-	StoreHeartBeatInterval  typeutil.Duration `toml:"pd-store-heartbeat-tick-interval" json:"pd-store-heartbeat-tick-interval"`
+	RegionHeartBeatInterval typeutil.Duration `toml:"tm-heartbeat-tick-interval" json:"tm-heartbeat-tick-interval"`
+	StoreHeartBeatInterval  typeutil.Duration `toml:"tm-store-heartbeat-tick-interval" json:"tm-store-heartbeat-tick-interval"`
 }
 
 // Coprocessor the configuration for coprocessor.
@@ -80,7 +79,7 @@ type Coprocessor struct {
 func NewSimConfig(serverLogLevel string) *SimConfig {
 	config.DefaultStoreLimit = config.StoreLimit{AddPeer: 2000, RemovePeer: 2000}
 	cfg := &config.Config{
-		Name:       "pd",
+		Name:       "tm",
 		ClientUrls: tempurl.Alloc(),
 		PeerUrls:   tempurl.Alloc(),
 	}
@@ -88,7 +87,7 @@ func NewSimConfig(serverLogLevel string) *SimConfig {
 	cfg.AdvertiseClientUrls = cfg.ClientUrls
 	cfg.AdvertisePeerUrls = cfg.PeerUrls
 	cfg.DataDir, _ = os.MkdirTemp("/tmp", "test_pd")
-	cfg.InitialCluster = fmt.Sprintf("pd=%s", cfg.PeerUrls)
+	cfg.InitialCluster = fmt.Sprintf("tm=%s", cfg.PeerUrls)
 	cfg.Log.Level = serverLogLevel
 	return &SimConfig{ServerConfig: cfg}
 }
@@ -97,7 +96,7 @@ func NewSimConfig(serverLogLevel string) *SimConfig {
 func (sc *SimConfig) Adjust(meta *toml.MetaData) error {
 	configutil.AdjustDuration(&sc.SimTickInterval, defaultSimTickInterval)
 	configutil.AdjustInt64(&sc.StoreIOMBPerSecond, defaultStoreIOMBPerSecond)
-	configutil.AdjustString(&sc.StoreVersion, versioninfo.PDReleaseVersion)
+	configutil.AdjustString(&sc.StoreVersion, versioninfo.TMReleaseVersion)
 	configutil.AdjustDuration(&sc.RaftStore.RegionHeartBeatInterval, defaultRegionHeartbeat)
 	configutil.AdjustDuration(&sc.RaftStore.StoreHeartBeatInterval, defaultStoreHeartbeat)
 	configutil.AdjustByteSize(&sc.RaftStore.Capacity, defaultCapacity)
@@ -114,7 +113,7 @@ func (sc *SimConfig) Adjust(meta *toml.MetaData) error {
 	return sc.ServerConfig.Adjust(meta, false)
 }
 
-// PDConfig saves some config which may be changed in PD.
+// PDConfig saves some config which may be changed in TM.
 type PDConfig struct {
 	PlacementRules []*placement.Rule
 	LocationLabels typeutil.StringSlice

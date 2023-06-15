@@ -39,13 +39,13 @@ func newVersionHandler(rd *render.Render) *versionHandler {
 	}
 }
 
-// @Summary  Get the version of PD server.
+// @Summary  Get the version of TM server.
 // @Produce  json
 // @Success  200  {object}  version
 // @Router   /version [get]
 func (h *versionHandler) GetVersion(w http.ResponseWriter, r *http.Request) {
 	version := &version{
-		Version: versioninfo.PDReleaseVersion,
+		Version: versioninfo.TMReleaseVersion,
 	}
 	h.rd.JSON(w, http.StatusOK, version)
 }

@@ -70,7 +70,7 @@ const (
 const (
 	// StatusStoreLowSpace represents the store cannot be selected because it runs out of space.
 	StatusStoreLowSpace = iota + 500
-	// StatusStoreNotExisted represents the store cannot be found in PD.
+	// StatusStoreNotExisted represents the store cannot be found in TM.
 	StatusStoreNotExisted
 )
 

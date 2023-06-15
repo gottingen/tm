@@ -1,7 +1,7 @@
-# PD Simulator Configuration
+# TM Simulator Configuration
 
 [tick]
-## the tick interval when starting PD inside (default: "100ms")
+## the tick interval when starting TM inside (default: "100ms")
 sim-tick-interval = "100ms"
 
 [store]

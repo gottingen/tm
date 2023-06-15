@@ -29,7 +29,7 @@ import (
 	"github.com/unrolled/render"
 )
 
-const schedulerConfigPrefix = "pd/api/v1/scheduler-config"
+const schedulerConfigPrefix = "tm/api/v1/scheduler-config"
 
 type schedulerHandler struct {
 	*server.Handler
@@ -55,7 +55,7 @@ type schedulerPausedPeriod struct {
 // @Summary  List all created schedulers by status.
 // @Produce  json
 // @Success  200  {array}   string
-// @Failure  500  {string}  string  "PD server failed to proceed the request."
+// @Failure  500  {string}  string  "TM server failed to proceed the request."
 // @Router   /schedulers [get]
 func (h *schedulerHandler) GetSchedulers(w http.ResponseWriter, r *http.Request) {
 	schedulers, err := h.Handler.GetSchedulers()
@@ -135,7 +135,7 @@ func (h *schedulerHandler) GetSchedulers(w http.ResponseWriter, r *http.Request)
 // @Produce  json
 // @Success  200  {string}  string  "The scheduler is created."
 // @Failure  400  {string}  string  "Bad format request."
-// @Failure  500  {string}  string  "PD server failed to proceed the request."
+// @Failure  500  {string}  string  "TM server failed to proceed the request."
 // @Router   /schedulers [post]
 func (h *schedulerHandler) CreateScheduler(w http.ResponseWriter, r *http.Request) {
 	var input map[string]interface{}
@@ -290,7 +290,7 @@ func (h *schedulerHandler) addEvictOrGrant(w http.ResponseWriter, input map[stri
 // @Produce  json
 // @Success  200  {string}  string  "The scheduler is removed."
 // @Failure  404  {string}  string  "The scheduler is not found."
-// @Failure  500  {string}  string  "PD server failed to proceed the request."
+// @Failure  500  {string}  string  "TM server failed to proceed the request."
 // @Router   /schedulers/{name} [delete]
 func (h *schedulerHandler) DeleteScheduler(w http.ResponseWriter, r *http.Request) {
 	name := mux.Vars(r)["name"]
@@ -339,7 +339,7 @@ func (h *schedulerHandler) redirectSchedulerDelete(w http.ResponseWriter, name, 
 // @Produce  json
 // @Success  200  {string}  string  "Pause or resume the scheduler successfully."
 // @Failure  400  {string}  string  "Bad format request."
-// @Failure  500  {string}  string  "PD server failed to proceed the request."
+// @Failure  500  {string}  string  "TM server failed to proceed the request."
 // @Router   /schedulers/{name} [post]
 func (h *schedulerHandler) PauseOrResumeScheduler(w http.ResponseWriter, r *http.Request) {
 	var input map[string]int64

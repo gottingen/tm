@@ -73,7 +73,7 @@ func (kv *etcdKVBase) Load(key string) (string, error) {
 func (kv *etcdKVBase) LoadRange(key, endKey string, limit int) ([]string, []string, error) {
 	// Note: reason to use `strings.Join` instead of `path.Join` is that the latter will
 	// removes suffix '/' of the joined string.
-	// As a result, when we try to scan from "foo/", it ends up scanning from "/pd/foo"
+	// As a result, when we try to scan from "foo/", it ends up scanning from "/tm/foo"
 	// internally, and returns unexpected keys such as "foo_bar/baz".
 	key = strings.Join([]string{kv.rootPath, key}, "/")
 	var OpOption []clientv3.OpOption

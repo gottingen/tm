@@ -44,7 +44,7 @@ func TestDefault(t *testing.T) {
 	_, manager := newTestManager(t, false)
 	rules := manager.GetAllRules()
 	re.Len(rules, 1)
-	re.Equal("pd", rules[0].GroupID)
+	re.Equal("tm", rules[0].GroupID)
 	re.Equal("default", rules[0].ID)
 	re.Equal(0, rules[0].Index)
 	re.Empty(rules[0].StartKey)
@@ -58,14 +58,14 @@ func TestDefault2(t *testing.T) {
 	_, manager := newTestManager(t, true)
 	rules := manager.GetAllRules()
 	re.Len(rules, 2)
-	re.Equal("pd", rules[0].GroupID)
+	re.Equal("tm", rules[0].GroupID)
 	re.Equal("default", rules[0].ID)
 	re.Equal(0, rules[0].Index)
 	re.Empty(rules[0].StartKey)
 	re.Empty(rules[0].EndKey)
 	re.Equal(Voter, rules[0].Role)
 	re.Equal([]string{"zone", "rack", "host"}, rules[0].LocationLabels)
-	re.Equal("pd", rules[1].GroupID)
+	re.Equal("tm", rules[1].GroupID)
 	re.Equal("witness", rules[1].ID)
 	re.Equal(0, rules[1].Index)
 	re.Empty(rules[1].StartKey)
@@ -130,7 +130,7 @@ func TestAdjustRule(t *testing.T) {
 func TestLeaderCheck(t *testing.T) {
 	re := require.New(t)
 	_, manager := newTestManager(t, false)
-	re.Regexp(".*needs at least one leader or voter.*", manager.SetRule(&Rule{GroupID: "pd", ID: "default", Role: "learner", Count: 3}).Error())
+	re.Regexp(".*needs at least one leader or voter.*", manager.SetRule(&Rule{GroupID: "tm", ID: "default", Role: "learner", Count: 3}).Error())
 	re.Regexp(".*define multiple leaders by count 2.*", manager.SetRule(&Rule{GroupID: "g2", ID: "33", Role: "leader", Count: 2}).Error())
 	re.Regexp(".*multiple leader replicas.*", manager.Batch([]RuleOp{
 		{
@@ -148,7 +148,7 @@ func TestSaveLoad(t *testing.T) {
 	re := require.New(t)
 	store, manager := newTestManager(t, false)
 	rules := []*Rule{
-		{GroupID: "pd", ID: "default", Role: "voter", Count: 5},
+		{GroupID: "tm", ID: "default", Role: "voter", Count: 5},
 		{GroupID: "foo", ID: "baz", StartKeyHex: "", EndKeyHex: "abcd", Role: "voter", Count: 1},
 		{GroupID: "foo", ID: "bar", Role: "learner", Count: 1},
 	}
@@ -160,7 +160,7 @@ func TestSaveLoad(t *testing.T) {
 	err := m2.Initialize(3, []string{"no", "labels"})
 	re.NoError(err)
 	re.Len(m2.GetAllRules(), 3)
-	re.Equal(rules[0].String(), m2.GetRule("pd", "default").String())
+	re.Equal(rules[0].String(), m2.GetRule("tm", "default").String())
 	re.Equal(rules[1].String(), m2.GetRule("foo", "baz").String())
 	re.Equal(rules[2].String(), m2.GetRule("foo", "bar").String())
 }
@@ -168,14 +168,14 @@ func TestSaveLoad(t *testing.T) {
 func TestSetAfterGet(t *testing.T) {
 	re := require.New(t)
 	store, manager := newTestManager(t, false)
-	rule := manager.GetRule("pd", "default")
+	rule := manager.GetRule("tm", "default")
 	rule.Count = 1
 	manager.SetRule(rule)
 
 	m2 := NewRuleManager(store, nil, nil)
 	err := m2.Initialize(100, []string{})
 	re.NoError(err)
-	rule = m2.GetRule("pd", "default")
+	rule = m2.GetRule("tm", "default")
 	re.Equal(1, rule.Count)
 }
 
@@ -205,16 +205,16 @@ func TestKeys(t *testing.T) {
 			DeleteByIDPrefix: false,
 		})
 	}
-	checkRules(t, manager.GetAllRules(), [][2]string{{"1", "1"}, {"2", "2"}, {"2", "3"}, {"pd", "default"}})
+	checkRules(t, manager.GetAllRules(), [][2]string{{"1", "1"}, {"2", "2"}, {"2", "3"}, {"tm", "default"}})
 	manager.Batch(toDelete)
-	checkRules(t, manager.GetAllRules(), [][2]string{{"pd", "default"}})
+	checkRules(t, manager.GetAllRules(), [][2]string{{"tm", "default"}})
 
 	rules = append(rules, &Rule{GroupID: "3", ID: "4", Role: "voter", Count: 1, StartKeyHex: "44", EndKeyHex: "ee"},
 		&Rule{GroupID: "3", ID: "5", Role: "voter", Count: 1, StartKeyHex: "44", EndKeyHex: "dd"})
 	manager.SetRules(rules)
-	checkRules(t, manager.GetAllRules(), [][2]string{{"1", "1"}, {"2", "2"}, {"2", "3"}, {"3", "4"}, {"3", "5"}, {"pd", "default"}})
+	checkRules(t, manager.GetAllRules(), [][2]string{{"1", "1"}, {"2", "2"}, {"2", "3"}, {"3", "4"}, {"3", "5"}, {"tm", "default"}})
 
-	manager.DeleteRule("pd", "default")
+	manager.DeleteRule("tm", "default")
 	checkRules(t, manager.GetAllRules(), [][2]string{{"1", "1"}, {"2", "2"}, {"2", "3"}, {"3", "4"}, {"3", "5"}})
 
 	splitKeys := [][]string{
@@ -285,7 +285,7 @@ func TestDeleteByIDPrefix(t *testing.T) {
 		{GroupID: "g2", ID: "foobar", Role: "voter", Count: 1},
 		{GroupID: "g2", ID: "baz2", Role: "voter", Count: 1},
 	})
-	manager.DeleteRule("pd", "default")
+	manager.DeleteRule("tm", "default")
 	checkRules(t, manager.GetAllRules(), [][2]string{{"g1", "foo1"}, {"g2", "baz2"}, {"g2", "foo1"}, {"g2", "foobar"}})
 
 	manager.Batch([]RuleOp{{
@@ -299,58 +299,58 @@ func TestDeleteByIDPrefix(t *testing.T) {
 func TestRangeGap(t *testing.T) {
 	re := require.New(t)
 	_, manager := newTestManager(t, false)
-	err := manager.DeleteRule("pd", "default")
+	err := manager.DeleteRule("tm", "default")
 	re.Error(err)
 
-	err = manager.SetRule(&Rule{GroupID: "pd", ID: "foo", StartKeyHex: "", EndKeyHex: "abcd", Role: "voter", Count: 1})
+	err = manager.SetRule(&Rule{GroupID: "tm", ID: "foo", StartKeyHex: "", EndKeyHex: "abcd", Role: "voter", Count: 1})
 	re.NoError(err)
 	// |-- default --|
 	// |-- foo --|
 	// still cannot delete default since it will cause ("abcd", "") has no rules inside.
-	err = manager.DeleteRule("pd", "default")
+	err = manager.DeleteRule("tm", "default")
 	re.Error(err)
-	err = manager.SetRule(&Rule{GroupID: "pd", ID: "bar", StartKeyHex: "abcd", EndKeyHex: "", Role: "voter", Count: 1})
+	err = manager.SetRule(&Rule{GroupID: "tm", ID: "bar", StartKeyHex: "abcd", EndKeyHex: "", Role: "voter", Count: 1})
 	re.NoError(err)
 	// now default can be deleted.
-	err = manager.DeleteRule("pd", "default")
+	err = manager.DeleteRule("tm", "default")
 	re.NoError(err)
 	// cannot change range since it will cause ("abaa", "abcd") has no rules inside.
-	err = manager.SetRule(&Rule{GroupID: "pd", ID: "foo", StartKeyHex: "", EndKeyHex: "abaa", Role: "voter", Count: 1})
+	err = manager.SetRule(&Rule{GroupID: "tm", ID: "foo", StartKeyHex: "", EndKeyHex: "abaa", Role: "voter", Count: 1})
 	re.Error(err)
 }
 
 func TestGroupConfig(t *testing.T) {
 	re := require.New(t)
 	_, manager := newTestManager(t, false)
-	pd1 := &RuleGroup{ID: "pd"}
-	re.Equal(pd1, manager.GetRuleGroup("pd"))
+	tm1 := &RuleGroup{ID: "tm"}
+	re.Equal(tm1, manager.GetRuleGroup("tm"))
 
-	// update group pd
-	pd2 := &RuleGroup{ID: "pd", Index: 100, Override: true}
-	err := manager.SetRuleGroup(pd2)
+	// update group tm
+	tm2 := &RuleGroup{ID: "tm", Index: 100, Override: true}
+	err := manager.SetRuleGroup(tm2)
 	re.NoError(err)
-	re.Equal(pd2, manager.GetRuleGroup("pd"))
+	re.Equal(tm2, manager.GetRuleGroup("tm"))
 
 	// new group g without config
 	err = manager.SetRule(&Rule{GroupID: "g", ID: "1", Role: "voter", Count: 1})
 	re.NoError(err)
 	g1 := &RuleGroup{ID: "g"}
 	re.Equal(g1, manager.GetRuleGroup("g"))
-	re.Equal([]*RuleGroup{g1, pd2}, manager.GetRuleGroups())
+	re.Equal([]*RuleGroup{g1, tm2}, manager.GetRuleGroups())
 
 	// update group g
 	g2 := &RuleGroup{ID: "g", Index: 2, Override: true}
 	err = manager.SetRuleGroup(g2)
 	re.NoError(err)
-	re.Equal([]*RuleGroup{g2, pd2}, manager.GetRuleGroups())
+	re.Equal([]*RuleGroup{g2, tm2}, manager.GetRuleGroups())
 
-	// delete pd group, restore to default config
-	err = manager.DeleteRuleGroup("pd")
+	// delete tm group, restore to default config
+	err = manager.DeleteRuleGroup("tm")
 	re.NoError(err)
-	re.Equal([]*RuleGroup{pd1, g2}, manager.GetRuleGroups())
+	re.Equal([]*RuleGroup{tm1, g2}, manager.GetRuleGroups())
 
 	// delete rule, the group is removed too
-	err = manager.DeleteRule("pd", "default")
+	err = manager.DeleteRule("tm", "default")
 	re.NoError(err)
 	re.Equal([]*RuleGroup{g2}, manager.GetRuleGroups())
 }
@@ -358,7 +358,7 @@ func TestGroupConfig(t *testing.T) {
 func TestRuleVersion(t *testing.T) {
 	re := require.New(t)
 	_, manager := newTestManager(t, false)
-	rule1 := manager.GetRule("pd", "default")
+	rule1 := manager.GetRule("tm", "default")
 	re.Equal(uint64(0), rule1.Version)
 	// create new rule
 	newRule := &Rule{GroupID: "g1", ID: "id", StartKeyHex: "123abc", EndKeyHex: "123abf", Role: "voter", Count: 3}

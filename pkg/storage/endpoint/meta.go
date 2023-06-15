@@ -28,7 +28,7 @@ import (
 	"github.com/pingcap/kvproto/pkg/metapb"
 )
 
-// MetaStorage defines the storage operations on the PD cluster meta info.
+// MetaStorage defines the storage operations on the TM cluster meta info.
 type MetaStorage interface {
 	LoadMeta(meta *metapb.Cluster) (bool, error)
 	SaveMeta(meta *metapb.Cluster) error
@@ -60,13 +60,13 @@ const (
 )
 
 // LoadMeta loads cluster meta from the storage. This method will only
-// be used by the PD server, so we should only implement it for the etcd storage.
+// be used by the TM server, so we should only implement it for the etcd storage.
 func (se *StorageEndpoint) LoadMeta(meta *metapb.Cluster) (bool, error) {
 	return se.loadProto(clusterPath, meta)
 }
 
 // SaveMeta save cluster meta to the storage. This method will only
-// be used by the PD server, so we should only implement it for the etcd storage.
+// be used by the TM server, so we should only implement it for the etcd storage.
 func (se *StorageEndpoint) SaveMeta(meta *metapb.Cluster) error {
 	return se.saveProto(clusterPath, meta)
 }

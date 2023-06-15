@@ -35,7 +35,7 @@ import (
 	"google.golang.org/grpc"
 )
 
-// Client is a PD (Placement Driver) client.
+// Client is a TM (Placement Driver) client.
 // It should not be used after calling Close().
 type Client interface {
 	GetClusterID(ctx context.Context) uint64
@@ -52,12 +52,12 @@ type Client interface {
 const (
 	pdTimeout             = time.Second
 	maxInitClusterRetries = 100
-	httpPrefix            = "pd/api/v1"
+	httpPrefix            = "tm/api/v1"
 )
 
 var (
-	// errFailInitClusterID is returned when failed to load clusterID from all supplied PD addresses.
-	errFailInitClusterID = errors.New("[pd] failed to get cluster id")
+	// errFailInitClusterID is returned when failed to load clusterID from all supplied TM addresses.
+	errFailInitClusterID = errors.New("[tm] failed to get cluster id")
 )
 
 type client struct {
@@ -75,9 +75,9 @@ type client struct {
 	cancel context.CancelFunc
 }
 
-// NewClient creates a PD client.
+// NewClient creates a TM client.
 func NewClient(pdAddr string, tag string) (Client, <-chan *pdpb.RegionHeartbeatResponse, error) {
-	simutil.Logger.Info("create pd client with endpoints", zap.String("tag", tag), zap.String("pd-address", pdAddr))
+	simutil.Logger.Info("create tm client with endpoints", zap.String("tag", tag), zap.String("tm-address", pdAddr))
 	ctx, cancel := context.WithCancel(context.Background())
 	c := &client{
 		url:                      pdAddr,

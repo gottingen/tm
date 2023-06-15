@@ -26,7 +26,7 @@ import (
 	"github.com/urfave/negroni"
 )
 
-const apiPrefix = "/pd"
+const apiPrefix = "/tm"
 
 // NewHandler creates a HTTP handler for API.
 func NewHandler(_ context.Context, svr *server.Server) (http.Handler, apiutil.APIServiceGroup, error) {

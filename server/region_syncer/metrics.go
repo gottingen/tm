@@ -18,7 +18,7 @@ import "github.com/prometheus/client_golang/prometheus"
 
 var regionSyncerStatus = prometheus.NewGaugeVec(
 	prometheus.GaugeOpts{
-		Namespace: "pd",
+		Namespace: "tm",
 		Subsystem: "region_syncer",
 		Name:      "status",
 		Help:      "Inner status of the region syncer.",

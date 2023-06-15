@@ -192,7 +192,7 @@ func TestInitClusterID(t *testing.T) {
 
 	<-etcd.Server.ReadyNotify()
 
-	pdClusterIDPath := "test/TestInitClusterID/pd/cluster_id"
+	pdClusterIDPath := "test/TestInitClusterID/tm/cluster_id"
 	// Get any cluster key to parse the cluster ID.
 	resp, err := EtcdKVGet(client, pdClusterIDPath)
 	re.NoError(err)

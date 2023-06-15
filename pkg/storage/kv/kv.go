@@ -25,7 +25,7 @@ type Txn interface {
 	LoadRange(key, endKey string, limit int) (keys []string, values []string, err error)
 }
 
-// Base is an abstract interface for load/save pd cluster data.
+// Base is an abstract interface for load/save tm cluster data.
 type Base interface {
 	Txn
 	// RunInTxn runs the user provided function in a Transaction.

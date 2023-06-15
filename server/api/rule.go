@@ -69,7 +69,7 @@ func (h *ruleHandler) GetAllRules(w http.ResponseWriter, r *http.Request) {
 // @Success  200    {string}  string            "Update rules successfully."
 // @Failure  400    {string}  string            "The input is invalid."
 // @Failure  412    {string}  string            "Placement rules feature is disabled."
-// @Failure  500    {string}  string            "PD server failed to proceed the request."
+// @Failure  500    {string}  string            "TM server failed to proceed the request."
 // @Router   /config/rules [get]
 func (h *ruleHandler) SetAllRules(w http.ResponseWriter, r *http.Request) {
 	cluster := getCluster(r)
@@ -87,7 +87,7 @@ func (h *ruleHandler) SetAllRules(w http.ResponseWriter, r *http.Request) {
 			return
 		}
 	}
-	if err := cluster.GetRuleManager().SetKeyType(h.svr.GetConfig().PDServerCfg.KeyType).
+	if err := cluster.GetRuleManager().SetKeyType(h.svr.GetConfig().TMServerCfg.KeyType).
 		SetRules(rules); err != nil {
 		if errs.ErrRuleContent.Equal(err) || errs.ErrHexDecodingString.Equal(err) {
 			h.rd.JSON(w, http.StatusBadRequest, err.Error())
@@ -229,7 +229,7 @@ func (h *ruleHandler) GetRuleByGroupAndID(w http.ResponseWriter, r *http.Request
 // @Success  200  {string}  string  "Update rule successfully."
 // @Failure  400  {string}  string  "The input is invalid."
 // @Failure  412  {string}  string  "Placement rules feature is disabled."
-// @Failure  500  {string}  string  "PD server failed to proceed the request."
+// @Failure  500  {string}  string  "TM server failed to proceed the request."
 // @Router   /config/rule [post]
 func (h *ruleHandler) SetRule(w http.ResponseWriter, r *http.Request) {
 	cluster := getCluster(r)
@@ -246,7 +246,7 @@ func (h *ruleHandler) SetRule(w http.ResponseWriter, r *http.Request) {
 		h.rd.JSON(w, http.StatusBadRequest, err.Error())
 		return
 	}
-	if err := cluster.GetRuleManager().SetKeyType(h.svr.GetConfig().PDServerCfg.KeyType).
+	if err := cluster.GetRuleManager().SetKeyType(h.svr.GetConfig().TMServerCfg.KeyType).
 		SetRule(&rule); err != nil {
 		if errs.ErrRuleContent.Equal(err) || errs.ErrHexDecodingString.Equal(err) {
 			h.rd.JSON(w, http.StatusBadRequest, err.Error())
@@ -265,7 +265,7 @@ func (h *ruleHandler) SetRule(w http.ResponseWriter, r *http.Request) {
 // sync replicate config with default-rule
 func (h *ruleHandler) syncReplicateConfigWithDefaultRule(rule *placement.Rule) error {
 	// sync default rule with replicate config
-	if rule.GroupID == "pd" && rule.ID == "default" {
+	if rule.GroupID == "tm" && rule.ID == "default" {
 		cfg := h.svr.GetReplicationConfig().Clone()
 		cfg.MaxReplicas = uint64(rule.Count)
 		if err := h.svr.SetReplicationConfig(*cfg); err != nil {
@@ -282,7 +282,7 @@ func (h *ruleHandler) syncReplicateConfigWithDefaultRule(rule *placement.Rule) e
 // @Produce  json
 // @Success  200  {string}  string  "Delete rule successfully."
 // @Failure  412  {string}  string  "Placement rules feature is disabled."
-// @Failure  500  {string}  string  "PD server failed to proceed the request."
+// @Failure  500  {string}  string  "TM server failed to proceed the request."
 // @Router   /config/rule/{group}/{id} [delete]
 func (h *ruleHandler) DeleteRuleByGroup(w http.ResponseWriter, r *http.Request) {
 	cluster := getCluster(r)
@@ -310,7 +310,7 @@ func (h *ruleHandler) DeleteRuleByGroup(w http.ResponseWriter, r *http.Request) 
 // @Success  200         {string}  string              "Batch operations successfully."
 // @Failure  400         {string}  string              "The input is invalid."
 // @Failure  412         {string}  string              "Placement rules feature is disabled."
-// @Failure  500         {string}  string              "PD server failed to proceed the request."
+// @Failure  500         {string}  string              "TM server failed to proceed the request."
 // @Router   /config/rules/batch [post]
 func (h *ruleHandler) BatchRules(w http.ResponseWriter, r *http.Request) {
 	cluster := getCluster(r)
@@ -322,7 +322,7 @@ func (h *ruleHandler) BatchRules(w http.ResponseWriter, r *http.Request) {
 	if err := apiutil.ReadJSONRespondError(h.rd, w, r.Body, &opts); err != nil {
 		return
 	}
-	if err := cluster.GetRuleManager().SetKeyType(h.svr.GetConfig().PDServerCfg.KeyType).
+	if err := cluster.GetRuleManager().SetKeyType(h.svr.GetConfig().TMServerCfg.KeyType).
 		Batch(opts); err != nil {
 		if errs.ErrRuleContent.Equal(err) || errs.ErrHexDecodingString.Equal(err) {
 			h.rd.JSON(w, http.StatusBadRequest, err.Error())
@@ -365,7 +365,7 @@ func (h *ruleHandler) GetGroupConfig(w http.ResponseWriter, r *http.Request) {
 // @Success  200  {string}  string  "Update rule group config successfully."
 // @Failure  400  {string}  string  "The input is invalid."
 // @Failure  412  {string}  string  "Placement rules feature is disabled."
-// @Failure  500  {string}  string  "PD server failed to proceed the request."
+// @Failure  500  {string}  string  "TM server failed to proceed the request."
 // @Router   /config/rule_group [post]
 func (h *ruleHandler) SetGroupConfig(w http.ResponseWriter, r *http.Request) {
 	cluster := getCluster(r)
@@ -393,7 +393,7 @@ func (h *ruleHandler) SetGroupConfig(w http.ResponseWriter, r *http.Request) {
 // @Produce  json
 // @Success  200  {string}  string  "Delete rule group config successfully."
 // @Failure  412  {string}  string  "Placement rules feature is disabled."
-// @Failure  500  {string}  string  "PD server failed to proceed the request."
+// @Failure  500  {string}  string  "TM server failed to proceed the request."
 // @Router   /config/rule_group/{id} [delete]
 func (h *ruleHandler) DeleteGroupConfig(w http.ResponseWriter, r *http.Request) {
 	cluster := getCluster(r)
@@ -452,7 +452,7 @@ func (h *ruleHandler) GetPlacementRules(w http.ResponseWriter, r *http.Request) 
 // @Success  200  {string}  string  "Update rules and groups successfully."
 // @Failure  400  {string}  string  "The input is invalid."
 // @Failure  412  {string}  string  "Placement rules feature is disabled."
-// @Failure  500  {string}  string  "PD server failed to proceed the request."
+// @Failure  500  {string}  string  "TM server failed to proceed the request."
 // @Router   /config/placement-rule [post]
 func (h *ruleHandler) SetPlacementRules(w http.ResponseWriter, r *http.Request) {
 	cluster := getCluster(r)
@@ -465,7 +465,7 @@ func (h *ruleHandler) SetPlacementRules(w http.ResponseWriter, r *http.Request) 
 		return
 	}
 	_, partial := r.URL.Query()["partial"]
-	if err := cluster.GetRuleManager().SetKeyType(h.svr.GetConfig().PDServerCfg.KeyType).
+	if err := cluster.GetRuleManager().SetKeyType(h.svr.GetConfig().TMServerCfg.KeyType).
 		SetAllGroupBundles(groups, !partial); err != nil {
 		if errs.ErrRuleContent.Equal(err) || errs.ErrHexDecodingString.Equal(err) {
 			h.rd.JSON(w, http.StatusBadRequest, err.Error())
@@ -529,7 +529,7 @@ func (h *ruleHandler) DeletePlacementRuleByGroup(w http.ResponseWriter, r *http.
 // @Success  200  {string}  string  "Update group and rules successfully."
 // @Failure  400  {string}  string  "The input is invalid."
 // @Failure  412  {string}  string  "Placement rules feature is disabled."
-// @Failure  500  {string}  string  "PD server failed to proceed the request."
+// @Failure  500  {string}  string  "TM server failed to proceed the request."
 // @Router   /config/placement-rule/{group} [post]
 func (h *ruleHandler) SetPlacementRuleByGroup(w http.ResponseWriter, r *http.Request) {
 	cluster := getCluster(r)
@@ -549,7 +549,7 @@ func (h *ruleHandler) SetPlacementRuleByGroup(w http.ResponseWriter, r *http.Req
 		h.rd.JSON(w, http.StatusBadRequest, fmt.Sprintf("group id %s does not match request URI %s", group.ID, groupID))
 		return
 	}
-	if err := cluster.GetRuleManager().SetKeyType(h.svr.GetConfig().PDServerCfg.KeyType).
+	if err := cluster.GetRuleManager().SetKeyType(h.svr.GetConfig().TMServerCfg.KeyType).
 		SetGroupBundle(group); err != nil {
 		if errs.ErrRuleContent.Equal(err) || errs.ErrHexDecodingString.Equal(err) {
 			h.rd.JSON(w, http.StatusBadRequest, err.Error())

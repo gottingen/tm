@@ -44,8 +44,8 @@ func newLogHandler(svr *server.Server, rd *render.Render) *logHandler {
 // @Produce  json
 // @Success  200  {string}  string  "The log level is updated."
 // @Failure  400  {string}  string  "The input is invalid."
-// @Failure  500  {string}  string  "PD server failed to proceed the request."
-// @Failure  503  {string}  string  "PD server has no leader."
+// @Failure  500  {string}  string  "TM server failed to proceed the request."
+// @Failure  503  {string}  string  "TM server has no leader."
 // @Router   /admin/log [post]
 func (h *logHandler) SetLogLevel(w http.ResponseWriter, r *http.Request) {
 	var level string

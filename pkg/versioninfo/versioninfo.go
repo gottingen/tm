@@ -31,10 +31,10 @@ const (
 
 // Version information.
 var (
-	PDReleaseVersion = "None"
-	PDBuildTS        = "None"
-	PDGitHash        = "None"
-	PDGitBranch      = "None"
+	TMReleaseVersion = "None"
+	TMBuildTS        = "None"
+	TMGitHash        = "None"
+	TMGitBranch      = "None"
 	PDEdition        = CommunityEdition
 )
 
@@ -83,22 +83,22 @@ func IsFeatureSupported(clusterVersion *semver.Version, f Feature) bool {
 	return IsCompatible(minSupportVersion, *clusterVersion)
 }
 
-// Log prints the version information of the PD with the specific service mode.
+// Log prints the version information of the TM with the specific service mode.
 func Log(serviceMode string) {
 	mode := strings.ToUpper(serviceMode)
 	log.Info(fmt.Sprintf("Welcome to Placement Driver (%s)", mode))
-	log.Info(mode, zap.String("release-version", PDReleaseVersion))
+	log.Info(mode, zap.String("release-version", TMReleaseVersion))
 	log.Info(mode, zap.String("edition", PDEdition))
-	log.Info(mode, zap.String("git-hash", PDGitHash))
-	log.Info(mode, zap.String("git-branch", PDGitBranch))
-	log.Info(mode, zap.String("utc-build-time", PDBuildTS))
+	log.Info(mode, zap.String("git-hash", TMGitHash))
+	log.Info(mode, zap.String("git-branch", TMGitBranch))
+	log.Info(mode, zap.String("utc-build-time", TMBuildTS))
 }
 
-// Print prints the version information, without log info, of the PD with the specific service mode.
+// Print prints the version information, without log info, of the TM with the specific service mode.
 func Print() {
-	fmt.Println("Release Version:", PDReleaseVersion)
+	fmt.Println("Release Version:", TMReleaseVersion)
 	fmt.Println("Edition:", PDEdition)
-	fmt.Println("Git Commit Hash:", PDGitHash)
-	fmt.Println("Git Branch:", PDGitBranch)
-	fmt.Println("UTC Build Time: ", PDBuildTS)
+	fmt.Println("Git Commit Hash:", TMGitHash)
+	fmt.Println("Git Branch:", TMGitBranch)
+	fmt.Println("UTC Build Time: ", TMBuildTS)
 }

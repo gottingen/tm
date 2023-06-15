@@ -12,7 +12,7 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-package pd
+package tm
 
 import (
 	"context"
@@ -49,7 +49,7 @@ type ResourceManagerClient interface {
 	AcquireTokenBuckets(ctx context.Context, request *rmpb.TokenBucketsRequest) ([]*rmpb.TokenBucketResponse, error)
 }
 
-// resourceManagerClient gets the ResourceManager client of current PD leader.
+// resourceManagerClient gets the ResourceManager client of current TM leader.
 func (c *client) resourceManagerClient() (rmpb.ResourceManagerClient, error) {
 	cc, err := c.pdSvcDiscovery.GetOrCreateGRPCConn(c.GetLeaderAddr())
 	if err != nil {
@@ -172,7 +172,7 @@ func (c *client) WatchResourceGroup(ctx context.Context, revision int64) (chan [
 		defer func() {
 			close(resourceGroupWatcherChan)
 			if r := recover(); r != nil {
-				log.Error("[pd] panic in ResourceManagerClient `WatchResourceGroups`", zap.Any("error", r))
+				log.Error("[tm] panic in ResourceManagerClient `WatchResourceGroups`", zap.Any("error", r))
 				return
 			}
 		}()

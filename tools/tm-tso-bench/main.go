@@ -27,7 +27,7 @@ import (
 	"syscall"
 	"time"
 
-	pd "github.com/gottingen/tm/client"
+	tm "github.com/gottingen/tm/client"
 	"github.com/influxdata/tdigest"
 	"github.com/pingcap/errors"
 	"github.com/pingcap/log"
@@ -36,8 +36,8 @@ import (
 )
 
 var (
-	pdAddrs                = flag.String("pd", "127.0.0.1:2379", "pd address")
-	clientNumber           = flag.Int("client", 1, "the number of pd clients involved in each benchmark")
+	pdAddrs                = flag.String("tm", "127.0.0.1:2379", "tm address")
+	clientNumber           = flag.Int("client", 1, "the number of tm clients involved in each benchmark")
 	concurrency            = flag.Int("c", 1000, "concurrency")
 	count                  = flag.Int("count", 1, "the count number that the test will run")
 	duration               = flag.Duration("duration", 60*time.Second, "how many seconds the test will last")
@@ -88,23 +88,23 @@ func bench(mainCtx context.Context) {
 
 	// Initialize all clients
 	fmt.Printf("Create %d client(s) for benchmark\n", *clientNumber)
-	pdClients := make([]pd.Client, *clientNumber)
+	pdClients := make([]tm.Client, *clientNumber)
 	for idx := range pdClients {
 		var (
-			pdCli pd.Client
+			pdCli tm.Client
 			err   error
 		)
 
-		pdCli, err = pd.NewClientWithContext(mainCtx, []string{*pdAddrs}, pd.SecurityOption{
+		pdCli, err = tm.NewClientWithContext(mainCtx, []string{*pdAddrs}, tm.SecurityOption{
 			CAPath:   *caPath,
 			CertPath: *certPath,
 			KeyPath:  *keyPath,
 		})
 
-		pdCli.UpdateOption(pd.MaxTSOBatchWaitInterval, *maxBatchWaitInterval)
-		pdCli.UpdateOption(pd.EnableTSOFollowerProxy, *enableTSOFollowerProxy)
+		pdCli.UpdateOption(tm.MaxTSOBatchWaitInterval, *maxBatchWaitInterval)
+		pdCli.UpdateOption(tm.EnableTSOFollowerProxy, *enableTSOFollowerProxy)
 		if err != nil {
-			log.Fatal(fmt.Sprintf("create pd client #%d failed: %v", idx, err))
+			log.Fatal(fmt.Sprintf("create tm client #%d failed: %v", idx, err))
 		}
 		pdClients[idx] = pdCli
 	}
@@ -338,7 +338,7 @@ func (s *stats) calculate(count int) float64 {
 	return float64(count) * 100 / float64(s.count)
 }
 
-func reqWorker(ctx context.Context, pdCli pd.Client, durCh chan time.Duration) {
+func reqWorker(ctx context.Context, pdCli tm.Client, durCh chan time.Duration) {
 	defer wg.Done()
 
 	reqCtx, cancel := context.WithCancel(ctx)

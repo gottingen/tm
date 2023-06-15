@@ -19,7 +19,7 @@ import "github.com/prometheus/client_golang/prometheus"
 var (
 	idGauge = prometheus.NewGaugeVec(
 		prometheus.GaugeOpts{
-			Namespace: "pd",
+			Namespace: "tm",
 			Subsystem: "cluster",
 			Name:      "id",
 			Help:      "Record of id allocator.",

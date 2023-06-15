@@ -47,8 +47,8 @@ const (
 	requestTimeout = 10 * time.Second
 	etcdTimeout    = 3 * time.Second
 
-	pdRootPath       = "/pd"
-	pdClusterIDPath  = "/pd/cluster_id"
+	pdRootPath       = "/tm"
+	pdClusterIDPath  = "/tm/cluster_id"
 	allocIDSafeGuard = 100000000
 )
 
@@ -58,7 +58,7 @@ func exitErr(err error) {
 }
 
 func main() {
-	fs := flag.NewFlagSet("pd-recover", flag.ExitOnError)
+	fs := flag.NewFlagSet("tm-recover", flag.ExitOnError)
 	fs.BoolVar(&v, "V", false, "print version information")
 	fs.BoolVar(&fromOldMember, "from-old-member", false, "recover from a member of an existing cluster")
 	fs.StringVar(&endpoints, "endpoints", "http://127.0.0.1:2379", "endpoints urls")
@@ -146,7 +146,7 @@ func recoverFromNewPDCluster(client *clientv3.Client, clusterID, allocID uint64)
 	timeData := typeutil.Uint64ToBytes(uint64(nano))
 	ops = append(ops, clientv3.OpPut(raftBootstrapTimeKey, string(timeData)))
 
-	// the new pd cluster should not bootstrapped by tikv
+	// the new tm cluster should not bootstrapped by tikv
 	bootstrapCmp := clientv3.Compare(clientv3.CreateRevision(clusterRootPath), "=", 0)
 	resp, err := client.Txn(ctx).If(bootstrapCmp).Then(ops...).Commit()
 	if err != nil {
@@ -156,7 +156,7 @@ func recoverFromNewPDCluster(client *clientv3.Client, clusterID, allocID uint64)
 		fmt.Println("failed to recover: the cluster is already bootstrapped")
 		return
 	}
-	fmt.Println("recover success! please restart the PD cluster")
+	fmt.Println("recover success! please restart the TM cluster")
 }
 
 func recoverFromOldMember(client *clientv3.Client) {
@@ -192,7 +192,7 @@ func recoverFromOldMember(client *clientv3.Client) {
 	// delete stores
 	storePath := path.Join(clusterRootPath, "s/")
 	ops = append(ops, clientv3.OpDelete(storePath, clientv3.WithPrefix()))
-	// the old pd cluster should bootstrapped by tikv
+	// the old tm cluster should bootstrapped by tikv
 	bootstrapCmp := clientv3.Compare(clientv3.CreateRevision(clusterRootPath), "!=", 0)
 	ctx, cancel := context.WithTimeout(client.Ctx(), requestTimeout)
 	defer cancel()
@@ -204,5 +204,5 @@ func recoverFromOldMember(client *clientv3.Client) {
 		fmt.Println("failed to recover: the cluster is already bootstrapped")
 		return
 	}
-	fmt.Println("recover success! please restart the PD cluster")
+	fmt.Println("recover success! please restart the TM cluster")
 }

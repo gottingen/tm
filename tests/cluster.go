@@ -210,7 +210,7 @@ func (s *TestServer) GetClusterID() uint64 {
 	return s.server.ClusterID()
 }
 
-// GetLeader returns current leader of PD cluster.
+// GetLeader returns current leader of TM cluster.
 func (s *TestServer) GetLeader() *pdpb.Member {
 	s.RLock()
 	defer s.RUnlock()
@@ -218,9 +218,9 @@ func (s *TestServer) GetLeader() *pdpb.Member {
 }
 
 // GetAllocatorLeader returns current allocator leader
-// of PD cluster for given dc-location.
+// of TM cluster for given dc-location.
 func (s *TestServer) GetAllocatorLeader(dcLocation string) *pdpb.Member {
-	// For the leader of Global TSO Allocator, it's the PD leader
+	// For the leader of Global TSO Allocator, it's the TM leader
 	if dcLocation == tso.GlobalDCLocation {
 		return s.GetLeader()
 	}
@@ -239,14 +239,14 @@ func (s *TestServer) GetKeyspaceManager() *keyspace.Manager {
 	return s.server.GetKeyspaceManager()
 }
 
-// GetCluster returns PD cluster.
+// GetCluster returns TM cluster.
 func (s *TestServer) GetCluster() *metapb.Cluster {
 	s.RLock()
 	defer s.RUnlock()
 	return s.server.GetCluster()
 }
 
-// GetClusterVersion returns PD cluster version.
+// GetClusterVersion returns TM cluster version.
 func (s *TestServer) GetClusterVersion() semver.Version {
 	s.RLock()
 	defer s.RUnlock()
@@ -404,7 +404,7 @@ func (s *TestServer) BootstrapCluster() error {
 }
 
 // WaitLeader is used to get instant leader info in order to
-// make a test know the PD leader has been elected as soon as possible.
+// make a test know the TM leader has been elected as soon as possible.
 // If it exceeds the maximum number of loops, it will return nil.
 func (s *TestServer) WaitLeader() bool {
 	for i := 0; i < 100; i++ {
@@ -434,7 +434,7 @@ type TestCluster struct {
 
 // ConfigOption is used to define customize settings in test.
 // You can use serverName to customize a config for a certain
-// server. Usually, the server name will be like `pd1`, `pd2`
+// server. Usually, the server name will be like `tm1`, `tm2`
 // and so on, which determined by the number of servers you set.
 type ConfigOption func(conf *config.Config, serverName string)
 
@@ -649,7 +649,7 @@ func (c *TestCluster) WaitAllocatorLeader(dcLocation string, ops ...WaitOption) 
 	return ""
 }
 
-// WaitAllLeaders will block and wait for the election of PD leader and all Local TSO Allocator leaders.
+// WaitAllLeaders will block and wait for the election of TM leader and all Local TSO Allocator leaders.
 func (c *TestCluster) WaitAllLeaders(re *require.Assertions, dcLocations map[string]string) {
 	c.WaitLeader()
 	c.CheckClusterDCLocation()
@@ -667,7 +667,7 @@ func (c *TestCluster) WaitAllLeaders(re *require.Assertions, dcLocations map[str
 	wg.Wait()
 }
 
-// GetCluster returns PD cluster.
+// GetCluster returns TM cluster.
 func (c *TestCluster) GetCluster() *metapb.Cluster {
 	leader := c.GetLeader()
 	return c.servers[leader].GetCluster()

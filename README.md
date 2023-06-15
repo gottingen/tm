@@ -5,39 +5,35 @@ titan search meta service
 ## Build
 
 1. Make sure [​*Go*​](https://golang.org/) (version 1.20) is installed.
-2. Use `make` to install PD. PD is installed in the `bin` directory.
+2. Use `make` to install TM. TM is installed in the `bin` directory.
 
 ## Usage
 
-### Command flags
-
-See [PD Configuration Flags](https://pingcap.com/docs/dev/reference/configuration/pd-server/configuration/#pd-configuration-flags).
-
 ### Single Node with default ports
 
-You can run `pd-server` directly on your local machine, if you want to connect to PD from outside,
-you can let PD listen on the host IP.
+You can run `tm-server` directly on your local machine, if you want to connect to TM from outside,
+you can let TM listen on the host IP.
 
 ```bash
 # Set correct HostIP here.
 export HostIP="192.168.199.105"
 
-pd-server --name="pd" \
-          --data-dir="pd" \
+tm-server --name="tm" \
+          --data-dir="tm" \
           --client-urls="http://${HostIP}:2379" \
           --peer-urls="http://${HostIP}:2380" \
-          --log-file=pd.log
+          --log-file=tm.log
 ```
 
-Using `curl` to see PD member:
+Using `curl` to see TM member:
 
 ```bash
-curl http://${HostIP}:2379/pd/api/v1/members
+curl http://${HostIP}:2379/tm/api/v1/members
 
 {
     "members": [
         {
-            "name":"pd",
+            "name":"tm",
             "member_id":"f62e88a6e81c149",
             "peer_urls": [
                 "http://192.168.199.105:2380"
@@ -53,7 +49,7 @@ curl http://${HostIP}:2379/pd/api/v1/members
 A better tool [httpie](https://github.com/jkbrzt/httpie) is recommended:
 
 ```bash
-http http://${HostIP}:2379/pd/api/v1/members
+http http://${HostIP}:2379/tm/api/v1/members
 Access-Control-Allow-Headers: accept, content-type, authorization
 Access-Control-Allow-Methods: POST, GET, OPTIONS, PUT, DELETE
 Access-Control-Allow-Origin: *
@@ -68,7 +64,7 @@ Date: Thu, 20 Feb 2020 09:49:42 GMT
                 "http://192.168.199.105:2379"
             ],
             "member_id": "f62e88a6e81c149",
-            "name": "pd",
+            "name": "tm",
             "peer_urls": [
                 "http://192.168.199.105:2380"
             ]
@@ -77,36 +73,6 @@ Date: Thu, 20 Feb 2020 09:49:42 GMT
 }
 ```
 
-### Docker
-
-You can use the following command to build a PD image directly:
-
-```bash
-docker build -t tikv/pd .
-```
-
-Or you can also use following command to get PD from Docker hub:
-
-```bash
-docker pull pingcap/pd
-```
-
-Run a single node with Docker:
-
-```bash
-# Set correct HostIP here.
-export HostIP="192.168.199.105"
-
-docker run -d -p 2379:2379 -p 2380:2380 --name pd tikv/pd \
-          --name="pd" \
-          --data-dir="pd" \
-          --client-urls="http://0.0.0.0:2379" \
-          --advertise-client-urls="http://${HostIP}:2379" \
-          --peer-urls="http://0.0.0.0:2380" \
-          --advertise-peer-urls="http://${HostIP}:2380" \
-          --log-file=pd.log
-```
-
 ### Cluster
 
-As a component of TiKV project, PD needs to run with TiKV to work. The cluster can also include TiDB to provide SQL services. You can refer [Deploy a TiDB Cluster Using TiUP](https://docs.pingcap.com/tidb/stable/production-deployment-using-tiup) or [TiDB in Kubernetes Documentation](https://docs.pingcap.com/tidb-in-kubernetes/stable) for detailed instructions to deploy a cluster.
+As a component of TiKV project, TM needs to run with TiKV to work. The cluster can also include TiDB to provide SQL services. You can refer [Deploy a TiDB Cluster Using TiUP](https://docs.pingcap.com/tidb/stable/production-deployment-using-tiup) or [TiDB in Kubernetes Documentation](https://docs.pingcap.com/tidb-in-kubernetes/stable) for detailed instructions to deploy a cluster.

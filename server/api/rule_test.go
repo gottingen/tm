@@ -52,9 +52,9 @@ func (suite *ruleTestSuite) SetupSuite() {
 	suite.urlPrefix = fmt.Sprintf("%s%s/api/v1/config", addr, apiPrefix)
 
 	mustBootstrapCluster(re, suite.svr)
-	PDServerCfg := suite.svr.GetConfig().PDServerCfg
-	PDServerCfg.KeyType = "raw"
-	err := suite.svr.SetPDServerConfig(PDServerCfg)
+	TMServerCfg := suite.svr.GetConfig().TMServerCfg
+	TMServerCfg.KeyType = "raw"
+	err := suite.svr.SetPDServerConfig(TMServerCfg)
 	suite.NoError(err)
 	suite.NoError(tu.CheckPostJSON(testDialClient, suite.urlPrefix, []byte(`{"enable-placement-rules":"true"}`), tu.StatusOK(re)))
 }
@@ -65,9 +65,9 @@ func (suite *ruleTestSuite) TearDownSuite() {
 
 func (suite *ruleTestSuite) TearDownTest() {
 	def := placement.GroupBundle{
-		ID: "pd",
+		ID: "tm",
 		Rules: []*placement.Rule{
-			{GroupID: "pd", ID: "default", Role: "voter", Count: 3},
+			{GroupID: "tm", ID: "default", Role: "voter", Count: 3},
 		},
 	}
 	data, err := json.Marshal([]placement.GroupBundle{def})
@@ -145,14 +145,14 @@ func (suite *ruleTestSuite) TestSet() {
 			name:    "Check rule failed",
 			rawData: checkErrData,
 			success: false,
-			response: `"[PD:hex:ErrHexDecodingString]decode string XXXX error"
+			response: `"[TM:hex:ErrHexDecodingString]decode string XXXX error"
 `,
 		},
 		{
 			name:    "Set Rule Failed",
 			rawData: setErrData,
 			success: false,
-			response: `"[PD:placement:ErrRuleContent]invalid rule content, invalid count -1"
+			response: `"[TM:placement:ErrRuleContent]invalid rule content, invalid count -1"
 `,
 		},
 	}
@@ -244,12 +244,12 @@ func (suite *ruleTestSuite) TestSetAll() {
 	rule2 := placement.Rule{GroupID: "b", ID: "12", StartKeyHex: "1111", EndKeyHex: "3333", Role: "voter", Count: 1}
 	rule3 := placement.Rule{GroupID: "a", ID: "12", StartKeyHex: "XXXX", EndKeyHex: "3333", Role: "voter", Count: 1}
 	rule4 := placement.Rule{GroupID: "a", ID: "12", StartKeyHex: "1111", EndKeyHex: "3333", Role: "voter", Count: -1}
-	rule5 := placement.Rule{GroupID: "pd", ID: "default", StartKeyHex: "", EndKeyHex: "", Role: "voter", Count: 1,
+	rule5 := placement.Rule{GroupID: "tm", ID: "default", StartKeyHex: "", EndKeyHex: "", Role: "voter", Count: 1,
 		LocationLabels: []string{"host"}}
-	rule6 := placement.Rule{GroupID: "pd", ID: "default", StartKeyHex: "", EndKeyHex: "", Role: "voter", Count: 3}
+	rule6 := placement.Rule{GroupID: "tm", ID: "default", StartKeyHex: "", EndKeyHex: "", Role: "voter", Count: 3}
 
 	suite.svr.GetPersistOptions().GetReplicationConfig().LocationLabels = []string{"host"}
-	defaultRule := suite.svr.GetRaftCluster().GetRuleManager().GetRule("pd", "default")
+	defaultRule := suite.svr.GetRaftCluster().GetRuleManager().GetRule("tm", "default")
 	defaultRule.LocationLabels = []string{"host"}
 	suite.svr.GetRaftCluster().GetRuleManager().SetRule(defaultRule)
 
@@ -302,7 +302,7 @@ func (suite *ruleTestSuite) TestSetAll() {
 			rawData:       checkErrData,
 			success:       false,
 			isDefaultRule: false,
-			response: `"[PD:hex:ErrHexDecodingString]decode string XXXX error"
+			response: `"[TM:hex:ErrHexDecodingString]decode string XXXX error"
 `,
 		},
 		{
@@ -310,7 +310,7 @@ func (suite *ruleTestSuite) TestSetAll() {
 			rawData:       setErrData,
 			success:       false,
 			isDefaultRule: false,
-			response: `"[PD:placement:ErrRuleContent]invalid rule content, invalid count -1"
+			response: `"[TM:placement:ErrRuleContent]invalid rule content, invalid count -1"
 `,
 		},
 		{
@@ -657,14 +657,14 @@ func (suite *ruleTestSuite) TestBatch() {
 			name:    "Check rule failed",
 			rawData: checkErrData,
 			success: false,
-			response: `"[PD:hex:ErrHexDecodingString]decode string XXXX error"
+			response: `"[TM:hex:ErrHexDecodingString]decode string XXXX error"
 `,
 		},
 		{
 			name:    "Set Rule Failed",
 			rawData: setErrData,
 			success: false,
-			response: `"[PD:placement:ErrRuleContent]invalid rule content, invalid count -1"
+			response: `"[TM:placement:ErrRuleContent]invalid rule content, invalid count -1"
 `,
 		},
 	}
@@ -687,9 +687,9 @@ func (suite *ruleTestSuite) TestBundle() {
 	re := suite.Require()
 	// GetAll
 	b1 := placement.GroupBundle{
-		ID: "pd",
+		ID: "tm",
 		Rules: []*placement.Rule{
-			{GroupID: "pd", ID: "default", Role: "voter", Count: 3},
+			{GroupID: "tm", ID: "default", Role: "voter", Count: 3},
 		},
 	}
 	var bundles []placement.GroupBundle
@@ -726,7 +726,7 @@ func (suite *ruleTestSuite) TestBundle() {
 	suite.compareBundle(bundles[1], b2)
 
 	// Delete
-	_, err = apiutil.DoDelete(testDialClient, suite.urlPrefix+"/placement-rule/pd")
+	_, err = apiutil.DoDelete(testDialClient, suite.urlPrefix+"/placement-rule/tm")
 	suite.NoError(err)
 
 	// GetAll again

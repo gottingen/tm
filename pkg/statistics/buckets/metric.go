@@ -21,7 +21,7 @@ import (
 var (
 	bucketsHotDegreeHist = prometheus.NewHistogram(
 		prometheus.HistogramOpts{
-			Namespace: "pd",
+			Namespace: "tm",
 			Subsystem: "scheduler",
 			Name:      "buckets_hot_degree_hist",
 			Help:      "Bucketed histogram of bucket hot degree",
@@ -30,7 +30,7 @@ var (
 
 	bucketsTaskDuration = prometheus.NewHistogramVec(
 		prometheus.HistogramOpts{
-			Namespace: "pd",
+			Namespace: "tm",
 			Subsystem: "scheduler",
 			Name:      "bucket_task_duration",
 			Help:      "Bucketed histogram of processing time (s) of bucket task.",

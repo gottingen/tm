@@ -38,10 +38,10 @@ ifeq ("$(WITH_RACE)", "1")
 	BUILD_CGO_ENABLED := 1
 endif
 
-LDFLAGS += -X "$(TM-PKG)/pkg/versioninfo.PDReleaseVersion=$(shell git describe --tags --dirty --always)"
-LDFLAGS += -X "$(TM-PKG)/pkg/versioninfo.PDBuildTS=$(shell date -u '+%Y-%m-%d %I:%M:%S')"
-LDFLAGS += -X "$(TM-PKG)/pkg/versioninfo.PDGitHash=$(shell git rev-parse HEAD)"
-LDFLAGS += -X "$(TM-PKG)/pkg/versioninfo.PDGitBranch=$(shell git rev-parse --abbrev-ref HEAD)"
+LDFLAGS += -X "$(TM-PKG)/pkg/versioninfo.TMReleaseVersion=$(shell git describe --tags --dirty --always)"
+LDFLAGS += -X "$(TM-PKG)/pkg/versioninfo.TMBuildTS=$(shell date -u '+%Y-%m-%d %I:%M:%S')"
+LDFLAGS += -X "$(TM-PKG)/pkg/versioninfo.TMGitHash=$(shell git rev-parse HEAD)"
+LDFLAGS += -X "$(TM-PKG)/pkg/versioninfo.TMGitBranch=$(shell git rev-parse --abbrev-ref HEAD)"
 LDFLAGS += -X "$(TM-PKG)/pkg/versioninfo.PDEdition=$(PD_EDITION)"
 
 ifneq ($(DASHBOARD), 0)
@@ -106,7 +106,7 @@ docker-image:
 	@if [ $(DOCKER_PS_EXIT_CODE) -ne 0 ]; then \
 	echo "Encountered problem while invoking docker cli. Is the docker daemon running?"; \
 	fi
-	docker build --no-cache -t tikv/pd .
+	docker build --no-cache -t tikv/tm .
 
 .PHONY: docker-image
 
@@ -195,7 +195,7 @@ failpoint-disable: install-tools
 
 PACKAGE_DIRECTORIES := $(subst $(TM-PKG)/,,$(PACKAGES))
 TEST_PKGS := $(filter $(shell find . -iname "*_test.go" -exec dirname {} \; | \
-                     sort -u | sed -e "s/^\./github.com\/tikv\/pd/"),$(PACKAGES))
+                     sort -u | sed -e "s/^\./github.com\/gottingen\/tm/"),$(PACKAGES))
 BASIC_TEST_PKGS := $(filter-out $(TM-PKG)/tests%,$(TEST_PKGS))
 
 SUBMODULES := $(filter $(shell find . -iname "go.mod" -exec dirname {} \;),\

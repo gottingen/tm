@@ -39,7 +39,7 @@ const (
 )
 
 // levelDBBackend is a storage backend that stores data in LevelDB,
-// which is mainly used by the PD region storage.
+// which is mainly used by the TM region storage.
 type levelDBBackend struct {
 	*endpoint.StorageEndpoint
 	ekm                 *encryption.Manager

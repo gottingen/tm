@@ -20,7 +20,7 @@ import (
 	"sync"
 	"time"
 
-	pd "github.com/gottingen/tm/client"
+	tm "github.com/gottingen/tm/client"
 	bs "github.com/gottingen/tm/pkg/basicserver"
 	rm "github.com/gottingen/tm/pkg/mcs/resource_manager/server"
 	tso "github.com/gottingen/tm/pkg/mcs/tso/server"
@@ -49,15 +49,15 @@ func initLogger(cfg *tso.Config) (err error) {
 }
 
 // SetupClientWithKeyspace creates a TSO client for test.
-func SetupClientWithKeyspace(ctx context.Context, re *require.Assertions, endpoints []string, opts ...pd.ClientOption) pd.Client {
-	cli, err := pd.NewClientWithKeyspace(ctx, utils.DefaultKeyspaceID, endpoints, pd.SecurityOption{}, opts...)
+func SetupClientWithKeyspace(ctx context.Context, re *require.Assertions, endpoints []string, opts ...tm.ClientOption) tm.Client {
+	cli, err := tm.NewClientWithKeyspace(ctx, utils.DefaultKeyspaceID, endpoints, tm.SecurityOption{}, opts...)
 	re.NoError(err)
 	return cli
 }
 
 // SetupClient creates a TSO client for test.
-func SetupClient(ctx context.Context, re *require.Assertions, endpoints []string, opts ...pd.ClientOption) pd.Client {
-	cli, err := pd.NewClientWithContext(ctx, endpoints, pd.SecurityOption{}, opts...)
+func SetupClient(ctx context.Context, re *require.Assertions, endpoints []string, opts ...tm.ClientOption) tm.Client {
+	cli, err := tm.NewClientWithContext(ctx, endpoints, tm.SecurityOption{}, opts...)
 	re.NoError(err)
 	return cli
 }
@@ -128,8 +128,8 @@ func WaitForPrimaryServing(re *require.Assertions, serverMap map[string]bs.Serve
 	return primary
 }
 
-// WaitForTSOServiceAvailable waits for the pd client being served by the tso server side
-func WaitForTSOServiceAvailable(ctx context.Context, pdClient pd.Client) error {
+// WaitForTSOServiceAvailable waits for the tm client being served by the tso server side
+func WaitForTSOServiceAvailable(ctx context.Context, pdClient tm.Client) error {
 	var err error
 	for i := 0; i < 30; i++ {
 		if _, _, err := pdClient.GetTS(ctx); err == nil {

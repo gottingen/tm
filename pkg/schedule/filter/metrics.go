@@ -19,7 +19,7 @@ import "github.com/prometheus/client_golang/prometheus"
 var (
 	filterCounter = prometheus.NewCounterVec(
 		prometheus.CounterOpts{
-			Namespace: "pd",
+			Namespace: "tm",
 			Subsystem: "schedule",
 			Name:      "filter",
 			Help:      "Counter of the filter",

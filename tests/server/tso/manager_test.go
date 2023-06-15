@@ -45,12 +45,12 @@ func TestClusterDCLocations(t *testing.T) {
 	}{
 		dcLocationNumber: 3,
 		dcLocationConfig: map[string]string{
-			"pd1": "dc-1",
-			"pd2": "dc-1",
-			"pd3": "dc-2",
-			"pd4": "dc-2",
-			"pd5": "dc-3",
-			"pd6": "dc-3",
+			"tm1": "dc-1",
+			"tm2": "dc-1",
+			"tm3": "dc-2",
+			"tm4": "dc-2",
+			"tm5": "dc-3",
+			"tm6": "dc-3",
 		},
 	}
 	serverNumber := len(testCase.dcLocationConfig)
@@ -97,12 +97,12 @@ func TestLocalTSOSuffix(t *testing.T) {
 	}{
 		dcLocations: []string{"dc-1", "dc-2", "dc-3"},
 		dcLocationConfig: map[string]string{
-			"pd1": "dc-1",
-			"pd2": "dc-1",
-			"pd3": "dc-2",
-			"pd4": "dc-2",
-			"pd5": "dc-3",
-			"pd6": "dc-3",
+			"tm1": "dc-1",
+			"tm2": "dc-1",
+			"tm3": "dc-2",
+			"tm4": "dc-2",
+			"tm5": "dc-3",
+			"tm6": "dc-3",
 		},
 	}
 	serverNumber := len(testCase.dcLocationConfig)
@@ -116,7 +116,7 @@ func TestLocalTSOSuffix(t *testing.T) {
 
 	cluster.WaitAllLeaders(re, testCase.dcLocationConfig)
 
-	tsoAllocatorManager := cluster.GetServer("pd1").GetTSOAllocatorManager()
+	tsoAllocatorManager := cluster.GetServer("tm1").GetTSOAllocatorManager()
 	for _, dcLocation := range testCase.dcLocations {
 		suffixResp, err := etcdutil.EtcdKVGet(
 			cluster.GetEtcdClient(),
@@ -150,8 +150,8 @@ func TestNextLeaderKey(t *testing.T) {
 		tso.PriorityCheck = time.Minute
 	}()
 	dcLocationConfig := map[string]string{
-		"pd1": "dc-1",
-		"pd2": "dc-1",
+		"tm1": "dc-1",
+		"tm2": "dc-1",
 	}
 	serverNum := len(dcLocationConfig)
 	cluster, err := tests.NewTestCluster(ctx, serverNum, func(conf *config.Config, serverName string) {

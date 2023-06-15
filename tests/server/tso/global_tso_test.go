@@ -34,11 +34,11 @@ import (
 )
 
 // There are three kinds of ways to generate a TSO:
-// 1. Normal Global TSO, the normal way to get a global TSO from the PD leader,
+// 1. Normal Global TSO, the normal way to get a global TSO from the TM leader,
 //    a.k.a the single Global TSO Allocator.
-// 2. Normal Local TSO, the new way to get a local TSO may from any of PD servers,
+// 2. Normal Local TSO, the new way to get a local TSO may from any of TM servers,
 //    a.k.a the Local TSO Allocator leader.
-// 3. Synchronized global TSO, the new way to get a global TSO from the PD leader,
+// 3. Synchronized global TSO, the new way to get a global TSO from the TM leader,
 //    which will coordinate and synchronize a TSO with other Local TSO Allocator
 //    leaders.
 

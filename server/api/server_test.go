@@ -159,32 +159,32 @@ func (suite *serviceTestSuite) TearDownSuite() {
 func (suite *serviceTestSuite) TestServiceLabels() {
 	accessPaths := suite.svr.GetServiceLabels("Profile")
 	suite.Len(accessPaths, 1)
-	suite.Equal("/pd/api/v1/debug/pprof/profile", accessPaths[0].Path)
+	suite.Equal("/tm/api/v1/debug/pprof/profile", accessPaths[0].Path)
 	suite.Equal("", accessPaths[0].Method)
 	serviceLabel := suite.svr.GetAPIAccessServiceLabel(
-		apiutil.NewAccessPath("/pd/api/v1/debug/pprof/profile", ""))
+		apiutil.NewAccessPath("/tm/api/v1/debug/pprof/profile", ""))
 	suite.Equal("Profile", serviceLabel)
 	serviceLabel = suite.svr.GetAPIAccessServiceLabel(
-		apiutil.NewAccessPath("/pd/api/v1/debug/pprof/profile", http.MethodGet))
+		apiutil.NewAccessPath("/tm/api/v1/debug/pprof/profile", http.MethodGet))
 	suite.Equal("Profile", serviceLabel)
 
 	accessPaths = suite.svr.GetServiceLabels("GetSchedulerConfig")
 	suite.Len(accessPaths, 1)
-	suite.Equal("/pd/api/v1/scheduler-config", accessPaths[0].Path)
+	suite.Equal("/tm/api/v1/scheduler-config", accessPaths[0].Path)
 	suite.Equal("", accessPaths[0].Method)
 
 	accessPaths = suite.svr.GetServiceLabels("ResignLeader")
 	suite.Len(accessPaths, 1)
-	suite.Equal("/pd/api/v1/leader/resign", accessPaths[0].Path)
+	suite.Equal("/tm/api/v1/leader/resign", accessPaths[0].Path)
 	suite.Equal(http.MethodPost, accessPaths[0].Method)
 	serviceLabel = suite.svr.GetAPIAccessServiceLabel(
-		apiutil.NewAccessPath("/pd/api/v1/leader/resign", http.MethodPost))
+		apiutil.NewAccessPath("/tm/api/v1/leader/resign", http.MethodPost))
 	suite.Equal("ResignLeader", serviceLabel)
 	serviceLabel = suite.svr.GetAPIAccessServiceLabel(
-		apiutil.NewAccessPath("/pd/api/v1/leader/resign", http.MethodGet))
+		apiutil.NewAccessPath("/tm/api/v1/leader/resign", http.MethodGet))
 	suite.Equal("", serviceLabel)
 	serviceLabel = suite.svr.GetAPIAccessServiceLabel(
-		apiutil.NewAccessPath("/pd/api/v1/leader/resign", ""))
+		apiutil.NewAccessPath("/tm/api/v1/leader/resign", ""))
 	suite.Equal("", serviceLabel)
 
 	accessPaths = suite.svr.GetServiceLabels("QueryMetric")
@@ -195,18 +195,18 @@ func (suite *serviceTestSuite) TestServiceLabels() {
 		}
 		return accessPaths[i].Path < accessPaths[j].Path
 	})
-	suite.Equal("/pd/api/v1/metric/query", accessPaths[0].Path)
+	suite.Equal("/tm/api/v1/metric/query", accessPaths[0].Path)
 	suite.Equal(http.MethodGet, accessPaths[0].Method)
-	suite.Equal("/pd/api/v1/metric/query", accessPaths[1].Path)
+	suite.Equal("/tm/api/v1/metric/query", accessPaths[1].Path)
 	suite.Equal(http.MethodPost, accessPaths[1].Method)
-	suite.Equal("/pd/api/v1/metric/query_range", accessPaths[2].Path)
+	suite.Equal("/tm/api/v1/metric/query_range", accessPaths[2].Path)
 	suite.Equal(http.MethodGet, accessPaths[2].Method)
-	suite.Equal("/pd/api/v1/metric/query_range", accessPaths[3].Path)
+	suite.Equal("/tm/api/v1/metric/query_range", accessPaths[3].Path)
 	suite.Equal(http.MethodPost, accessPaths[3].Method)
 	serviceLabel = suite.svr.GetAPIAccessServiceLabel(
-		apiutil.NewAccessPath("/pd/api/v1/metric/query", http.MethodPost))
+		apiutil.NewAccessPath("/tm/api/v1/metric/query", http.MethodPost))
 	suite.Equal("QueryMetric", serviceLabel)
 	serviceLabel = suite.svr.GetAPIAccessServiceLabel(
-		apiutil.NewAccessPath("/pd/api/v1/metric/query", http.MethodGet))
+		apiutil.NewAccessPath("/tm/api/v1/metric/query", http.MethodGet))
 	suite.Equal("QueryMetric", serviceLabel)
 }

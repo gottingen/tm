@@ -151,7 +151,7 @@ name = ""
 lease = 0
 max-request-bytes = 20000000
 
-[pd-server]
+[tm-server]
 metric-storage = "http://127.0.0.1:9090"
 
 [schedule]
@@ -186,13 +186,13 @@ leader-schedule-limit = 0
 	re.True(cfg.PreVote)
 	re.Equal("info", cfg.Log.Level)
 	re.Equal(uint64(0), cfg.Schedule.MaxMergeRegionKeys)
-	re.Equal("http://127.0.0.1:9090", cfg.PDServerCfg.MetricStorage)
+	re.Equal("http://127.0.0.1:9090", cfg.TMServerCfg.MetricStorage)
 
 	re.Equal(defaultTSOUpdatePhysicalInterval, cfg.TSOUpdatePhysicalInterval.Duration)
 
 	// Check undefined config fields
 	cfgData = `
-type = "pd"
+type = "tm"
 name = ""
 lease = 0
 
@@ -256,7 +256,7 @@ func TestMigrateFlags(t *testing.T) {
 		return cfg, err
 	}
 	cfg, err := load(`
-[pd-server]
+[tm-server]
 trace-region-flow = false
 [schedule]
 disable-remove-down-replica = true
@@ -265,7 +265,7 @@ disable-remove-extra-replica = true
 enable-remove-extra-replica = false
 `)
 	re.NoError(err)
-	re.Equal(math.MaxInt8, cfg.PDServerCfg.FlowRoundByDigit)
+	re.Equal(math.MaxInt8, cfg.TMServerCfg.FlowRoundByDigit)
 	re.True(cfg.Schedule.EnableReplaceOfflineReplica)
 	re.False(cfg.Schedule.EnableRemoveDownReplica)
 	re.False(cfg.Schedule.EnableMakeUpReplica)
@@ -292,7 +292,7 @@ func TestPDServerConfig(t *testing.T) {
 	}{
 		{
 			`
-[pd-server]
+[tm-server]
 dashboard-address = "http://127.0.0.1:2379"
 `,
 			false,
@@ -300,7 +300,7 @@ dashboard-address = "http://127.0.0.1:2379"
 		},
 		{
 			`
-[pd-server]
+[tm-server]
 dashboard-address = "auto"
 `,
 			false,
@@ -308,7 +308,7 @@ dashboard-address = "auto"
 		},
 		{
 			`
-[pd-server]
+[tm-server]
 dashboard-address = "none"
 `,
 			false,
@@ -321,7 +321,7 @@ dashboard-address = "none"
 		},
 		{
 			`
-[pd-server]
+[tm-server]
 dashboard-address = "127.0.0.1:2379"
 `,
 			true,
@@ -329,7 +329,7 @@ dashboard-address = "127.0.0.1:2379"
 		},
 		{
 			`
-[pd-server]
+[tm-server]
 dashboard-address = "foo"
 `,
 			true,
@@ -344,7 +344,7 @@ dashboard-address = "foo"
 		err = cfg.Adjust(&meta, false)
 		re.Equal(test.hasErr, err != nil)
 		if !test.hasErr {
-			re.Equal(test.dashboardAddress, cfg.PDServerCfg.DashboardAddress)
+			re.Equal(test.dashboardAddress, cfg.TMServerCfg.DashboardAddress)
 		}
 	}
 }
@@ -461,7 +461,7 @@ func TestConfigClone(t *testing.T) {
 	replication.adjust(emptyConfigMetaData)
 	re.Equal(replication, replication.Clone())
 
-	pdServer := &PDServerConfig{}
+	pdServer := &TMServerConfig{}
 	pdServer.adjust(emptyConfigMetaData)
 	re.Equal(pdServer, pdServer.Clone())
 

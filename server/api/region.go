@@ -46,16 +46,16 @@ type MetaPeer struct {
 	*metapb.Peer
 	// RoleName is `Role.String()`.
 	// Since Role is serialized as int by json by default,
-	// introducing it will make the output of pd-ctl easier to identify Role.
+	// introducing it will make the output of tm-ctl easier to identify Role.
 	RoleName string `json:"role_name"`
 	// IsLearner is `Role == "Learner"`.
 	// Since IsLearner was changed to Role in kvproto in 5.0, this field was introduced to ensure api compatibility.
 	IsLearner bool `json:"is_learner,omitempty"`
 }
 
-// PDPeerStats is api compatible with *pdpb.PeerStats.
+// TMPeerStats is api compatible with *pdpb.PeerStats.
 // NOTE: This type is exported by HTTP API. Please pay more attention when modifying it.
-type PDPeerStats struct {
+type TMPeerStats struct {
 	*pdpb.PeerStats
 	Peer MetaPeer `json:"peer"`
 }
@@ -82,18 +82,18 @@ func fromPeerSlice(peers []*metapb.Peer) []MetaPeer {
 	return slice
 }
 
-func fromPeerStats(peer *pdpb.PeerStats) PDPeerStats {
-	return PDPeerStats{
+func fromPeerStats(peer *pdpb.PeerStats) TMPeerStats {
+	return TMPeerStats{
 		PeerStats: peer,
 		Peer:      fromPeer(peer.Peer),
 	}
 }
 
-func fromPeerStatsSlice(peers []*pdpb.PeerStats) []PDPeerStats {
+func fromPeerStatsSlice(peers []*pdpb.PeerStats) []TMPeerStats {
 	if peers == nil {
 		return nil
 	}
-	slice := make([]PDPeerStats, len(peers))
+	slice := make([]TMPeerStats, len(peers))
 	for i, peer := range peers {
 		slice[i] = fromPeerStats(peer)
 	}
@@ -110,7 +110,7 @@ type RegionInfo struct {
 	Peers       []MetaPeer          `json:"peers,omitempty"`
 
 	Leader          MetaPeer      `json:"leader,omitempty"`
-	DownPeers       []PDPeerStats `json:"down_peers,omitempty"`
+	DownPeers       []TMPeerStats `json:"down_peers,omitempty"`
 	PendingPeers    []MetaPeer    `json:"pending_peers,omitempty"`
 	CPUUsage        uint64        `json:"cpu_usage"`
 	WrittenBytes    uint64        `json:"written_bytes"`
@@ -183,7 +183,7 @@ func InitRegion(r *core.RegionInfo, s *RegionInfo) *RegionInfo {
 // Adjust is only used in testing, in order to compare the data from json deserialization.
 func (r *RegionInfo) Adjust() {
 	for _, peer := range r.DownPeers {
-		// Since api.PDPeerStats uses the api.MetaPeer type variable Peer to overwrite PeerStats.Peer,
+		// Since api.TMPeerStats uses the api.MetaPeer type variable Peer to overwrite PeerStats.Peer,
 		// it needs to be restored after deserialization to be completely consistent with the original.
 		peer.PeerStats.Peer = peer.Peer.Peer
 	}
@@ -402,7 +402,7 @@ func (h *regionsHandler) GetStoreRegions(w http.ResponseWriter, r *http.Request)
 // @Summary  List all regions that miss peer.
 // @Produce  json
 // @Success  200  {object}  RegionsInfo
-// @Failure  500  {string}  string  "PD server failed to proceed the request."
+// @Failure  500  {string}  string  "TM server failed to proceed the request."
 // @Router   /regions/check/miss-peer [get]
 func (h *regionsHandler) GetMissPeerRegions(w http.ResponseWriter, r *http.Request) {
 	handler := h.svr.GetHandler()
@@ -419,7 +419,7 @@ func (h *regionsHandler) GetMissPeerRegions(w http.ResponseWriter, r *http.Reque
 // @Summary  List all regions that has extra peer.
 // @Produce  json
 // @Success  200  {object}  RegionsInfo
-// @Failure  500  {string}  string  "PD server failed to proceed the request."
+// @Failure  500  {string}  string  "TM server failed to proceed the request."
 // @Router   /regions/check/extra-peer [get]
 func (h *regionsHandler) GetExtraPeerRegions(w http.ResponseWriter, r *http.Request) {
 	handler := h.svr.GetHandler()
@@ -436,7 +436,7 @@ func (h *regionsHandler) GetExtraPeerRegions(w http.ResponseWriter, r *http.Requ
 // @Summary  List all regions that has pending peer.
 // @Produce  json
 // @Success  200  {object}  RegionsInfo
-// @Failure  500  {string}  string  "PD server failed to proceed the request."
+// @Failure  500  {string}  string  "TM server failed to proceed the request."
 // @Router   /regions/check/pending-peer [get]
 func (h *regionsHandler) GetPendingPeerRegions(w http.ResponseWriter, r *http.Request) {
 	handler := h.svr.GetHandler()
@@ -453,7 +453,7 @@ func (h *regionsHandler) GetPendingPeerRegions(w http.ResponseWriter, r *http.Re
 // @Summary  List all regions that has down peer.
 // @Produce  json
 // @Success  200  {object}  RegionsInfo
-// @Failure  500  {string}  string  "PD server failed to proceed the request."
+// @Failure  500  {string}  string  "TM server failed to proceed the request."
 // @Router   /regions/check/down-peer [get]
 func (h *regionsHandler) GetDownPeerRegions(w http.ResponseWriter, r *http.Request) {
 	handler := h.svr.GetHandler()
@@ -470,7 +470,7 @@ func (h *regionsHandler) GetDownPeerRegions(w http.ResponseWriter, r *http.Reque
 // @Summary  List all regions that has learner peer.
 // @Produce  json
 // @Success  200  {object}  RegionsInfo
-// @Failure  500  {string}  string  "PD server failed to proceed the request."
+// @Failure  500  {string}  string  "TM server failed to proceed the request."
 // @Router   /regions/check/learner-peer [get]
 func (h *regionsHandler) GetLearnerPeerRegions(w http.ResponseWriter, r *http.Request) {
 	handler := h.svr.GetHandler()
@@ -487,7 +487,7 @@ func (h *regionsHandler) GetLearnerPeerRegions(w http.ResponseWriter, r *http.Re
 // @Summary  List all regions that has offline peer.
 // @Produce  json
 // @Success  200  {object}  RegionsInfo
-// @Failure  500  {string}  string  "PD server failed to proceed the request."
+// @Failure  500  {string}  string  "TM server failed to proceed the request."
 // @Router   /regions/check/offline-peer [get]
 func (h *regionsHandler) GetOfflinePeerRegions(w http.ResponseWriter, r *http.Request) {
 	handler := h.svr.GetHandler()
@@ -504,7 +504,7 @@ func (h *regionsHandler) GetOfflinePeerRegions(w http.ResponseWriter, r *http.Re
 // @Summary  List all regions that are oversized.
 // @Produce  json
 // @Success  200  {object}  RegionsInfo
-// @Failure  500  {string}  string  "PD server failed to proceed the request."
+// @Failure  500  {string}  string  "TM server failed to proceed the request."
 // @Router   /regions/check/oversized-region [get]
 func (h *regionsHandler) GetOverSizedRegions(w http.ResponseWriter, r *http.Request) {
 	handler := h.svr.GetHandler()
@@ -521,7 +521,7 @@ func (h *regionsHandler) GetOverSizedRegions(w http.ResponseWriter, r *http.Requ
 // @Summary  List all regions that are undersized.
 // @Produce  json
 // @Success  200  {object}  RegionsInfo
-// @Failure  500  {string}  string  "PD server failed to proceed the request."
+// @Failure  500  {string}  string  "TM server failed to proceed the request."
 // @Router   /regions/check/undersized-region [get]
 func (h *regionsHandler) GetUndersizedRegions(w http.ResponseWriter, r *http.Request) {
 	handler := h.svr.GetHandler()
@@ -538,7 +538,7 @@ func (h *regionsHandler) GetUndersizedRegions(w http.ResponseWriter, r *http.Req
 // @Summary  List all empty regions.
 // @Produce  json
 // @Success  200  {object}  RegionsInfo
-// @Failure  500  {string}  string  "PD server failed to proceed the request."
+// @Failure  500  {string}  string  "TM server failed to proceed the request."
 // @Router   /regions/check/empty-region [get]
 func (h *regionsHandler) GetEmptyRegions(w http.ResponseWriter, r *http.Request) {
 	handler := h.svr.GetHandler()

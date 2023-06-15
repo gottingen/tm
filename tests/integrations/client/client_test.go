@@ -28,8 +28,7 @@ import (
 	"testing"
 	"time"
 
-	"github.com/docker/go-units"
-	pd "github.com/gottingen/tm/client"
+	tm "github.com/gottingen/tm/client"
 	"github.com/gottingen/tm/pkg/core"
 	"github.com/gottingen/tm/pkg/errs"
 	"github.com/gottingen/tm/pkg/mock/mockid"
@@ -76,17 +75,17 @@ func TestClientClusterIDCheck(t *testing.T) {
 	defer cluster2.Destroy()
 	endpoints2 := runServer(re, cluster2)
 	// Try to create a client with the mixed endpoints.
-	_, err = pd.NewClientWithContext(
+	_, err = tm.NewClientWithContext(
 		ctx, append(endpoints1, endpoints2...),
-		pd.SecurityOption{}, pd.WithMaxErrorRetry(1),
+		tm.SecurityOption{}, tm.WithMaxErrorRetry(1),
 	)
 	re.Error(err)
 	re.Contains(err.Error(), "unmatched cluster id")
 	// updateMember should fail due to unmatched cluster ID found.
 	re.NoError(failpoint.Enable("github.com/gottingen/tm/client/skipClusterIDCheck", `return(true)`))
 	re.NoError(failpoint.Enable("github.com/gottingen/tm/client/skipFirstUpdateMember", `return(true)`))
-	_, err = pd.NewClientWithContext(ctx, []string{endpoints1[0], endpoints2[0]},
-		pd.SecurityOption{}, pd.WithMaxErrorRetry(1),
+	_, err = tm.NewClientWithContext(ctx, []string{endpoints1[0], endpoints2[0]},
+		tm.SecurityOption{}, tm.WithMaxErrorRetry(1),
 	)
 	re.Error(err)
 	re.Contains(err.Error(), "ErrClientGetMember")
@@ -104,7 +103,7 @@ func TestClientLeaderChange(t *testing.T) {
 
 	endpoints := runServer(re, cluster)
 	cli := setupCli(re, ctx, endpoints)
-	innerCli, ok := cli.(interface{ GetServiceDiscovery() pd.ServiceDiscovery })
+	innerCli, ok := cli.(interface{ GetServiceDiscovery() tm.ServiceDiscovery })
 	re.True(ok)
 
 	var ts1, ts2 uint64
@@ -214,9 +213,9 @@ func TestTSOAllocatorLeader(t *testing.T) {
 	ctx, cancel := context.WithCancel(context.Background())
 	defer cancel()
 	dcLocationConfig := map[string]string{
-		"pd1": "dc-1",
-		"pd2": "dc-2",
-		"pd3": "dc-3",
+		"tm1": "dc-1",
+		"tm2": "dc-2",
+		"tm3": "dc-3",
 	}
 	dcLocationNum := len(dcLocationConfig)
 	cluster, err := tests.NewTestCluster(ctx, dcLocationNum, func(conf *config.Config, serverName string) {
@@ -249,7 +248,7 @@ func TestTSOAllocatorLeader(t *testing.T) {
 		allocatorLeaderMap[dcLocation] = pdName
 	}
 	cli := setupCli(re, ctx, endpoints)
-	innerCli, ok := cli.(interface{ GetServiceDiscovery() pd.ServiceDiscovery })
+	innerCli, ok := cli.(interface{ GetServiceDiscovery() tm.ServiceDiscovery })
 	re.True(ok)
 
 	// Check allocator leaders URL map.
@@ -283,7 +282,7 @@ func TestTSOFollowerProxy(t *testing.T) {
 	endpoints := runServer(re, cluster)
 	cli1 := setupCli(re, ctx, endpoints)
 	cli2 := setupCli(re, ctx, endpoints)
-	cli2.UpdateOption(pd.EnableTSOFollowerProxy, true)
+	cli2.UpdateOption(tm.EnableTSOFollowerProxy, true)
 
 	var wg sync.WaitGroup
 	wg.Add(tsoRequestConcurrencyNumber)
@@ -341,7 +340,7 @@ func TestUnavailableTimeAfterLeaderIsReady(t *testing.T) {
 		}
 	}
 
-	// test resign pd leader or stop pd leader
+	// test resign tm leader or stop tm leader
 	wg.Add(1 + 1)
 	go getTsoFunc()
 	go func() {
@@ -355,7 +354,7 @@ func TestUnavailableTimeAfterLeaderIsReady(t *testing.T) {
 	wg.Wait()
 	re.Less(maxUnavailableTime.UnixMilli(), leaderReadyTime.Add(1*time.Second).UnixMilli())
 
-	// test kill pd leader pod or network of leader is unreachable
+	// test kill tm leader pod or network of leader is unreachable
 	wg.Add(1 + 1)
 	maxUnavailableTime, leaderReadyTime = time.Time{}, time.Time{}
 	go getTsoFunc()
@@ -378,9 +377,9 @@ func TestGlobalAndLocalTSO(t *testing.T) {
 	ctx, cancel := context.WithCancel(context.Background())
 	defer cancel()
 	dcLocationConfig := map[string]string{
-		"pd1": "dc-1",
-		"pd2": "dc-2",
-		"pd3": "dc-3",
+		"tm1": "dc-1",
+		"tm2": "dc-2",
+		"tm3": "dc-3",
 	}
 	dcLocationNum := len(dcLocationConfig)
 	cluster, err := tests.NewTestCluster(ctx, dcLocationNum, func(conf *config.Config, serverName string) {
@@ -397,14 +396,14 @@ func TestGlobalAndLocalTSO(t *testing.T) {
 	time.Sleep(time.Second * 5)
 
 	// Join a new dc-location
-	pd4, err := cluster.Join(ctx, func(conf *config.Config, serverName string) {
+	tm4, err := cluster.Join(ctx, func(conf *config.Config, serverName string) {
 		conf.EnableLocalTSO = true
 		conf.Labels[config.ZoneLabel] = "dc-4"
 	})
 	re.NoError(err)
-	err = pd4.Run()
+	err = tm4.Run()
 	re.NoError(err)
-	dcLocationConfig["pd4"] = "dc-4"
+	dcLocationConfig["tm4"] = "dc-4"
 	cluster.CheckClusterDCLocation()
 	cluster.WaitAllLeaders(re, dcLocationConfig)
 
@@ -425,17 +424,17 @@ func TestGlobalAndLocalTSO(t *testing.T) {
 	re.NotEmpty(cluster.WaitLeader())
 	_, _, err = cli.GetTS(ctx)
 	re.Error(err)
-	re.True(pd.IsLeaderChange(err))
+	re.True(tm.IsLeaderChange(err))
 	_, _, err = cli.GetTS(ctx)
 	re.NoError(err)
 	re.NoError(failpoint.Disable("github.com/gottingen/tm/client/skipUpdateMember"))
 
 	// Test the TSO follower proxy while enabling the Local TSO.
-	cli.UpdateOption(pd.EnableTSOFollowerProxy, true)
+	cli.UpdateOption(tm.EnableTSOFollowerProxy, true)
 	// Sleep a while here to prevent from canceling the ongoing TSO request.
 	time.Sleep(time.Millisecond * 50)
 	requestGlobalAndLocalTSO(re, wg, dcLocationConfig, cli)
-	cli.UpdateOption(pd.EnableTSOFollowerProxy, false)
+	cli.UpdateOption(tm.EnableTSOFollowerProxy, false)
 	time.Sleep(time.Millisecond * 50)
 	requestGlobalAndLocalTSO(re, wg, dcLocationConfig, cli)
 }
@@ -444,7 +443,7 @@ func requestGlobalAndLocalTSO(
 	re *require.Assertions,
 	wg *sync.WaitGroup,
 	dcLocationConfig map[string]string,
-	cli pd.Client,
+	cli tm.Client,
 ) {
 	for _, dcLocation := range dcLocationConfig {
 		wg.Add(tsoRequestConcurrencyNumber)
@@ -502,7 +501,7 @@ func TestCustomTimeout(t *testing.T) {
 	defer cluster.Destroy()
 
 	endpoints := runServer(re, cluster)
-	cli := setupCli(re, ctx, endpoints, pd.WithCustomTimeoutOption(time.Second))
+	cli := setupCli(re, ctx, endpoints, tm.WithCustomTimeoutOption(time.Second))
 
 	start := time.Now()
 	re.NoError(failpoint.Enable("github.com/gottingen/tm/server/customTimeout", "return(true)"))
@@ -517,13 +516,13 @@ func TestGetRegionFromFollowerClient(t *testing.T) {
 	re := require.New(t)
 	ctx, cancel := context.WithCancel(context.Background())
 	defer cancel()
-	pd.LeaderHealthCheckInterval = 100 * time.Millisecond
+	tm.LeaderHealthCheckInterval = 100 * time.Millisecond
 	cluster, err := tests.NewTestCluster(ctx, 3)
 	re.NoError(err)
 	defer cluster.Destroy()
 
 	endpoints := runServer(re, cluster)
-	cli := setupCli(re, ctx, endpoints, pd.WithForwardingOption(true))
+	cli := setupCli(re, ctx, endpoints, tm.WithForwardingOption(true))
 
 	re.NoError(failpoint.Enable("github.com/gottingen/tm/client/unreachableNetwork1", "return(true)"))
 	time.Sleep(200 * time.Millisecond)
@@ -543,13 +542,13 @@ func TestGetTsoFromFollowerClient1(t *testing.T) {
 	re := require.New(t)
 	ctx, cancel := context.WithCancel(context.Background())
 	defer cancel()
-	pd.LeaderHealthCheckInterval = 100 * time.Millisecond
+	tm.LeaderHealthCheckInterval = 100 * time.Millisecond
 	cluster, err := tests.NewTestCluster(ctx, 3)
 	re.NoError(err)
 	defer cluster.Destroy()
 
 	endpoints := runServer(re, cluster)
-	cli := setupCli(re, ctx, endpoints, pd.WithForwardingOption(true))
+	cli := setupCli(re, ctx, endpoints, tm.WithForwardingOption(true))
 
 	re.NoError(failpoint.Enable("github.com/gottingen/tm/client/unreachableNetwork", "return(true)"))
 	var lastTS uint64
@@ -574,13 +573,13 @@ func TestGetTsoFromFollowerClient2(t *testing.T) {
 	re := require.New(t)
 	ctx, cancel := context.WithCancel(context.Background())
 	defer cancel()
-	pd.LeaderHealthCheckInterval = 100 * time.Millisecond
+	tm.LeaderHealthCheckInterval = 100 * time.Millisecond
 	cluster, err := tests.NewTestCluster(ctx, 3)
 	re.NoError(err)
 	defer cluster.Destroy()
 
 	endpoints := runServer(re, cluster)
-	cli := setupCli(re, ctx, endpoints, pd.WithForwardingOption(true))
+	cli := setupCli(re, ctx, endpoints, tm.WithForwardingOption(true))
 
 	re.NoError(failpoint.Enable("github.com/gottingen/tm/client/unreachableNetwork", "return(true)"))
 	var lastTS uint64
@@ -604,7 +603,7 @@ func TestGetTsoFromFollowerClient2(t *testing.T) {
 	checkTS(re, cli, lastTS)
 }
 
-func checkTS(re *require.Assertions, cli pd.Client, lastTS uint64) uint64 {
+func checkTS(re *require.Assertions, cli tm.Client, lastTS uint64) uint64 {
 	for i := 0; i < tsoRequestRound; i++ {
 		physical, logical, err := cli.GetTS(context.TODO())
 		if err == nil {
@@ -632,13 +631,13 @@ func runServer(re *require.Assertions, cluster *tests.TestCluster) []string {
 	return endpoints
 }
 
-func setupCli(re *require.Assertions, ctx context.Context, endpoints []string, opts ...pd.ClientOption) pd.Client {
-	cli, err := pd.NewClientWithContext(ctx, endpoints, pd.SecurityOption{}, opts...)
+func setupCli(re *require.Assertions, ctx context.Context, endpoints []string, opts ...tm.ClientOption) tm.Client {
+	cli, err := tm.NewClientWithContext(ctx, endpoints, tm.SecurityOption{}, opts...)
 	re.NoError(err)
 	return cli
 }
 
-func waitLeader(re *require.Assertions, cli pd.ServiceDiscovery, leader string) {
+func waitLeader(re *require.Assertions, cli tm.ServiceDiscovery, leader string) {
 	testutil.Eventually(re, func() bool {
 		cli.ScheduleCheckMemberChanged()
 		return cli.GetServingAddr() == leader
@@ -656,7 +655,7 @@ func TestConfigTTLAfterTransferLeader(t *testing.T) {
 	re.NoError(err)
 	leader := cluster.GetServer(cluster.WaitLeader())
 	re.NoError(leader.BootstrapCluster())
-	addr := fmt.Sprintf("%s/pd/api/v1/config?ttlSecond=5", leader.GetAddr())
+	addr := fmt.Sprintf("%s/tm/api/v1/config?ttlSecond=5", leader.GetAddr())
 	postData, err := json.Marshal(map[string]interface{}{
 		"schedule.max-snapshot-count":             999,
 		"schedule.enable-location-replacement":    false,
@@ -755,7 +754,7 @@ type clientTestSuite struct {
 	clean           context.CancelFunc
 	srv             *server.Server
 	grpcSvr         *server.GrpcServer
-	client          pd.Client
+	client          tm.Client
 	grpcPDClient    pdpb.PDClient
 	regionHeartbeat pdpb.PD_RegionHeartbeatClient
 	reportBucket    pdpb.PD_ReportBucketsClient
@@ -886,7 +885,7 @@ func (suite *clientTestSuite) TestGetRegion() {
 	}
 	suite.NoError(suite.reportBucket.Send(breq))
 	testutil.Eventually(re, func() bool {
-		r, err := suite.client.GetRegion(context.Background(), []byte("a"), pd.WithBuckets())
+		r, err := suite.client.GetRegion(context.Background(), []byte("a"), tm.WithBuckets())
 		suite.NoError(err)
 		if r == nil {
 			return false
@@ -896,7 +895,7 @@ func (suite *clientTestSuite) TestGetRegion() {
 	suite.srv.GetRaftCluster().GetStoreConfig().SetRegionBucketEnabled(false)
 
 	testutil.Eventually(re, func() bool {
-		r, err := suite.client.GetRegion(context.Background(), []byte("a"), pd.WithBuckets())
+		r, err := suite.client.GetRegion(context.Background(), []byte("a"), tm.WithBuckets())
 		suite.NoError(err)
 		if r == nil {
 			return false
@@ -1122,7 +1121,7 @@ func (suite *clientTestSuite) TestGetStore() {
 	suite.True(contains)
 
 	// Should not return tombstone stores.
-	stores, err = suite.client.GetAllStores(context.Background(), pd.WithExcludeTombstone())
+	stores, err = suite.client.GetAllStores(context.Background(), tm.WithExcludeTombstone())
 	suite.NoError(err)
 	for _, store := range stores {
 		if store.GetId() == physicallyDestroyedStoreID {
@@ -1330,7 +1329,7 @@ func (suite *clientTestSuite) TestScatterRegion() {
 	// Test interface `ScatterRegions`.
 	re := suite.Require()
 	testutil.Eventually(re, func() bool {
-		scatterResp, err := suite.client.ScatterRegions(context.Background(), regionsID, pd.WithGroup("test"), pd.WithRetry(1))
+		scatterResp, err := suite.client.ScatterRegions(context.Background(), regionsID, tm.WithGroup("test"), tm.WithRetry(1))
 		if err != nil {
 			return false
 		}
@@ -1378,7 +1377,7 @@ func TestWatch(t *testing.T) {
 	resp, err := client.Get(ctx, []byte(key))
 	re.NoError(err)
 	rev := resp.GetHeader().GetRevision()
-	ch, err := client.Watch(ctx, []byte(key), pd.WithRev(rev))
+	ch, err := client.Watch(ctx, []byte(key), tm.WithRev(rev))
 	re.NoError(err)
 	exit := make(chan struct{})
 	go func() {
@@ -1425,7 +1424,7 @@ func TestPutGet(t *testing.T) {
 	re.NoError(err)
 	re.Equal([]byte("1"), getResp.GetKvs()[0].Value)
 	re.NotEqual(0, getResp.GetHeader().GetRevision())
-	putResp, err = client.Put(context.Background(), key, []byte("2"), pd.WithPrevKV())
+	putResp, err = client.Put(context.Background(), key, []byte("2"), tm.WithPrevKV())
 	re.NoError(err)
 	re.Equal([]byte("1"), putResp.GetPrevKv().Value)
 	getResp, err = client.Get(context.Background(), key)
@@ -1465,7 +1464,7 @@ func TestClientWatchWithRevision(t *testing.T) {
 	// Mock get revision by loading
 	r, err := s.GetEtcdClient().Put(context.Background(), watchPrefix+"test", "test")
 	re.NoError(err)
-	res, err := client.Get(context.Background(), []byte(watchPrefix), pd.WithPrefix())
+	res, err := client.Get(context.Background(), []byte(watchPrefix), tm.WithPrefix())
 	re.NoError(err)
 	re.Len(res.Kvs, 1)
 	re.LessOrEqual(r.Header.GetRevision(), res.GetHeader().GetRevision())
@@ -1476,7 +1475,7 @@ func TestClientWatchWithRevision(t *testing.T) {
 		re.NoError(err)
 	}
 	// Start watcher at next revision
-	ch, err := client.Watch(context.Background(), []byte(watchPrefix), pd.WithRev(res.GetHeader().GetRevision()), pd.WithPrefix(), pd.WithPrevKV())
+	ch, err := client.Watch(context.Background(), []byte(watchPrefix), tm.WithRev(res.GetHeader().GetRevision()), tm.WithPrefix(), tm.WithPrevKV())
 	re.NoError(err)
 	// Mock delete
 	for i := 0; i < 3; i++ {

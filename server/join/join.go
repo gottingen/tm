@@ -42,13 +42,13 @@ const (
 // listMemberRetryTimes is the retry times of list member.
 var listMemberRetryTimes = 20
 
-// PrepareJoinCluster sends MemberAdd command to PD cluster,
-// and returns the initial configuration of the PD cluster.
+// PrepareJoinCluster sends MemberAdd command to TM cluster,
+// and returns the initial configuration of the TM cluster.
 //
 // TL;DR: The join functionality is safe. With data, join does nothing, w/o data
 //
 //	and it is not a member of cluster, join does MemberAdd, it returns an
-//	error if PD tries to join itself, missing data or join a duplicated PD.
+//	error if TM tries to join itself, missing data or join a duplicated TM.
 //
 // Etcd automatically re-joins the cluster if there is a data directory. So
 // first it checks if there is a data directory or not. If there is, it returns
@@ -57,31 +57,31 @@ var listMemberRetryTimes = 20
 //
 // If there is no data directory, there are following cases:
 //
-//   - A new PD joins an existing cluster.
+//   - A new TM joins an existing cluster.
 //     What join does: MemberAdd, MemberList, then generate initial-cluster.
 //
-//   - A failed PD re-joins the previous cluster.
+//   - A failed TM re-joins the previous cluster.
 //     What join does: return an error. (etcd reports: raft log corrupted,
 //     truncated, or lost?)
 //
-//   - A deleted PD joins to previous cluster.
+//   - A deleted TM joins to previous cluster.
 //     What join does: MemberAdd, MemberList, then generate initial-cluster.
 //     (it is not in the member list and there is no data, so
-//     we can treat it as a new PD.)
+//     we can treat it as a new TM.)
 //
 // If there is a data directory, there are following special cases:
 //
-//   - A failed PD tries to join the previous cluster but it has been deleted
+//   - A failed TM tries to join the previous cluster but it has been deleted
 //     during its downtime.
 //     What join does: return "" (etcd will connect to other peers and find
-//     that the PD itself has been removed.)
+//     that the TM itself has been removed.)
 //
-//   - A deleted PD joins the previous cluster.
+//   - A deleted TM joins the previous cluster.
 //     What join does: return "" (as etcd will read data directory and find
-//     that the PD itself has been removed, so an empty string
+//     that the TM itself has been removed, so an empty string
 //     is fine.)
 func PrepareJoinCluster(cfg *config.Config) error {
-	// - A PD tries to join itself.
+	// - A TM tries to join itself.
 	if cfg.Join == "" {
 		return nil
 	}
@@ -143,9 +143,9 @@ func PrepareJoinCluster(cfg *config.Config) error {
 		}
 	}
 
-	// - A failed PD re-joins the previous cluster.
+	// - A failed TM re-joins the previous cluster.
 	if existed {
-		return errors.New("missing data or join a duplicated pd")
+		return errors.New("missing data or join a duplicated tm")
 	}
 
 	var addResp *clientv3.MemberAddResponse
@@ -154,8 +154,8 @@ func PrepareJoinCluster(cfg *config.Config) error {
 		listMemberRetryTimes = 2
 		failpoint.Goto("LabelSkipAddMember")
 	})
-	// - A new PD joins an existing cluster.
-	// - A deleted PD joins to previous cluster.
+	// - A new TM joins an existing cluster.
+	// - A deleted TM joins to previous cluster.
 	{
 		// First adds member through the API
 		addResp, err = etcdutil.AddEtcdMember(client, []string{cfg.AdvertisePeerUrls})

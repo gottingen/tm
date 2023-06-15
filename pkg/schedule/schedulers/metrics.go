@@ -18,7 +18,7 @@ import "github.com/prometheus/client_golang/prometheus"
 
 var schedulerCounter = prometheus.NewCounterVec(
 	prometheus.CounterOpts{
-		Namespace: "pd",
+		Namespace: "tm",
 		Subsystem: "scheduler",
 		Name:      "event_count",
 		Help:      "Counter of scheduler events.",
@@ -26,7 +26,7 @@ var schedulerCounter = prometheus.NewCounterVec(
 
 var schedulerStatus = prometheus.NewGaugeVec(
 	prometheus.GaugeOpts{
-		Namespace: "pd",
+		Namespace: "tm",
 		Subsystem: "scheduler",
 		Name:      "inner_status",
 		Help:      "Inner status of the scheduler.",
@@ -35,7 +35,7 @@ var schedulerStatus = prometheus.NewGaugeVec(
 // TODO: pre-allocate gauge metrics
 var opInfluenceStatus = prometheus.NewGaugeVec(
 	prometheus.GaugeOpts{
-		Namespace: "pd",
+		Namespace: "tm",
 		Subsystem: "scheduler",
 		Name:      "op_influence",
 		Help:      "Store status for schedule",
@@ -44,7 +44,7 @@ var opInfluenceStatus = prometheus.NewGaugeVec(
 // TODO: pre-allocate gauge metrics
 var tolerantResourceStatus = prometheus.NewGaugeVec(
 	prometheus.GaugeOpts{
-		Namespace: "pd",
+		Namespace: "tm",
 		Subsystem: "scheduler",
 		Name:      "tolerant_resource",
 		Help:      "Store status for schedule",
@@ -52,7 +52,7 @@ var tolerantResourceStatus = prometheus.NewGaugeVec(
 
 var balanceLeaderCounter = prometheus.NewCounterVec(
 	prometheus.CounterOpts{
-		Namespace: "pd",
+		Namespace: "tm",
 		Subsystem: "scheduler",
 		Name:      "balance_leader",
 		Help:      "Counter of balance leader scheduler.",
@@ -60,7 +60,7 @@ var balanceLeaderCounter = prometheus.NewCounterVec(
 
 var balanceWitnessCounter = prometheus.NewCounterVec(
 	prometheus.CounterOpts{
-		Namespace: "pd",
+		Namespace: "tm",
 		Subsystem: "scheduler",
 		Name:      "balance_witness",
 		Help:      "Counter of balance witness scheduler.",
@@ -68,7 +68,7 @@ var balanceWitnessCounter = prometheus.NewCounterVec(
 
 var balanceRegionCounter = prometheus.NewCounterVec(
 	prometheus.CounterOpts{
-		Namespace: "pd",
+		Namespace: "tm",
 		Subsystem: "scheduler",
 		Name:      "balance_region",
 		Help:      "Counter of balance region scheduler.",
@@ -77,7 +77,7 @@ var balanceRegionCounter = prometheus.NewCounterVec(
 // TODO: pre-allocate gauge metrics
 var hotSchedulerResultCounter = prometheus.NewCounterVec(
 	prometheus.CounterOpts{
-		Namespace: "pd",
+		Namespace: "tm",
 		Subsystem: "scheduler",
 		Name:      "hot_region",
 		Help:      "Counter of hot region scheduler.",
@@ -85,7 +85,7 @@ var hotSchedulerResultCounter = prometheus.NewCounterVec(
 
 var balanceDirectionCounter = prometheus.NewCounterVec(
 	prometheus.CounterOpts{
-		Namespace: "pd",
+		Namespace: "tm",
 		Subsystem: "scheduler",
 		Name:      "balance_direction",
 		Help:      "Counter of direction of balance related schedulers.",
@@ -94,7 +94,7 @@ var balanceDirectionCounter = prometheus.NewCounterVec(
 // TODO: pre-allocate gauge metrics
 var hotDirectionCounter = prometheus.NewCounterVec(
 	prometheus.CounterOpts{
-		Namespace: "pd",
+		Namespace: "tm",
 		Subsystem: "scheduler",
 		Name:      "hot_region_direction",
 		Help:      "Counter of hot region scheduler.",
@@ -102,7 +102,7 @@ var hotDirectionCounter = prometheus.NewCounterVec(
 
 var scatterRangeLeaderCounter = prometheus.NewCounterVec(
 	prometheus.CounterOpts{
-		Namespace: "pd",
+		Namespace: "tm",
 		Subsystem: "scheduler",
 		Name:      "scatter_range_leader",
 		Help:      "Counter of scatter range leader scheduler.",
@@ -110,7 +110,7 @@ var scatterRangeLeaderCounter = prometheus.NewCounterVec(
 
 var scatterRangeRegionCounter = prometheus.NewCounterVec(
 	prometheus.CounterOpts{
-		Namespace: "pd",
+		Namespace: "tm",
 		Subsystem: "scheduler",
 		Name:      "scatter_range_region",
 		Help:      "Counter of scatter range region scheduler.",
@@ -118,7 +118,7 @@ var scatterRangeRegionCounter = prometheus.NewCounterVec(
 
 var hotPendingStatus = prometheus.NewGaugeVec(
 	prometheus.GaugeOpts{
-		Namespace: "pd",
+		Namespace: "tm",
 		Subsystem: "scheduler",
 		Name:      "hot_pending",
 		Help:      "Pending influence status in hot region scheduler.",
@@ -126,7 +126,7 @@ var hotPendingStatus = prometheus.NewGaugeVec(
 
 var hotPeerHist = prometheus.NewHistogramVec(
 	prometheus.HistogramOpts{
-		Namespace: "pd",
+		Namespace: "tm",
 		Subsystem: "scheduler",
 		Name:      "hot_peer",
 		Help:      "Bucketed histogram of the scheduling hot peer.",
@@ -135,7 +135,7 @@ var hotPeerHist = prometheus.NewHistogramVec(
 
 var storeSlowTrendEvictedStatusGauge = prometheus.NewGaugeVec(
 	prometheus.GaugeOpts{
-		Namespace: "pd",
+		Namespace: "tm",
 		Subsystem: "scheduler",
 		Name:      "store_slow_trend_evicted_status",
 		Help:      "Store evited by slow trend status for schedule",
@@ -143,7 +143,7 @@ var storeSlowTrendEvictedStatusGauge = prometheus.NewGaugeVec(
 
 var storeSlowTrendActionStatusGauge = prometheus.NewGaugeVec(
 	prometheus.GaugeOpts{
-		Namespace: "pd",
+		Namespace: "tm",
 		Subsystem: "scheduler",
 		Name:      "store_slow_trend_action_status",
 		Help:      "Store trend scheduler calculating actions",
@@ -151,7 +151,7 @@ var storeSlowTrendActionStatusGauge = prometheus.NewGaugeVec(
 
 var storeSlowTrendMiscGauge = prometheus.NewGaugeVec(
 	prometheus.GaugeOpts{
-		Namespace: "pd",
+		Namespace: "tm",
 		Subsystem: "scheduler",
 		Name:      "store_slow_trend_misc",
 		Help:      "Store trend internal uncatelogued values",

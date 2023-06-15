@@ -28,7 +28,7 @@ import (
 	"github.com/stretchr/testify/require"
 )
 
-// TODO: enable it when we fix TestFailedAndDeletedPDJoinsPreviousCluster
+// TODO: enable it when we fix TestFailedAndDeletedTMJoinsPreviousCluster
 // func TestMain(m *testing.M) {
 // 	goleak.VerifyTestMain(m, testutil.LeakOptions...)
 // }
@@ -45,43 +45,43 @@ func TestSimpleJoin(t *testing.T) {
 	re.NoError(err)
 	cluster.WaitLeader()
 
-	pd1 := cluster.GetServer("pd1")
-	client := pd1.GetEtcdClient()
+	tm1 := cluster.GetServer("tm1")
+	client := tm1.GetEtcdClient()
 	members, err := etcdutil.ListEtcdMembers(client)
 	re.NoError(err)
 	re.Len(members.Members, 1)
 
-	// Join the second PD.
-	pd2, err := cluster.Join(ctx)
+	// Join the second TM.
+	tm2, err := cluster.Join(ctx)
 	re.NoError(err)
-	err = pd2.Run()
+	err = tm2.Run()
 	re.NoError(err)
-	_, err = os.Stat(path.Join(pd2.GetConfig().DataDir, "join"))
+	_, err = os.Stat(path.Join(tm2.GetConfig().DataDir, "join"))
 	re.False(os.IsNotExist(err))
 	members, err = etcdutil.ListEtcdMembers(client)
 	re.NoError(err)
 	re.Len(members.Members, 2)
-	re.Equal(pd1.GetClusterID(), pd2.GetClusterID())
+	re.Equal(tm1.GetClusterID(), tm2.GetClusterID())
 
 	// Wait for all nodes becoming healthy.
 	time.Sleep(time.Second * 5)
 
-	// Join another PD.
-	pd3, err := cluster.Join(ctx)
+	// Join another TM.
+	tm3, err := cluster.Join(ctx)
 	re.NoError(err)
-	err = pd3.Run()
+	err = tm3.Run()
 	re.NoError(err)
-	_, err = os.Stat(path.Join(pd3.GetConfig().DataDir, "join"))
+	_, err = os.Stat(path.Join(tm3.GetConfig().DataDir, "join"))
 	re.False(os.IsNotExist(err))
 	members, err = etcdutil.ListEtcdMembers(client)
 	re.NoError(err)
 	re.Len(members.Members, 3)
-	re.Equal(pd1.GetClusterID(), pd3.GetClusterID())
+	re.Equal(tm1.GetClusterID(), tm3.GetClusterID())
 }
 
-// A failed PD tries to join the previous cluster but it has been deleted
+// A failed TM tries to join the previous cluster but it has been deleted
 // during its downtime.
-func TestFailedAndDeletedPDJoinsPreviousCluster(t *testing.T) {
+func TestFailedAndDeletedTMJoinsPreviousCluster(t *testing.T) {
 	re := require.New(t)
 	ctx, cancel := context.WithCancel(context.Background())
 	defer cancel()
@@ -96,16 +96,16 @@ func TestFailedAndDeletedPDJoinsPreviousCluster(t *testing.T) {
 	// Wait for all nodes becoming healthy.
 	time.Sleep(time.Second * 5)
 
-	pd3 := cluster.GetServer("pd3")
-	err = pd3.Stop()
+	tm3 := cluster.GetServer("tm3")
+	err = tm3.Stop()
 	re.NoError(err)
 
-	client := cluster.GetServer("pd1").GetEtcdClient()
-	_, err = client.MemberRemove(context.TODO(), pd3.GetServerID())
+	client := cluster.GetServer("tm1").GetEtcdClient()
+	_, err = client.MemberRemove(context.TODO(), tm3.GetServerID())
 	re.NoError(err)
 
 	// The server should not successfully start.
-	res := cluster.RunServer(pd3)
+	res := cluster.RunServer(tm3)
 	re.Error(<-res)
 
 	members, err := etcdutil.ListEtcdMembers(client)
@@ -113,7 +113,7 @@ func TestFailedAndDeletedPDJoinsPreviousCluster(t *testing.T) {
 	re.Len(members.Members, 2)
 }
 
-// A deleted PD joins the previous cluster.
+// A deleted TM joins the previous cluster.
 func TestDeletedPDJoinsPreviousCluster(t *testing.T) {
 	re := require.New(t)
 	ctx, cancel := context.WithCancel(context.Background())
@@ -129,16 +129,16 @@ func TestDeletedPDJoinsPreviousCluster(t *testing.T) {
 	// Wait for all nodes becoming healthy.
 	time.Sleep(time.Second * 5)
 
-	pd3 := cluster.GetServer("pd3")
-	client := cluster.GetServer("pd1").GetEtcdClient()
-	_, err = client.MemberRemove(context.TODO(), pd3.GetServerID())
+	tm3 := cluster.GetServer("tm3")
+	client := cluster.GetServer("tm1").GetEtcdClient()
+	_, err = client.MemberRemove(context.TODO(), tm3.GetServerID())
 	re.NoError(err)
 
-	err = pd3.Stop()
+	err = tm3.Stop()
 	re.NoError(err)
 
 	// The server should not successfully start.
-	res := cluster.RunServer(pd3)
+	res := cluster.RunServer(tm3)
 	re.Error(<-res)
 
 	members, err := etcdutil.ListEtcdMembers(client)
@@ -157,11 +157,11 @@ func TestFailedPDJoinsPreviousCluster(t *testing.T) {
 	re.NoError(cluster.RunInitialServers())
 	cluster.WaitLeader()
 
-	// Join the second PD.
-	pd2, err := cluster.Join(ctx)
+	// Join the second TM.
+	tm2, err := cluster.Join(ctx)
 	re.NoError(err)
-	re.NoError(pd2.Run())
-	re.NoError(pd2.Stop())
-	re.NoError(pd2.Destroy())
-	re.Error(join.PrepareJoinCluster(pd2.GetConfig()))
+	re.NoError(tm2.Run())
+	re.NoError(tm2.Stop())
+	re.NoError(tm2.Destroy())
+	re.Error(join.PrepareJoinCluster(tm2.GetConfig()))
 }

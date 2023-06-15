@@ -29,8 +29,8 @@ import (
 )
 
 const (
-	keyspacesPrefix      = "/pd/api/v2/keyspaces"
-	keyspaceGroupsPrefix = "/pd/api/v2/tso/keyspace-groups"
+	keyspacesPrefix      = "/tm/api/v2/keyspaces"
+	keyspaceGroupsPrefix = "/tm/api/v2/tso/keyspace-groups"
 )
 
 // dialClient used to dial http request.

@@ -61,7 +61,7 @@ import (
 
 const (
 	// pdRootPath is the old path for storing the tso related root path.
-	pdRootPath        = "/pd"
+	pdRootPath        = "/tm"
 	msServiceRootPath = "/ms"
 	// tsoSvcRootPathFormat defines the root path for all etcd paths used for different purposes.
 	// format: "/ms/{cluster_id}/tso".
@@ -432,9 +432,9 @@ func (s *Server) startServer() (err error) {
 
 	// It may lose accuracy if use float64 to store uint64. So we store the cluster id in label.
 	metadataGauge.WithLabelValues(fmt.Sprintf("cluster%d", s.clusterID)).Set(0)
-	// The independent TSO service still reuses PD version info since PD and TSO are just
-	// different service modes provided by the same pd-server binary
-	serverInfo.WithLabelValues(versioninfo.PDReleaseVersion, versioninfo.PDGitHash).Set(float64(time.Now().Unix()))
+	// The independent TSO service still reuses TM version info since TM and TSO are just
+	// different service modes provided by the same tm-server binary
+	serverInfo.WithLabelValues(versioninfo.TMReleaseVersion, versioninfo.TMGitHash).Set(float64(time.Now().Unix()))
 
 	s.listenURL, err = url.Parse(s.cfg.ListenAddr)
 	if err != nil {

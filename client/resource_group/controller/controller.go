@@ -22,7 +22,7 @@ import (
 	"sync/atomic"
 	"time"
 
-	pd "github.com/gottingen/tm/client"
+	tm "github.com/gottingen/tm/client"
 	"github.com/gottingen/tm/client/errs"
 	"github.com/pingcap/errors"
 	"github.com/pingcap/failpoint"
@@ -64,7 +64,7 @@ type ResourceGroupProvider interface {
 	ModifyResourceGroup(ctx context.Context, metaGroup *rmpb.ResourceGroup) (string, error)
 	DeleteResourceGroup(ctx context.Context, resourceGroupName string) (string, error)
 	AcquireTokenBuckets(ctx context.Context, request *rmpb.TokenBucketsRequest) ([]*rmpb.TokenBucketResponse, error)
-	LoadGlobalConfig(ctx context.Context, names []string, configPath string) ([]pd.GlobalConfigItem, int64, error)
+	LoadGlobalConfig(ctx context.Context, names []string, configPath string) ([]tm.GlobalConfigItem, int64, error)
 }
 
 // ResourceControlCreateOption create a ResourceGroupsController with the optional settings.

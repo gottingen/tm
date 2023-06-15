@@ -47,9 +47,9 @@ func TestMemberDelete(t *testing.T) {
 	ctx, cancel := context.WithCancel(context.Background())
 	defer cancel()
 	dcLocationConfig := map[string]string{
-		"pd1": "dc-1",
-		"pd2": "dc-2",
-		"pd3": "dc-3",
+		"tm1": "dc-1",
+		"tm2": "dc-2",
+		"tm3": "dc-3",
 	}
 	dcLocationNum := len(dcLocationConfig)
 	cluster, err := tests.NewTestCluster(ctx, dcLocationNum, func(conf *config.Config, serverName string) {
@@ -87,7 +87,7 @@ func TestMemberDelete(t *testing.T) {
 	for _, table := range tables {
 		t.Log(time.Now(), "try to delete:", table.path)
 		testutil.Eventually(re, func() bool {
-			addr := leader.GetConfig().ClientUrls + "/pd/api/v1/members/" + table.path
+			addr := leader.GetConfig().ClientUrls + "/tm/api/v1/members/" + table.path
 			req, err := http.NewRequest(http.MethodDelete, addr, nil)
 			re.NoError(err)
 			res, err := httpClient.Do(req)
@@ -122,7 +122,7 @@ func TestMemberDelete(t *testing.T) {
 
 func checkMemberList(re *require.Assertions, clientURL string, configs []*config.Config) error {
 	httpClient := &http.Client{Timeout: 15 * time.Second}
-	addr := clientURL + "/pd/api/v1/members"
+	addr := clientURL + "/tm/api/v1/members"
 	res, err := httpClient.Get(addr)
 	re.NoError(err)
 	defer res.Body.Close()
@@ -160,19 +160,19 @@ func TestLeaderPriority(t *testing.T) {
 
 	cluster.WaitLeader()
 
-	leader1, err := cluster.GetServer("pd1").GetEtcdLeader()
+	leader1, err := cluster.GetServer("tm1").GetEtcdLeader()
 	re.NoError(err)
 	server1 := cluster.GetServer(leader1)
 	addr := server1.GetConfig().ClientUrls
-	// PD leader should sync with etcd leader.
+	// TM leader should sync with etcd leader.
 	testutil.Eventually(re, func() bool {
 		return cluster.GetLeader() == leader1
 	})
 	// Bind a lower priority to current leader.
-	post(t, re, addr+"/pd/api/v1/members/name/"+leader1, `{"leader-priority": -1}`)
+	post(t, re, addr+"/tm/api/v1/members/name/"+leader1, `{"leader-priority": -1}`)
 	// Wait etcd leader change.
 	leader2 := waitEtcdLeaderChange(re, server1, leader1)
-	// PD leader should sync with etcd leader again.
+	// TM leader should sync with etcd leader again.
 	testutil.Eventually(re, func() bool {
 		return cluster.GetLeader() == leader2
 	})
@@ -217,11 +217,11 @@ func TestLeaderResign(t *testing.T) {
 	leader1 := cluster.WaitLeader()
 	addr1 := cluster.GetServer(leader1).GetConfig().ClientUrls
 
-	post(t, re, addr1+"/pd/api/v1/leader/resign", "")
+	post(t, re, addr1+"/tm/api/v1/leader/resign", "")
 	leader2 := waitLeaderChange(re, cluster, leader1)
 	t.Log("leader2:", leader2)
 	addr2 := cluster.GetServer(leader2).GetConfig().ClientUrls
-	post(t, re, addr2+"/pd/api/v1/leader/transfer/"+leader1, "")
+	post(t, re, addr2+"/tm/api/v1/leader/transfer/"+leader1, "")
 	leader3 := waitLeaderChange(re, cluster, leader2)
 	re.Equal(leader1, leader3)
 }
@@ -241,7 +241,7 @@ func TestLeaderResignWithBlock(t *testing.T) {
 	addr1 := cluster.GetServer(leader1).GetConfig().ClientUrls
 
 	re.NoError(failpoint.Enable("github.com/gottingen/tm/server/raftclusterIsBusy", `pause`))
-	post(t, re, addr1+"/pd/api/v1/leader/resign", "")
+	post(t, re, addr1+"/tm/api/v1/leader/resign", "")
 	leader2 := waitLeaderChange(re, cluster, leader1)
 	t.Log("leader2:", leader2)
 	re.NotEqual(leader1, leader2)

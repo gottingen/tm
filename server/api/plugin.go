@@ -45,7 +45,7 @@ func newPluginHandler(handler *server.Handler, rd *render.Render) *pluginHandler
 // @Produce  json
 // @Success  200  {string}  string  "Load plugin success."
 // @Failure  400  {string}  string  "The input is invalid."
-// @Failure  500  {string}  string  "PD server failed to proceed the request."
+// @Failure  500  {string}  string  "TM server failed to proceed the request."
 // @Router   /plugin [post]
 func (h *pluginHandler) LoadPlugin(w http.ResponseWriter, r *http.Request) {
 	h.processPluginCommand(w, r, cluster.PluginLoad)
@@ -59,7 +59,7 @@ func (h *pluginHandler) LoadPlugin(w http.ResponseWriter, r *http.Request) {
 // @Produce  json
 // @Success  200  {string}  string  "Load/Unload plugin successfully."
 // @Failure  400  {string}  string  "The input is invalid."
-// @Failure  500  {string}  string  "PD server failed to proceed the request."
+// @Failure  500  {string}  string  "TM server failed to proceed the request."
 // @Router   /plugin [delete]
 func (h *pluginHandler) UnloadPlugin(w http.ResponseWriter, r *http.Request) {
 	h.processPluginCommand(w, r, cluster.PluginUnload)

@@ -855,7 +855,7 @@ func TestPersistScheduler(t *testing.T) {
 	re.Len(co.schedulers, 3)
 	co.stop()
 	co.wg.Wait()
-	// suppose restart PD again
+	// suppose restart TM again
 	_, newOpt, err = newTestScheduleConfig()
 	re.NoError(err)
 	re.NoError(newOpt.Reload(storage))
@@ -976,7 +976,7 @@ func TestRemoveScheduler(t *testing.T) {
 	co.stop()
 	co.wg.Wait()
 
-	// suppose restart PD again
+	// suppose restart TM again
 	_, newOpt, err := newTestScheduleConfig()
 	re.NoError(err)
 	re.NoError(newOpt.Reload(tc.storage))

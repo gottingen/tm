@@ -20,7 +20,7 @@ var (
 	// TODO: pre-allocate gauge metrics
 	operatorCounter = prometheus.NewCounterVec(
 		prometheus.CounterOpts{
-			Namespace: "pd",
+			Namespace: "tm",
 			Subsystem: "schedule",
 			Name:      "operators_count",
 			Help:      "Counter of schedule operators.",
@@ -28,7 +28,7 @@ var (
 
 	operatorDuration = prometheus.NewHistogramVec(
 		prometheus.HistogramOpts{
-			Namespace: "pd",
+			Namespace: "tm",
 			Subsystem: "schedule",
 			Name:      "finish_operators_duration_seconds",
 			Help:      "Bucketed histogram of processing time (s) of finished operator.",
@@ -37,7 +37,7 @@ var (
 
 	operatorSizeHist = prometheus.NewHistogramVec(
 		prometheus.HistogramOpts{
-			Namespace: "pd",
+			Namespace: "tm",
 			Subsystem: "schedule",
 			Name:      "operator_region_size",
 			Help:      "Bucketed histogram of the operator region size.",
@@ -46,7 +46,7 @@ var (
 
 	operatorWaitCounter = prometheus.NewCounterVec(
 		prometheus.CounterOpts{
-			Namespace: "pd",
+			Namespace: "tm",
 			Subsystem: "schedule",
 			Name:      "operators_waiting_count",
 			Help:      "Counter of schedule waiting operators.",
@@ -54,7 +54,7 @@ var (
 
 	operatorWaitDuration = prometheus.NewHistogramVec(
 		prometheus.HistogramOpts{
-			Namespace: "pd",
+			Namespace: "tm",
 			Subsystem: "schedule",
 			Name:      "waiting_operators_duration_seconds",
 			Help:      "Bucketed histogram of waiting time (s) of operator for being promoted.",
@@ -63,7 +63,7 @@ var (
 
 	storeLimitCostCounter = prometheus.NewCounterVec(
 		prometheus.CounterOpts{
-			Namespace: "pd",
+			Namespace: "tm",
 			Subsystem: "schedule",
 			Name:      "store_limit_cost",
 			Help:      "limit rate cost of store.",
@@ -71,7 +71,7 @@ var (
 
 	scatterCounter = prometheus.NewCounterVec(
 		prometheus.CounterOpts{
-			Namespace: "pd",
+			Namespace: "tm",
 			Subsystem: "schedule",
 			Name:      "scatter_operators_count",
 			Help:      "Counter of region scatter operators.",
@@ -79,7 +79,7 @@ var (
 
 	scatterDistributionCounter = prometheus.NewCounterVec(
 		prometheus.CounterOpts{
-			Namespace: "pd",
+			Namespace: "tm",
 			Subsystem: "schedule",
 			Name:      "scatter_distribution",
 			Help:      "Counter of the distribution in scatter.",
@@ -88,7 +88,7 @@ var (
 	// LabelerEventCounter is a counter of the scheduler labeler system.
 	LabelerEventCounter = prometheus.NewCounterVec(
 		prometheus.CounterOpts{
-			Namespace: "pd",
+			Namespace: "tm",
 			Subsystem: "schedule",
 			Name:      "labeler_event_counter",
 			Help:      "Counter of the scheduler label.",

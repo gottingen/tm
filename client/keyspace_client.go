@@ -12,14 +12,13 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-package pd
+package tm
 
 import (
 	"context"
 	"time"
 
 	"github.com/gottingen/tm/client/grpcutil"
-	"github.com/opentracing/opentracing-go"
 	"github.com/pingcap/errors"
 	"github.com/pingcap/kvproto/pkg/keyspacepb"
 	"github.com/pingcap/log"
@@ -36,7 +35,7 @@ type KeyspaceClient interface {
 	UpdateKeyspaceState(ctx context.Context, id uint32, state keyspacepb.KeyspaceState) (*keyspacepb.KeyspaceMeta, error)
 }
 
-// keyspaceClient returns the KeyspaceClient from current PD leader.
+// keyspaceClient returns the KeyspaceClient from current TM leader.
 func (c *client) keyspaceClient() keyspacepb.KeyspaceClient {
 	if client := c.pdSvcDiscovery.GetServingEndpointClientConn(); client != nil {
 		return keyspacepb.NewKeyspaceClient(client)
@@ -92,7 +91,7 @@ func (c *client) WatchKeyspaces(ctx context.Context) (chan []*keyspacepb.Keyspac
 	go func() {
 		defer func() {
 			if r := recover(); r != nil {
-				log.Error("[pd] panic in keyspace client `WatchKeyspaces`", zap.Any("error", r))
+				log.Error("[tm] panic in keyspace client `WatchKeyspaces`", zap.Any("error", r))
 				return
 			}
 		}()

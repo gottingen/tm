@@ -62,7 +62,7 @@ func NewAdminHandler(handler Handler, rd *render.Render) *AdminHandler {
 //
 //	reset ts to input ts if it > current ts and < upper bound, error if not in that range
 //
-// during EBS based restore, we call this to make sure ts of pd >= resolved_ts in backup.
+// during EBS based restore, we call this to make sure ts of tm >= resolved_ts in backup.
 func (h *AdminHandler) ResetTS(w http.ResponseWriter, r *http.Request) {
 	handler := h.handler
 	var input map[string]interface{}

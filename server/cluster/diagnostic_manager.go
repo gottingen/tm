@@ -46,7 +46,7 @@ const (
 )
 
 // DiagnosableSummaryFunc includes all implementations of plan.Summary.
-// And it also includes all schedulers which pd support to diagnose.
+// And it also includes all schedulers which tm support to diagnose.
 var DiagnosableSummaryFunc = map[string]plan.Summary{
 	schedulers.BalanceRegionName: schedulers.BalancePlanSummary,
 	schedulers.BalanceLeaderName: schedulers.BalancePlanSummary,

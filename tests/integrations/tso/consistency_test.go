@@ -23,7 +23,7 @@ import (
 	tso "github.com/gottingen/tm/pkg/mcs/tso/server"
 	tsopkg "github.com/gottingen/tm/pkg/tso"
 	"github.com/gottingen/tm/pkg/utils/tempurl"
-	pd "github.com/gottingen/tm/pkg/utils/testutil"
+	tm "github.com/gottingen/tm/pkg/utils/testutil"
 	"github.com/gottingen/tm/pkg/utils/tsoutil"
 	"github.com/gottingen/tm/tests"
 	"github.com/gottingen/tm/tests/integrations/mcs"
@@ -41,9 +41,9 @@ type tsoConsistencyTestSuite struct {
 	ctx    context.Context
 	cancel context.CancelFunc
 
-	// The PD cluster.
+	// The TM cluster.
 	cluster *tests.TestCluster
-	// pdLeaderServer is the leader server of the PD cluster.
+	// pdLeaderServer is the leader server of the TM cluster.
 	pdLeaderServer *tests.TestServer
 	// tsoServer is the TSO service provider.
 	tsoServer        *tso.Server
@@ -83,7 +83,7 @@ func (suite *tsoConsistencyTestSuite) SetupSuite() {
 	suite.pdLeaderServer = suite.cluster.GetServer(leaderName)
 	backendEndpoints := suite.pdLeaderServer.GetAddr()
 	if suite.legacy {
-		suite.pdClient = pd.MustNewGrpcClient(re, backendEndpoints)
+		suite.pdClient = tm.MustNewGrpcClient(re, backendEndpoints)
 	} else {
 		suite.tsoServer, suite.tsoServerCleanup = mcs.StartSingleTSOTestServer(suite.ctx, re, backendEndpoints, tempurl.Alloc())
 		suite.tsoClientConn, suite.tsoClient = tso.MustNewGrpcClient(re, suite.tsoServer.GetAddr())

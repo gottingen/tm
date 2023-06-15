@@ -48,7 +48,7 @@ type minResolvedTS struct {
 // @Produce  json
 // @Success  200  {array}   minResolvedTS
 // @Failure  400  {string}  string  "The input is invalid."
-// @Failure  500  {string}  string  "PD server failed to proceed the request."
+// @Failure  500  {string}  string  "TM server failed to proceed the request."
 // @Router   /min-resolved-ts/{store_id} [get]
 func (h *minResolvedTSHandler) GetStoreMinResolvedTS(w http.ResponseWriter, r *http.Request) {
 	c := h.svr.GetRaftCluster()
@@ -71,7 +71,7 @@ func (h *minResolvedTSHandler) GetStoreMinResolvedTS(w http.ResponseWriter, r *h
 // @Summary  Get cluster-level min resolved ts.
 // @Produce  json
 // @Success  200  {array}   minResolvedTS
-// @Failure  500  {string}  string  "PD server failed to proceed the request."
+// @Failure  500  {string}  string  "TM server failed to proceed the request."
 // @Router   /min-resolved-ts [get]
 func (h *minResolvedTSHandler) GetMinResolvedTS(w http.ResponseWriter, r *http.Request) {
 	c := h.svr.GetRaftCluster()

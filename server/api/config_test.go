@@ -90,7 +90,7 @@ func (suite *configTestSuite) TestConfigAll() {
 	cfg.Replication.MaxReplicas = 5
 	cfg.Replication.LocationLabels = []string{"zone", "rack"}
 	cfg.Schedule.RegionScheduleLimit = 10
-	cfg.PDServerCfg.MetricStorage = "http://127.0.0.1:9090"
+	cfg.TMServerCfg.MetricStorage = "http://127.0.0.1:9090"
 	suite.Equal(newCfg, cfg)
 
 	// the new way
@@ -98,7 +98,7 @@ func (suite *configTestSuite) TestConfigAll() {
 		"schedule.tolerant-size-ratio":            2.5,
 		"schedule.enable-tikv-split-region":       "false",
 		"replication.location-labels":             "idc,host",
-		"pd-server.metric-storage":                "http://127.0.0.1:1234",
+		"tm-server.metric-storage":                "http://127.0.0.1:1234",
 		"log.level":                               "warn",
 		"cluster-version":                         "v4.0.0-beta",
 		"replication-mode.replication-mode":       "dr-auto-sync",
@@ -114,7 +114,7 @@ func (suite *configTestSuite) TestConfigAll() {
 	cfg.Schedule.EnableTiKVSplitRegion = false
 	cfg.Schedule.TolerantSizeRatio = 2.5
 	cfg.Replication.LocationLabels = []string{"idc", "host"}
-	cfg.PDServerCfg.MetricStorage = "http://127.0.0.1:1234"
+	cfg.TMServerCfg.MetricStorage = "http://127.0.0.1:1234"
 	cfg.Log.Level = "warn"
 	cfg.ReplicationMode.DRAutoSync.LabelKey = "foobar"
 	cfg.ReplicationMode.ReplicationMode = "dr-auto-sync"
@@ -292,7 +292,7 @@ func (suite *configTestSuite) TestConfigDefault() {
 	suite.Equal(uint64(3), defaultCfg.Replication.MaxReplicas)
 	suite.Equal(typeutil.StringSlice([]string{}), defaultCfg.Replication.LocationLabels)
 	suite.Equal(uint64(2048), defaultCfg.Schedule.RegionScheduleLimit)
-	suite.Equal("", defaultCfg.PDServerCfg.MetricStorage)
+	suite.Equal("", defaultCfg.TMServerCfg.MetricStorage)
 }
 
 func (suite *configTestSuite) TestConfigPDServer() {
@@ -304,8 +304,8 @@ func (suite *configTestSuite) TestConfigPDServer() {
 	postData, err := json.Marshal(ms)
 	suite.NoError(err)
 	suite.NoError(tu.CheckPostJSON(testDialClient, addrPost, postData, tu.StatusOK(re)))
-	addrGet := fmt.Sprintf("%s/config/pd-server", suite.urlPrefix)
-	sc := &config.PDServerConfig{}
+	addrGet := fmt.Sprintf("%s/config/tm-server", suite.urlPrefix)
+	sc := &config.TMServerConfig{}
 	suite.NoError(tu.ReadGetJSON(re, testDialClient, addrGet, sc))
 	suite.Equal(bool(true), sc.UseRegionStorage)
 	suite.Equal("table", sc.KeyType)

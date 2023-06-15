@@ -472,7 +472,7 @@ func (c *RuleChecker) isDownPeer(region *core.RegionInfo, peer *metapb.Peer) boo
 			storeID := peer.GetStoreId()
 			store := c.cluster.GetStore(storeID)
 			if store == nil {
-				log.Warn("lost the store, maybe you are recovering the PD cluster", zap.Uint64("store-id", storeID))
+				log.Warn("lost the store, maybe you are recovering the TM cluster", zap.Uint64("store-id", storeID))
 				return false
 			}
 			return true
@@ -489,7 +489,7 @@ func (c *RuleChecker) isStoreDownTimeHitMaxDownTime(storeID uint64) bool {
 func (c *RuleChecker) isOfflinePeer(peer *metapb.Peer) bool {
 	store := c.cluster.GetStore(peer.GetStoreId())
 	if store == nil {
-		log.Warn("lost the store, maybe you are recovering the PD cluster", zap.Uint64("store-id", peer.StoreId))
+		log.Warn("lost the store, maybe you are recovering the TM cluster", zap.Uint64("store-id", peer.StoreId))
 		return false
 	}
 	return !store.IsPreparing() && !store.IsServing()

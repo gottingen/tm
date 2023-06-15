@@ -1,0 +1,29 @@
+{
+	"folders": [
+		{
+			"name": "tm-server",
+			"path": "."
+		},
+		{
+			"name": "tm-client",
+			"path": "client"
+		},
+		{
+			"name": "tm-client-tests",
+			"path": "tests/integrations/client"
+		},
+		{
+			"name": "mcs-tests",
+			"path": "tests/integrations/mcs"
+		},
+		{
+			"name": "tso-tests",
+			"path": "tests/integrations/tso"
+		},
+		{
+			"name": "tm-tso-bench",
+			"path": "tools/tm-tso-bench"
+		}
+	],
+	"settings": {}
+}

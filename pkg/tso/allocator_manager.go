@@ -69,7 +69,7 @@ type allocatorGroup struct {
 	// cancel would be call when allocatorGroup is deleted to stop background loop.
 	ctx    context.Context
 	cancel context.CancelFunc
-	// For the Global TSO Allocator, leadership is a PD leader's
+	// For the Global TSO Allocator, leadership is a TM leader's
 	// leadership, and for the Local TSO Allocator, leadership
 	// is a DC-level certificate to allow an allocator to generate
 	// TSO for local transactions in its DC.
@@ -82,7 +82,7 @@ type allocatorGroup struct {
 type DCLocationInfo struct {
 	// dc-location/global (string) -> Member IDs
 	ServerIDs []uint64
-	// dc-location (string) -> Suffix sign. It is collected and maintained by the PD leader.
+	// dc-location (string) -> Suffix sign. It is collected and maintained by the TM leader.
 	Suffix int32
 }
 
@@ -133,7 +133,7 @@ type ElectionMember interface {
 	GetLeaderID() uint64
 	// GetLeaderPath returns the path of the leader.
 	GetLeaderPath() string
-	// GetLeadership returns the leadership of the PD member.
+	// GetLeadership returns the leadership of the TM member.
 	GetLeadership() *election.Leadership
 	// GetLastLeaderUpdatedTime returns the last time when the leader is updated.
 	GetLastLeaderUpdatedTime() time.Time
@@ -145,7 +145,7 @@ type ElectionMember interface {
 	PreCheckLeader() error
 }
 
-// AllocatorManager is used to manage the TSO Allocators a PD server holds.
+// AllocatorManager is used to manage the TSO Allocators a TM server holds.
 // It is in charge of maintaining TSO allocators' leadership, checking election
 // priority, and forwarding TSO allocation requests to correct TSO Allocators.
 type AllocatorManager struct {
@@ -282,7 +282,7 @@ func (am *AllocatorManager) tsoAllocatorLoop() {
 }
 
 // close is used to shutdown TSO Allocator updating daemon.
-// tso service call this function to shutdown the loop here, but pd manages its own loop.
+// tso service call this function to shutdown the loop here, but tm manages its own loop.
 func (am *AllocatorManager) close() {
 	log.Info("closing the allocator manager")
 
@@ -300,7 +300,7 @@ func (am *AllocatorManager) getMember() ElectionMember {
 	return am.member
 }
 
-// SetLocalTSOConfig receives the zone label of this PD server and write it into etcd as dc-location
+// SetLocalTSOConfig receives the zone label of this TM server and write it into etcd as dc-location
 // to make the whole cluster know the DC-level topology for later Local TSO Allocator campaign.
 func (am *AllocatorManager) SetLocalTSOConfig(dcLocation string) error {
 	serverName := am.member.Name()
@@ -343,7 +343,7 @@ func (am *AllocatorManager) checkDCLocationUpperLimit(dcLocation string) error {
 	if err != nil {
 		return err
 	}
-	// It's ok to add a new PD to the old dc-location.
+	// It's ok to add a new TM to the old dc-location.
 	if _, ok := clusterDCLocations[dcLocation]; ok {
 		return nil
 	}
@@ -368,7 +368,7 @@ func (am *AllocatorManager) GetClusterDCLocationsFromEtcd() (clusterDCLocations 
 	for _, kv := range resp.Kvs {
 		// The key will contain the member ID and the value is its dcLocation
 		serverPath := strings.Split(string(kv.Key), "/")
-		// Get serverID from serverPath, e.g, /pd/dc-location/1232143243253 -> 1232143243253
+		// Get serverID from serverPath, e.g, /tm/dc-location/1232143243253 -> 1232143243253
 		serverID, err := strconv.ParseUint(serverPath[len(serverPath)-1], 10, 64)
 		dcLocation := string(kv.Value)
 		if err != nil {
@@ -523,17 +523,17 @@ func (am *AllocatorManager) allocatorLeaderLoop(ctx context.Context, allocator *
 		// Global TSO synchronization can cover up this dc-location.
 		ok, dcLocationInfo, err := am.getDCLocationInfoFromLeader(ctx, allocator.GetDCLocation())
 		if err != nil {
-			log.Error("get dc-location info from pd leader failed",
+			log.Error("get dc-location info from tm leader failed",
 				zap.String("dc-location", allocator.GetDCLocation()),
 				errs.ZapError(err))
-			// PD leader hasn't been elected out, wait for the campaign
+			// TM leader hasn't been elected out, wait for the campaign
 			if !longSleep(ctx, time.Second) {
 				return
 			}
 			continue
 		}
 		if !ok || dcLocationInfo.Suffix <= 0 || dcLocationInfo.MaxTs == nil {
-			log.Warn("pd leader is not aware of dc-location during allocatorLeaderLoop, wait next round",
+			log.Warn("tm leader is not aware of dc-location during allocatorLeaderLoop, wait next round",
 				zap.String("dc-location", allocator.GetDCLocation()),
 				zap.Any("dc-location-info", dcLocationInfo),
 				zap.String("wait-duration", checkStep.String()))
@@ -702,9 +702,9 @@ func (am *AllocatorManager) AllocatorDaemon(ctx context.Context) {
 		case <-checkerTicker.C:
 			// Check and maintain the cluster's meta info about dc-location distribution.
 			go am.ClusterDCLocationChecker()
-			// We won't have any Local TSO Allocator set up in PD without enabling Local TSO.
+			// We won't have any Local TSO Allocator set up in TM without enabling Local TSO.
 			if am.enableLocalTSO {
-				// Check the election priority of every Local TSO Allocator this PD is holding.
+				// Check the election priority of every Local TSO Allocator this TM is holding.
 				go am.PriorityChecker()
 			}
 			// PS: ClusterDCLocationChecker and PriorityChecker are time consuming and low frequent to run,
@@ -937,9 +937,9 @@ func (am *AllocatorManager) GetLocalTSOSuffixPath(dcLocation string) string {
 // PriorityChecker is used to check the election priority of a Local TSO Allocator.
 // In the normal case, if we want to elect a Local TSO Allocator for a certain DC,
 // such as dc-1, we need to make sure the follow priority rules:
-// 1. The PD server with dc-location="dc-1" needs to be elected as the allocator
+// 1. The TM server with dc-location="dc-1" needs to be elected as the allocator
 // leader with the highest priority.
-// 2. If all PD servers with dc-location="dc-1" are down, then the other PD servers
+// 2. If all TM servers with dc-location="dc-1" are down, then the other TM servers
 // of DC could be elected.
 func (am *AllocatorManager) PriorityChecker() {
 	defer logutil.LogPanic()

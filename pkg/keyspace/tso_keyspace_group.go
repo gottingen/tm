@@ -112,7 +112,7 @@ func (m *GroupManager) Bootstrap() error {
 
 	m.Lock()
 	defer m.Unlock()
-	// Ignore the error if default keyspace group already exists in the storage (e.g. PD restart/recover).
+	// Ignore the error if default keyspace group already exists in the storage (e.g. TM restart/recover).
 	err := m.saveKeyspaceGroups([]*endpoint.KeyspaceGroup{defaultKeyspaceGroup}, false)
 	if err != nil && err != ErrKeyspaceGroupExists {
 		return err

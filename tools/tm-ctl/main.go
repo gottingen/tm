@@ -20,7 +20,7 @@ import (
 	"os/signal"
 	"syscall"
 
-	"github.com/gottingen/tm/tools/tm-ctl/pdctl"
+	"github.com/gottingen/tm/tools/tm-ctl/tmctl"
 )
 
 func main() {
@@ -50,12 +50,12 @@ func main() {
 	var inputs []string
 	stat, _ := os.Stdin.Stat()
 	if (stat.Mode() & os.ModeCharDevice) == 0 {
-		in, err := pdctl.ReadStdin(os.Stdin)
+		in, err := tmctl.ReadStdin(os.Stdin)
 		if err != nil {
 			fmt.Println(err)
 			return
 		}
 		inputs = in
 	}
-	pdctl.MainStart(append(os.Args[1:], inputs...))
+	tmctl.MainStart(append(os.Args[1:], inputs...))
 }

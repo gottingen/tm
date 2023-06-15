@@ -21,13 +21,13 @@ import (
 	"strings"
 	"time"
 
-	"github.com/gottingen/tm/tools/tm-backup/pdbackup"
+	"github.com/gottingen/tm/tools/tm-backup/tmbackup"
 	"go.etcd.io/etcd/clientv3"
 	"go.etcd.io/etcd/pkg/transport"
 )
 
 var (
-	pdAddr   = flag.String("pd", "http://127.0.0.1:2379", "pd address")
+	pdAddr   = flag.String("tm", "http://127.0.0.1:2379", "tm address")
 	filePath = flag.String("file", "backup.json", "backup file path and name")
 	caPath   = flag.String("cacert", "", "path of file that contains list of trusted SSL CAs")
 	certPath = flag.String("cert", "", "path of file that contains X509 certificate in PEM format")
@@ -65,10 +65,10 @@ func main() {
 	})
 	checkErr(err)
 
-	backInfo, err := pdbackup.GetBackupInfo(client, *pdAddr)
+	backInfo, err := tmbackup.GetBackupInfo(client, *pdAddr)
 	checkErr(err)
-	pdbackup.OutputToFile(backInfo, f)
-	fmt.Println("pd backup successful! dump file is:", *filePath)
+	tmbackup.OutputToFile(backInfo, f)
+	fmt.Println("tm backup successful! dump file is:", *filePath)
 }
 
 func checkErr(err error) {

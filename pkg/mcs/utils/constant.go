@@ -37,7 +37,7 @@ const (
 
 	// DefaultKeyspaceID is the default key space id.
 	// Valid keyspace id range is [0, 0xFFFFFF](uint24max, or 16777215)
-	// ​0 is reserved for default keyspace with the name "DEFAULT", It's initialized when PD bootstrap
+	// ​0 is reserved for default keyspace with the name "DEFAULT", It's initialized when TM bootstrap
 	// and reserved for users who haven't been assigned keyspace.
 	DefaultKeyspaceID = uint32(0)
 

@@ -92,7 +92,7 @@ func (suite *keyspaceGroupManagerTestSuite) TestNewKeyspaceGroupManager() {
 
 	tsoServiceID := &discovery.ServiceRegistryEntry{ServiceAddr: suite.cfg.AdvertiseListenAddr}
 	guid := uuid.New().String()
-	legacySvcRootPath := path.Join("/pd", guid)
+	legacySvcRootPath := path.Join("/tm", guid)
 	tsoSvcRootPath := path.Join("/ms", guid, "tso")
 	electionNamePrefix := "tso-server-" + guid
 
@@ -612,7 +612,7 @@ func (suite *keyspaceGroupManagerTestSuite) newUniqueKeyspaceGroupManager(
 	tsoServiceID := &discovery.ServiceRegistryEntry{ServiceAddr: suite.cfg.AdvertiseListenAddr}
 	uniqueID := memberutil.GenerateUniqueID(uuid.New().String())
 	uniqueStr := strconv.FormatUint(uniqueID, 10)
-	legacySvcRootPath := path.Join("/pd", uniqueStr)
+	legacySvcRootPath := path.Join("/tm", uniqueStr)
 	tsoSvcRootPath := path.Join("/ms", uniqueStr, "tso")
 	electionNamePrefix := "kgm-test-" + uniqueStr
 

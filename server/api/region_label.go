@@ -57,7 +57,7 @@ func (h *regionLabelHandler) GetAllRegionLabelRules(w http.ResponseWriter, r *ht
 // @Produce  json
 // @Success  200  {string}  string  "Update region label rules successfully."
 // @Failure  400  {string}  string  "The input is invalid."
-// @Failure  500  {string}  string  "PD server failed to proceed the request."
+// @Failure  500  {string}  string  "TM server failed to proceed the request."
 // @Router   /config/region-label/rules [patch]
 func (h *regionLabelHandler) PatchRegionLabelRules(w http.ResponseWriter, r *http.Request) {
 	cluster := getCluster(r)
@@ -82,7 +82,7 @@ func (h *regionLabelHandler) PatchRegionLabelRules(w http.ResponseWriter, r *htt
 // @Produce  json
 // @Success  200  {array}   labeler.LabelRule
 // @Failure  400  {string}  string  "The input is invalid."
-// @Failure  500  {string}  string  "PD server failed to proceed the request."
+// @Failure  500  {string}  string  "TM server failed to proceed the request."
 // @Router   /config/region-label/rule/ids [get]
 func (h *regionLabelHandler) GetRegionLabelRulesByIDs(w http.ResponseWriter, r *http.Request) {
 	cluster := getCluster(r)
@@ -126,7 +126,7 @@ func (h *regionLabelHandler) GetRegionLabelRuleByID(w http.ResponseWriter, r *ht
 // @Produce  json
 // @Success  200  {string}  string  "Delete rule successfully."
 // @Failure  404  {string}  string  "The rule does not exist."
-// @Failure  500  {string}  string  "PD server failed to proceed the request."
+// @Failure  500  {string}  string  "TM server failed to proceed the request."
 // @Router   /config/region-label/rule/{id} [delete]
 func (h *regionLabelHandler) DeleteRegionLabelRule(w http.ResponseWriter, r *http.Request) {
 	cluster := getCluster(r)
@@ -154,7 +154,7 @@ func (h *regionLabelHandler) DeleteRegionLabelRule(w http.ResponseWriter, r *htt
 // @Produce  json
 // @Success  200  {string}  string  "Update rule successfully."
 // @Failure  400  {string}  string  "The input is invalid."
-// @Failure  500  {string}  string  "PD server failed to proceed the request."
+// @Failure  500  {string}  string  "TM server failed to proceed the request."
 // @Router   /config/region-label/rule [post]
 func (h *regionLabelHandler) SetRegionLabelRule(w http.ResponseWriter, r *http.Request) {
 	cluster := getCluster(r)

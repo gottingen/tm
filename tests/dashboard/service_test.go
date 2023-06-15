@@ -29,8 +29,8 @@ import (
 	"github.com/gottingen/tm/pkg/utils/testutil"
 	"github.com/gottingen/tm/server/config"
 	"github.com/gottingen/tm/tests"
-	"github.com/gottingen/tm/tests/pdctl"
-	pdctlCmd "github.com/gottingen/tm/tools/tm-ctl/pdctl"
+	"github.com/gottingen/tm/tests/tmctl"
+	pdctlCmd "github.com/gottingen/tm/tools/tm-ctl/tmctl"
 )
 
 func TestMain(m *testing.M) {
@@ -140,7 +140,7 @@ func (suite *dashboardTestSuite) testDashboard(internalProxy bool) {
 	// auto select node
 	dashboardAddress1 := suite.checkServiceIsStarted(internalProxy, servers, leader)
 
-	// pd-ctl set another addr
+	// tm-ctl set another addr
 	var dashboardAddress2 string
 	for _, srv := range servers {
 		if srv.GetAddr() != dashboardAddress1 {
@@ -149,14 +149,14 @@ func (suite *dashboardTestSuite) testDashboard(internalProxy bool) {
 		}
 	}
 	args := []string{"-u", leaderAddr, "config", "set", "dashboard-address", dashboardAddress2}
-	_, err = pdctl.ExecuteCommand(cmd, args...)
+	_, err = tmctl.ExecuteCommand(cmd, args...)
 	suite.NoError(err)
 	suite.checkServiceIsStarted(internalProxy, servers, leader)
 	suite.Equal(dashboardAddress2, leader.GetServer().GetPersistOptions().GetDashboardAddress())
 
-	// pd-ctl set stop
+	// tm-ctl set stop
 	args = []string{"-u", leaderAddr, "config", "set", "dashboard-address", "none"}
-	_, err = pdctl.ExecuteCommand(cmd, args...)
+	_, err = tmctl.ExecuteCommand(cmd, args...)
 	suite.NoError(err)
 	suite.checkServiceIsStopped(servers)
 }

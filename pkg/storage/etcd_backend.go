@@ -21,7 +21,7 @@ import (
 )
 
 // etcdBackend is a storage backend that stores data in etcd,
-// which is mainly used by the PD server.
+// which is mainly used by the TM server.
 type etcdBackend struct {
 	*endpoint.StorageEndpoint
 }

@@ -19,7 +19,7 @@ import "github.com/prometheus/client_golang/prometheus"
 var (
 	hotCacheStatusGauge = prometheus.NewGaugeVec(
 		prometheus.GaugeOpts{
-			Namespace: "pd",
+			Namespace: "tm",
 			Subsystem: "hotcache",
 			Name:      "status",
 			Help:      "Status of the hotspot.",
@@ -27,7 +27,7 @@ var (
 
 	storeStatusGauge = prometheus.NewGaugeVec(
 		prometheus.GaugeOpts{
-			Namespace: "pd",
+			Namespace: "tm",
 			Subsystem: "scheduler",
 			Name:      "store_status",
 			Help:      "Store status for schedule",
@@ -35,7 +35,7 @@ var (
 
 	regionStatusGauge = prometheus.NewGaugeVec(
 		prometheus.GaugeOpts{
-			Namespace: "pd",
+			Namespace: "tm",
 			Subsystem: "regions",
 			Name:      "status",
 			Help:      "Status of the regions.",
@@ -43,7 +43,7 @@ var (
 
 	offlineRegionStatusGauge = prometheus.NewGaugeVec(
 		prometheus.GaugeOpts{
-			Namespace: "pd",
+			Namespace: "tm",
 			Subsystem: "regions",
 			Name:      "offline_status",
 			Help:      "Status of the offline regions.",
@@ -51,7 +51,7 @@ var (
 
 	clusterStatusGauge = prometheus.NewGaugeVec(
 		prometheus.GaugeOpts{
-			Namespace: "pd",
+			Namespace: "tm",
 			Subsystem: "cluster",
 			Name:      "status",
 			Help:      "Status of the cluster.",
@@ -59,7 +59,7 @@ var (
 
 	placementStatusGauge = prometheus.NewGaugeVec(
 		prometheus.GaugeOpts{
-			Namespace: "pd",
+			Namespace: "tm",
 			Subsystem: "cluster",
 			Name:      "placement_status",
 			Help:      "Status of the cluster placement.",
@@ -67,7 +67,7 @@ var (
 
 	configStatusGauge = prometheus.NewGaugeVec(
 		prometheus.GaugeOpts{
-			Namespace: "pd",
+			Namespace: "tm",
 			Subsystem: "config",
 			Name:      "status",
 			Help:      "Status of the scheduling configurations.",
@@ -76,7 +76,7 @@ var (
 	// StoreLimitGauge is used to record the current store limit.
 	StoreLimitGauge = prometheus.NewGaugeVec(
 		prometheus.GaugeOpts{
-			Namespace: "pd",
+			Namespace: "tm",
 			Subsystem: "cluster",
 			Name:      "store_limit",
 			Help:      "Status of the store limit.",
@@ -84,14 +84,14 @@ var (
 
 	regionLabelLevelGauge = prometheus.NewGaugeVec(
 		prometheus.GaugeOpts{
-			Namespace: "pd",
+			Namespace: "tm",
 			Subsystem: "regions",
 			Name:      "label_level",
 			Help:      "Number of regions in the different label level.",
 		}, []string{"type"})
 	readByteHist = prometheus.NewHistogram(
 		prometheus.HistogramOpts{
-			Namespace: "pd",
+			Namespace: "tm",
 			Subsystem: "scheduler",
 			Name:      "read_byte_hist",
 			Help:      "The distribution of region read bytes",
@@ -99,7 +99,7 @@ var (
 		})
 	writeByteHist = prometheus.NewHistogram(
 		prometheus.HistogramOpts{
-			Namespace: "pd",
+			Namespace: "tm",
 			Subsystem: "scheduler",
 			Name:      "write_byte_hist",
 			Help:      "The distribution of region write bytes",
@@ -107,7 +107,7 @@ var (
 		})
 	readKeyHist = prometheus.NewHistogram(
 		prometheus.HistogramOpts{
-			Namespace: "pd",
+			Namespace: "tm",
 			Subsystem: "scheduler",
 			Name:      "read_key_hist",
 			Help:      "The distribution of region read keys",
@@ -115,7 +115,7 @@ var (
 		})
 	writeKeyHist = prometheus.NewHistogram(
 		prometheus.HistogramOpts{
-			Namespace: "pd",
+			Namespace: "tm",
 			Subsystem: "scheduler",
 			Name:      "write_key_hist",
 			Help:      "The distribution of region write keys",
@@ -123,7 +123,7 @@ var (
 		})
 	readQueryHist = prometheus.NewHistogram(
 		prometheus.HistogramOpts{
-			Namespace: "pd",
+			Namespace: "tm",
 			Subsystem: "scheduler",
 			Name:      "read_query_hist",
 			Help:      "The distribution of region read query",
@@ -131,7 +131,7 @@ var (
 		})
 	writeQueryHist = prometheus.NewHistogram(
 		prometheus.HistogramOpts{
-			Namespace: "pd",
+			Namespace: "tm",
 			Subsystem: "scheduler",
 			Name:      "write_query_hist",
 			Help:      "The distribution of region write query",
@@ -139,7 +139,7 @@ var (
 		})
 	regionHeartbeatIntervalHist = prometheus.NewHistogram(
 		prometheus.HistogramOpts{
-			Namespace: "pd",
+			Namespace: "tm",
 			Subsystem: "scheduler",
 			Name:      "region_heartbeat_interval_hist",
 			Help:      "Bucketed histogram of the batch size of handled requests.",
@@ -147,7 +147,7 @@ var (
 		})
 	storeHeartbeatIntervalHist = prometheus.NewHistogram(
 		prometheus.HistogramOpts{
-			Namespace: "pd",
+			Namespace: "tm",
 			Subsystem: "scheduler",
 			Name:      "store_heartbeat_interval_hist",
 			Help:      "Bucketed histogram of the batch size of handled requests.",
@@ -156,7 +156,7 @@ var (
 
 	regionAbnormalPeerDuration = prometheus.NewHistogramVec(
 		prometheus.HistogramOpts{
-			Namespace: "pd",
+			Namespace: "tm",
 			Subsystem: "regions",
 			Name:      "abnormal_peer_duration_seconds",
 			Help:      "Bucketed histogram of processing time (s) of handled success cmds.",
@@ -165,7 +165,7 @@ var (
 
 	hotCacheFlowQueueStatusGauge = prometheus.NewGaugeVec(
 		prometheus.GaugeOpts{
-			Namespace: "pd",
+			Namespace: "tm",
 			Subsystem: "hotcache",
 			Name:      "flow_queue_status",
 			Help:      "Status of the hotspot flow queue.",
@@ -173,7 +173,7 @@ var (
 
 	hotPeerSummary = prometheus.NewGaugeVec(
 		prometheus.GaugeOpts{
-			Namespace: "pd",
+			Namespace: "tm",
 			Subsystem: "scheduler",
 			Name:      "hot_peers_summary",
 			Help:      "Hot peers summary for each store",
