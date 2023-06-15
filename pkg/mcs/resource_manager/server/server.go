@@ -359,7 +359,7 @@ func (s *Server) startServer() (err error) {
 	log.Info("init cluster id", zap.Uint64("cluster-id", s.clusterID))
 	// The independent Resource Manager service still reuses TM version info since TM and Resource Manager are just
 	// different service modes provided by the same tm-server binary
-	serverInfo.WithLabelValues(versioninfo.PDReleaseVersion, versioninfo.PDGitHash).Set(float64(time.Now().Unix()))
+	serverInfo.WithLabelValues(versioninfo.TMReleaseVersion, versioninfo.TMGitHash).Set(float64(time.Now().Unix()))
 
 	uniqueName := s.cfg.ListenAddr
 	uniqueID := memberutil.GenerateUniqueID(uniqueName)

@@ -128,10 +128,10 @@ func (h *pprofHandler) PProfZip(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 	versions, err := json.Marshal(&version{
-		Version:   versioninfo.PDReleaseVersion,
-		Branch:    versioninfo.PDGitBranch,
-		BuildTime: versioninfo.PDBuildTS,
-		Hash:      versioninfo.PDGitHash,
+		Version:   versioninfo.TMReleaseVersion,
+		Branch:    versioninfo.TMGitBranch,
+		BuildTime: versioninfo.TMBuildTS,
+		Hash:      versioninfo.TMGitHash,
 	})
 	if err != nil {
 		log.Error("json marshal version failed", zap.Error(err))

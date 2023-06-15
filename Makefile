@@ -38,10 +38,10 @@ ifeq ("$(WITH_RACE)", "1")
 	BUILD_CGO_ENABLED := 1
 endif
 
-LDFLAGS += -X "$(TM-PKG)/pkg/versioninfo.PDReleaseVersion=$(shell git describe --tags --dirty --always)"
-LDFLAGS += -X "$(TM-PKG)/pkg/versioninfo.PDBuildTS=$(shell date -u '+%Y-%m-%d %I:%M:%S')"
-LDFLAGS += -X "$(TM-PKG)/pkg/versioninfo.PDGitHash=$(shell git rev-parse HEAD)"
-LDFLAGS += -X "$(TM-PKG)/pkg/versioninfo.PDGitBranch=$(shell git rev-parse --abbrev-ref HEAD)"
+LDFLAGS += -X "$(TM-PKG)/pkg/versioninfo.TMReleaseVersion=$(shell git describe --tags --dirty --always)"
+LDFLAGS += -X "$(TM-PKG)/pkg/versioninfo.TMBuildTS=$(shell date -u '+%Y-%m-%d %I:%M:%S')"
+LDFLAGS += -X "$(TM-PKG)/pkg/versioninfo.TMGitHash=$(shell git rev-parse HEAD)"
+LDFLAGS += -X "$(TM-PKG)/pkg/versioninfo.TMGitBranch=$(shell git rev-parse --abbrev-ref HEAD)"
 LDFLAGS += -X "$(TM-PKG)/pkg/versioninfo.PDEdition=$(PD_EDITION)"
 
 ifneq ($(DASHBOARD), 0)

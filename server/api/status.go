@@ -48,9 +48,9 @@ func newStatusHandler(svr *server.Server, rd *render.Render) *statusHandler {
 // @Router   /status [get]
 func (h *statusHandler) GetPDStatus(w http.ResponseWriter, r *http.Request) {
 	version := status{
-		BuildTS:        versioninfo.PDBuildTS,
-		GitHash:        versioninfo.PDGitHash,
-		Version:        versioninfo.PDReleaseVersion,
+		BuildTS:        versioninfo.TMBuildTS,
+		GitHash:        versioninfo.TMGitHash,
+		Version:        versioninfo.TMReleaseVersion,
 		StartTimestamp: h.svr.StartTimestamp(),
 	}
 

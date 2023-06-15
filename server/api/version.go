@@ -45,7 +45,7 @@ func newVersionHandler(rd *render.Render) *versionHandler {
 // @Router   /version [get]
 func (h *versionHandler) GetVersion(w http.ResponseWriter, r *http.Request) {
 	version := &version{
-		Version: versioninfo.PDReleaseVersion,
+		Version: versioninfo.TMReleaseVersion,
 	}
 	h.rd.JSON(w, http.StatusOK, version)
 }

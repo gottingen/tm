@@ -1,9 +1,9 @@
 # For `--version`
 $PD_PKG = "github.com/gottingen/tm"
-$GO_LDFLAGS = "-X `"$PD_PKG/server.PDReleaseVersion=$(git describe --tags --dirty --always)`""
-$GO_LDFLAGS += " -X `"$PD_PKG/server.PDBuildTS=$(date -u '+%Y-%m-%d_%I:%M:%S')`""
-$GO_LDFLAGS += " -X `"$PD_PKG/server.PDGitHash=$(git rev-parse HEAD)`""
-$GO_LDFLAGS += " -X `"$PD_PKG/server.PDGitBranch=$(git rev-parse --abbrev-ref HEAD)`""
+$GO_LDFLAGS = "-X `"$PD_PKG/server.TMReleaseVersion=$(git describe --tags --dirty --always)`""
+$GO_LDFLAGS += " -X `"$PD_PKG/server.TMBuildTS=$(date -u '+%Y-%m-%d_%I:%M:%S')`""
+$GO_LDFLAGS += " -X `"$PD_PKG/server.TMGitHash=$(git rev-parse HEAD)`""
+$GO_LDFLAGS += " -X `"$PD_PKG/server.TMGitBranch=$(git rev-parse --abbrev-ref HEAD)`""
 
 # Download Dashboard UI
 powershell.exe -File ./scripts/embed-dashboard-ui.ps1

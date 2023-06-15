@@ -96,7 +96,7 @@ func NewSimConfig(serverLogLevel string) *SimConfig {
 func (sc *SimConfig) Adjust(meta *toml.MetaData) error {
 	configutil.AdjustDuration(&sc.SimTickInterval, defaultSimTickInterval)
 	configutil.AdjustInt64(&sc.StoreIOMBPerSecond, defaultStoreIOMBPerSecond)
-	configutil.AdjustString(&sc.StoreVersion, versioninfo.PDReleaseVersion)
+	configutil.AdjustString(&sc.StoreVersion, versioninfo.TMReleaseVersion)
 	configutil.AdjustDuration(&sc.RaftStore.RegionHeartBeatInterval, defaultRegionHeartbeat)
 	configutil.AdjustDuration(&sc.RaftStore.StoreHeartBeatInterval, defaultStoreHeartbeat)
 	configutil.AdjustByteSize(&sc.RaftStore.Capacity, defaultCapacity)

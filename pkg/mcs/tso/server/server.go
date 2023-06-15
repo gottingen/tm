@@ -434,7 +434,7 @@ func (s *Server) startServer() (err error) {
 	metadataGauge.WithLabelValues(fmt.Sprintf("cluster%d", s.clusterID)).Set(0)
 	// The independent TSO service still reuses TM version info since TM and TSO are just
 	// different service modes provided by the same tm-server binary
-	serverInfo.WithLabelValues(versioninfo.PDReleaseVersion, versioninfo.PDGitHash).Set(float64(time.Now().Unix()))
+	serverInfo.WithLabelValues(versioninfo.TMReleaseVersion, versioninfo.TMGitHash).Set(float64(time.Now().Unix()))
 
 	s.listenURL, err = url.Parse(s.cfg.ListenAddr)
 	if err != nil {

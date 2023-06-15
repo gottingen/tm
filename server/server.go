@@ -410,13 +410,13 @@ func (s *Server) startServer(ctx context.Context) error {
 	log.Info("init cluster id", zap.Uint64("cluster-id", s.clusterID))
 	// It may lose accuracy if use float64 to store uint64. So we store the cluster id in label.
 	metadataGauge.WithLabelValues(fmt.Sprintf("cluster%d", s.clusterID)).Set(0)
-	serverInfo.WithLabelValues(versioninfo.PDReleaseVersion, versioninfo.PDGitHash).Set(float64(time.Now().Unix()))
+	serverInfo.WithLabelValues(versioninfo.TMReleaseVersion, versioninfo.TMGitHash).Set(float64(time.Now().Unix()))
 
 	s.rootPath = path.Join(pdRootPath, strconv.FormatUint(s.clusterID, 10))
 	s.member.InitMemberInfo(s.cfg.AdvertiseClientUrls, s.cfg.AdvertisePeerUrls, s.Name(), s.rootPath)
 	s.member.SetMemberDeployPath(s.member.ID())
-	s.member.SetMemberBinaryVersion(s.member.ID(), versioninfo.PDReleaseVersion)
-	s.member.SetMemberGitHash(s.member.ID(), versioninfo.PDGitHash)
+	s.member.SetMemberBinaryVersion(s.member.ID(), versioninfo.TMReleaseVersion)
+	s.member.SetMemberGitHash(s.member.ID(), versioninfo.TMGitHash)
 	s.idAllocator = id.NewAllocator(&id.AllocatorParams{
 		Client:    s.client,
 		RootPath:  s.rootPath,
