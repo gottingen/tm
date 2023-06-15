@@ -19,7 +19,7 @@ import "github.com/prometheus/client_golang/prometheus"
 var (
 	healthStatusGauge = prometheus.NewGaugeVec(
 		prometheus.GaugeOpts{
-			Namespace: "pd",
+			Namespace: "tm",
 			Subsystem: "cluster",
 			Name:      "health_status",
 			Help:      "Status of the cluster.",
@@ -27,7 +27,7 @@ var (
 
 	regionEventCounter = prometheus.NewCounterVec(
 		prometheus.CounterOpts{
-			Namespace: "pd",
+			Namespace: "tm",
 			Subsystem: "cluster",
 			Name:      "region_event",
 			Help:      "Counter of the region event",
@@ -35,7 +35,7 @@ var (
 
 	bucketEventCounter = prometheus.NewCounterVec(
 		prometheus.CounterOpts{
-			Namespace: "pd",
+			Namespace: "tm",
 			Subsystem: "cluster",
 			Name:      "bucket_event",
 			Help:      "Counter of the bucket event",
@@ -43,7 +43,7 @@ var (
 
 	schedulerStatusGauge = prometheus.NewGaugeVec(
 		prometheus.GaugeOpts{
-			Namespace: "pd",
+			Namespace: "tm",
 			Subsystem: "scheduler",
 			Name:      "status",
 			Help:      "Status of the scheduler.",
@@ -51,7 +51,7 @@ var (
 
 	hotSpotStatusGauge = prometheus.NewGaugeVec(
 		prometheus.GaugeOpts{
-			Namespace: "pd",
+			Namespace: "tm",
 			Subsystem: "hotspot",
 			Name:      "status",
 			Help:      "Status of the hotspot.",
@@ -59,7 +59,7 @@ var (
 
 	hotPendingSum = prometheus.NewGaugeVec(
 		prometheus.GaugeOpts{
-			Namespace: "pd",
+			Namespace: "tm",
 			Subsystem: "scheduler",
 			Name:      "hot_pending_sum",
 			Help:      "Pending influence sum of store in hot region scheduler.",
@@ -67,7 +67,7 @@ var (
 
 	patrolCheckRegionsGauge = prometheus.NewGauge(
 		prometheus.GaugeOpts{
-			Namespace: "pd",
+			Namespace: "tm",
 			Subsystem: "checker",
 			Name:      "patrol_regions_time",
 			Help:      "Time spent of patrol checks region.",
@@ -75,7 +75,7 @@ var (
 
 	updateStoreStatsGauge = prometheus.NewGauge(
 		prometheus.GaugeOpts{
-			Namespace: "pd",
+			Namespace: "tm",
 			Subsystem: "cluster",
 			Name:      "update_stores_stats_time",
 			Help:      "Time spent of updating store stats.",
@@ -83,14 +83,14 @@ var (
 
 	clusterStateCPUGauge = prometheus.NewGauge(
 		prometheus.GaugeOpts{
-			Namespace: "pd",
+			Namespace: "tm",
 			Subsystem: "server",
 			Name:      "cluster_state_cpu_usage",
 			Help:      "CPU usage to determine the cluster state",
 		})
 	clusterStateCurrent = prometheus.NewGaugeVec(
 		prometheus.GaugeOpts{
-			Namespace: "pd",
+			Namespace: "tm",
 			Subsystem: "server",
 			Name:      "cluster_state_current",
 			Help:      "Current state of the cluster",
@@ -98,7 +98,7 @@ var (
 
 	regionListGauge = prometheus.NewGaugeVec(
 		prometheus.GaugeOpts{
-			Namespace: "pd",
+			Namespace: "tm",
 			Subsystem: "checker",
 			Name:      "region_list",
 			Help:      "Number of region in waiting list",
@@ -106,7 +106,7 @@ var (
 
 	storesProgressGauge = prometheus.NewGaugeVec(
 		prometheus.GaugeOpts{
-			Namespace: "pd",
+			Namespace: "tm",
 			Subsystem: "cluster",
 			Name:      "progress",
 			Help:      "The current progress of corresponding action",
@@ -114,7 +114,7 @@ var (
 
 	storesSpeedGauge = prometheus.NewGaugeVec(
 		prometheus.GaugeOpts{
-			Namespace: "pd",
+			Namespace: "tm",
 			Subsystem: "cluster",
 			Name:      "speed",
 			Help:      "The current speed of corresponding action",
@@ -122,7 +122,7 @@ var (
 
 	storesETAGauge = prometheus.NewGaugeVec(
 		prometheus.GaugeOpts{
-			Namespace: "pd",
+			Namespace: "tm",
 			Subsystem: "cluster",
 			Name:      "eta",
 			Help:      "The ETA of corresponding action",
@@ -130,7 +130,7 @@ var (
 
 	storeSyncConfigEvent = prometheus.NewCounterVec(
 		prometheus.CounterOpts{
-			Namespace: "pd",
+			Namespace: "tm",
 			Subsystem: "cluster",
 			Name:      "store_sync",
 			Help:      "The state of store sync config",

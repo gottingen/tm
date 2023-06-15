@@ -25,7 +25,7 @@ import (
 func NewPingCommand() *cobra.Command {
 	m := &cobra.Command{
 		Use:   "ping",
-		Short: "show the total time spend ping the pd",
+		Short: "show the total time spend ping the tm",
 		Run:   showPingCommandFunc,
 	}
 	return m

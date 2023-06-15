@@ -286,7 +286,7 @@ func (suite *replicaCheckerTestSuite) TestLostStore() {
 	rc := NewReplicaChecker(tc, tc.GetOpts(), cache.NewDefaultCache(10))
 
 	// now region peer in store 1,2,3.but we just have store 1,2
-	// This happens only in recovering the PD tc
+	// This happens only in recovering the TM tc
 	// should not panic
 	tc.AddLeaderRegion(1, 1, 2, 3)
 	region := tc.GetRegion(1)

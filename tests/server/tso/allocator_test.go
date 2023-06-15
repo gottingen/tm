@@ -63,7 +63,7 @@ func TestAllocatorLeader(t *testing.T) {
 			tso.FilterDCLocation(tso.GlobalDCLocation),
 			tso.FilterUnavailableLeadership(),
 			tso.FilterUninitialized())
-		// One PD server will have at most three initialized Local TSO Allocators,
+		// One TM server will have at most three initialized Local TSO Allocators,
 		// which also means three allocator leaders
 		re.LessOrEqual(len(allocators), dcLocationNum)
 		if len(allocators) == 0 {

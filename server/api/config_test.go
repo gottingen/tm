@@ -98,7 +98,7 @@ func (suite *configTestSuite) TestConfigAll() {
 		"schedule.tolerant-size-ratio":            2.5,
 		"schedule.enable-tikv-split-region":       "false",
 		"replication.location-labels":             "idc,host",
-		"pd-server.metric-storage":                "http://127.0.0.1:1234",
+		"tm-server.metric-storage":                "http://127.0.0.1:1234",
 		"log.level":                               "warn",
 		"cluster-version":                         "v4.0.0-beta",
 		"replication-mode.replication-mode":       "dr-auto-sync",
@@ -304,7 +304,7 @@ func (suite *configTestSuite) TestConfigPDServer() {
 	postData, err := json.Marshal(ms)
 	suite.NoError(err)
 	suite.NoError(tu.CheckPostJSON(testDialClient, addrPost, postData, tu.StatusOK(re)))
-	addrGet := fmt.Sprintf("%s/config/pd-server", suite.urlPrefix)
+	addrGet := fmt.Sprintf("%s/config/tm-server", suite.urlPrefix)
 	sc := &config.PDServerConfig{}
 	suite.NoError(tu.ReadGetJSON(re, testDialClient, addrGet, sc))
 	suite.Equal(bool(true), sc.UseRegionStorage)

@@ -42,7 +42,7 @@ func newStatusHandler(svr *server.Server, rd *render.Render) *statusHandler {
 	}
 }
 
-// @Summary  Get the build info of PD server.
+// @Summary  Get the build info of TM server.
 // @Produce  json
 // @Success  200  {object}  status
 // @Router   /status [get]

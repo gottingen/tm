@@ -12,7 +12,7 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-package pd
+package tm
 
 import (
 	"sync/atomic"
@@ -43,8 +43,8 @@ const (
 	dynamicOptionCount
 )
 
-// option is the configurable option for the PD client.
-// It provides the ability to change some PD client's options online from the outside.
+// option is the configurable option for the TM client.
+// It provides the ability to change some TM client's options online from the outside.
 type option struct {
 	// Static options.
 	gRPCDialOptions  []grpc.DialOption
@@ -58,7 +58,7 @@ type option struct {
 	enableTSOFollowerProxyCh chan struct{}
 }
 
-// newOption creates a new PD client option with the default values set.
+// newOption creates a new TM client option with the default values set.
 func newOption() *option {
 	co := &option{
 		timeout:                  defaultPDTimeout,
@@ -75,7 +75,7 @@ func newOption() *option {
 // It only accepts the interval value between 0 and 10ms.
 func (o *option) setMaxTSOBatchWaitInterval(interval time.Duration) error {
 	if interval < 0 || interval > 10*time.Millisecond {
-		return errors.New("[pd] invalid max TSO batch wait interval, should be between 0 and 10ms")
+		return errors.New("[tm] invalid max TSO batch wait interval, should be between 0 and 10ms")
 	}
 	old := o.getMaxTSOBatchWaitInterval()
 	if interval != old {

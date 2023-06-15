@@ -61,7 +61,7 @@ func (h *serviceMiddlewareHandler) GetServiceMiddlewareConfig(w http.ResponseWri
 // @Produce  json
 // @Success  200  {string}  string  "The config is updated."
 // @Failure  400  {string}  string  "The input is invalid."
-// @Failure  500  {string}  string  "PD server failed to proceed the request."
+// @Failure  500  {string}  string  "TM server failed to proceed the request."
 // @Router   /service-middleware/config [post]
 func (h *serviceMiddlewareHandler) SetServiceMiddlewareConfig(w http.ResponseWriter, r *http.Request) {
 	cfg := h.svr.GetServiceMiddlewareConfig()

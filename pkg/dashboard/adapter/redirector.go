@@ -29,7 +29,7 @@ const (
 	proxyHeader = "Via"
 )
 
-// Redirector is used to redirect when the dashboard is started in another PD.
+// Redirector is used to redirect when the dashboard is started in another TM.
 type Redirector struct {
 	mu syncutil.RWMutex
 

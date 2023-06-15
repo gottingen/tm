@@ -141,7 +141,7 @@ func (t *TiDBInfo) getLabels() map[string]string {
 	return t.Labels
 }
 
-// GetTiDB get TiDB info which registered in PD by address
+// GetTiDB get TiDB info which registered in TM by address
 func GetTiDB(etcdClient *clientv3.Client, address string) (*TiDBInfo, error) {
 	key := fmt.Sprintf("/topology/tidb/%s/info", address)
 	resp, err := etcdutil.EtcdKVGet(etcdClient, key)
@@ -166,7 +166,7 @@ const (
 	tidbInfoPrefix    = "/topology/tidb/"
 )
 
-// GetTiDBs list TiDB register in PD
+// GetTiDBs list TiDB register in TM
 func GetTiDBs(etcdClient *clientv3.Client) ([]*TiDBInfo, error) {
 	tidbTTLPattern, err := regexp.Compile(tidbTTLPatternStr)
 	if err != nil {

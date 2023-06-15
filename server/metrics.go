@@ -19,21 +19,21 @@ import "github.com/prometheus/client_golang/prometheus"
 var (
 	timeJumpBackCounter = prometheus.NewCounter(
 		prometheus.CounterOpts{
-			Namespace: "pd",
+			Namespace: "tm",
 			Subsystem: "monitor",
 			Name:      "time_jump_back_total",
 			Help:      "Counter of system time jumps backward.",
 		})
 	bucketReportCounter = prometheus.NewCounterVec(
 		prometheus.CounterOpts{
-			Namespace: "pd",
+			Namespace: "tm",
 			Subsystem: "server",
 			Name:      "bucket_report",
 			Help:      "Counter of bucket report.",
 		}, []string{"address", "store", "type", "status"})
 	regionHeartbeatCounter = prometheus.NewCounterVec(
 		prometheus.CounterOpts{
-			Namespace: "pd",
+			Namespace: "tm",
 			Subsystem: "scheduler",
 			Name:      "region_heartbeat",
 			Help:      "Counter of region heartbeat.",
@@ -41,7 +41,7 @@ var (
 
 	regionHeartbeatLatency = prometheus.NewHistogramVec(
 		prometheus.HistogramOpts{
-			Namespace: "pd",
+			Namespace: "tm",
 			Subsystem: "scheduler",
 			Name:      "region_heartbeat_latency_seconds",
 			Help:      "Bucketed histogram of latency (s) of receiving heartbeat.",
@@ -50,7 +50,7 @@ var (
 
 	metadataGauge = prometheus.NewGaugeVec(
 		prometheus.GaugeOpts{
-			Namespace: "pd",
+			Namespace: "tm",
 			Subsystem: "cluster",
 			Name:      "metadata",
 			Help:      "Record critical metadata.",
@@ -58,7 +58,7 @@ var (
 
 	etcdStateGauge = prometheus.NewGaugeVec(
 		prometheus.GaugeOpts{
-			Namespace: "pd",
+			Namespace: "tm",
 			Subsystem: "server",
 			Name:      "etcd_state",
 			Help:      "Etcd raft states.",
@@ -66,7 +66,7 @@ var (
 
 	tsoProxyHandleDuration = prometheus.NewHistogram(
 		prometheus.HistogramOpts{
-			Namespace: "pd",
+			Namespace: "tm",
 			Subsystem: "server",
 			Name:      "handle_tso_proxy_duration_seconds",
 			Help:      "Bucketed histogram of processing time (s) of handled tso proxy requests.",
@@ -75,7 +75,7 @@ var (
 
 	tsoProxyBatchSize = prometheus.NewHistogram(
 		prometheus.HistogramOpts{
-			Namespace: "pd",
+			Namespace: "tm",
 			Subsystem: "server",
 			Name:      "handle_tso_proxy_batch_size",
 			Help:      "Bucketed histogram of the batch size of handled tso proxy requests.",
@@ -84,7 +84,7 @@ var (
 
 	tsoHandleDuration = prometheus.NewHistogram(
 		prometheus.HistogramOpts{
-			Namespace: "pd",
+			Namespace: "tm",
 			Subsystem: "server",
 			Name:      "handle_tso_duration_seconds",
 			Help:      "Bucketed histogram of processing time (s) of handled tso requests.",
@@ -93,7 +93,7 @@ var (
 
 	bucketReportLatency = prometheus.NewHistogramVec(
 		prometheus.HistogramOpts{
-			Namespace: "pd",
+			Namespace: "tm",
 			Subsystem: "server",
 			Name:      "handle_bucket_report_duration_seconds",
 			Help:      "Bucketed histogram of processing time (s) of handled bucket report requests.",
@@ -102,7 +102,7 @@ var (
 
 	bucketReportInterval = prometheus.NewHistogramVec(
 		prometheus.HistogramOpts{
-			Namespace: "pd",
+			Namespace: "tm",
 			Subsystem: "server",
 			Name:      "bucket_report_interval_seconds",
 			Help:      "Bucketed histogram of processing time (s) of handled bucket report requests.",
@@ -111,7 +111,7 @@ var (
 
 	regionHeartbeatHandleDuration = prometheus.NewHistogramVec(
 		prometheus.HistogramOpts{
-			Namespace: "pd",
+			Namespace: "tm",
 			Subsystem: "scheduler",
 			Name:      "handle_region_heartbeat_duration_seconds",
 			Help:      "Bucketed histogram of processing time (s) of handled region heartbeat requests.",
@@ -121,7 +121,7 @@ var (
 	// TODO: pre-allocate gauge metrics
 	storeHeartbeatHandleDuration = prometheus.NewHistogramVec(
 		prometheus.HistogramOpts{
-			Namespace: "pd",
+			Namespace: "tm",
 			Subsystem: "scheduler",
 			Name:      "handle_store_heartbeat_duration_seconds",
 			Help:      "Bucketed histogram of processing time (s) of handled store heartbeat requests.",
@@ -130,23 +130,23 @@ var (
 
 	serverInfo = prometheus.NewGaugeVec(
 		prometheus.GaugeOpts{
-			Namespace: "pd",
+			Namespace: "tm",
 			Subsystem: "server",
 			Name:      "info",
-			Help:      "Indicate the pd server info, and the value is the start timestamp (s).",
+			Help:      "Indicate the tm server info, and the value is the start timestamp (s).",
 		}, []string{"version", "hash"})
 
 	serviceAuditHistogram = prometheus.NewHistogramVec(
 		prometheus.HistogramOpts{
-			Namespace: "pd",
+			Namespace: "tm",
 			Subsystem: "service",
 			Name:      "audit_handling_seconds",
-			Help:      "PD server service handling audit",
+			Help:      "TM server service handling audit",
 			Buckets:   prometheus.DefBuckets,
 		}, []string{"service", "method", "component", "ip"})
 	serverMaxProcs = prometheus.NewGauge(
 		prometheus.GaugeOpts{
-			Namespace: "pd",
+			Namespace: "tm",
 			Subsystem: "service",
 			Name:      "maxprocs",
 			Help:      "The value of GOMAXPROCS.",

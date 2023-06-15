@@ -19,7 +19,7 @@ import "github.com/prometheus/client_golang/prometheus"
 var (
 	operatorStepDuration = prometheus.NewHistogramVec(
 		prometheus.HistogramOpts{
-			Namespace: "pd",
+			Namespace: "tm",
 			Subsystem: "schedule",
 			Name:      "finish_operator_steps_duration_seconds",
 			Help:      "Bucketed histogram of processing time (s) of finished operator step.",
@@ -29,7 +29,7 @@ var (
 	// OperatorLimitCounter exposes the counter when meeting limit.
 	OperatorLimitCounter = prometheus.NewCounterVec(
 		prometheus.CounterOpts{
-			Namespace: "pd",
+			Namespace: "tm",
 			Subsystem: "schedule",
 			Name:      "operator_limit",
 			Help:      "Counter of operator meeting limit",
@@ -38,7 +38,7 @@ var (
 	// OperatorExceededStoreLimitCounter exposes the counter when operator meet exceeded store limit.
 	OperatorExceededStoreLimitCounter = prometheus.NewCounterVec(
 		prometheus.CounterOpts{
-			Namespace: "pd",
+			Namespace: "tm",
 			Subsystem: "schedule",
 			Name:      "operator_exceeded_store_limit",
 			Help:      "Counter of operator meeting store limit",

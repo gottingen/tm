@@ -23,7 +23,7 @@ import (
 	"github.com/spf13/cobra"
 )
 
-const unsafePrefix = "pd/api/v1/admin/unsafe"
+const unsafePrefix = "tm/api/v1/admin/unsafe"
 
 // NewUnsafeCommand returns the unsafe subcommand of rootCmd.
 func NewUnsafeCommand() *cobra.Command {
@@ -43,9 +43,9 @@ func NewRemoveFailedStoresCommand() *cobra.Command {
 		Run:   removeFailedStoresCommandFunc,
 	}
 	cmd.PersistentFlags().Float64("timeout", 300, "timeout in seconds")
-	cmd.PersistentFlags().Bool("auto-detect", false, `detect failed stores automatically without needing to pass failed store ids, and all stores not in PD stores list are regarded as failed; 
-Note: DO NOT RECOMMEND to use this flag for general use, it's used only for case that PD doesn't have the store information of failed stores after pd-recover;
-Note: Do it with caution to make sure all live stores's heartbeats has been reported PD already, otherwise it may regarded some stores as failed mistakenly.`)
+	cmd.PersistentFlags().Bool("auto-detect", false, `detect failed stores automatically without needing to pass failed store ids, and all stores not in TM stores list are regarded as failed; 
+Note: DO NOT RECOMMEND to use this flag for general use, it's used only for case that TM doesn't have the store information of failed stores after tm-recover;
+Note: Do it with caution to make sure all live stores's heartbeats has been reported TM already, otherwise it may regarded some stores as failed mistakenly.`)
 	cmd.AddCommand(NewRemoveFailedStoresShowCommand())
 	return cmd
 }

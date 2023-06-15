@@ -108,7 +108,7 @@ func NewGlobalTSOAllocator(
 }
 
 // close is used to shutdown the primary election loop.
-// tso service call this function to shutdown the loop here, but pd manages its own loop.
+// tso service call this function to shutdown the loop here, but tm manages its own loop.
 func (gta *GlobalTSOAllocator) close() {
 	gta.cancel()
 	gta.wg.Wait()
@@ -181,7 +181,7 @@ func (gta *GlobalTSOAllocator) SetTSO(tso uint64, ignoreSmaller, skipUpperBoundC
 func (gta *GlobalTSOAllocator) GenerateTSO(count uint32) (pdpb.Timestamp, error) {
 	if !gta.member.GetLeadership().Check() {
 		tsoCounter.WithLabelValues("not_leader", gta.timestampOracle.dcLocation).Inc()
-		return pdpb.Timestamp{}, errs.ErrGenerateTimestamp.FastGenByArgs(fmt.Sprintf("requested pd %s of cluster", errs.NotLeaderErr))
+		return pdpb.Timestamp{}, errs.ErrGenerateTimestamp.FastGenByArgs(fmt.Sprintf("requested tm %s of cluster", errs.NotLeaderErr))
 	}
 	// To check if we have any dc-location configured in the cluster
 	dcLocationMap := gta.am.GetClusterDCLocations()
@@ -259,7 +259,7 @@ func (gta *GlobalTSOAllocator) GenerateTSO(count uint32) (pdpb.Timestamp, error)
 		// 5. Check leadership again before we returning the response.
 		if !gta.member.GetLeadership().Check() {
 			tsoCounter.WithLabelValues("not_leader_anymore", gta.timestampOracle.dcLocation).Inc()
-			return pdpb.Timestamp{}, errs.ErrGenerateTimestamp.FastGenByArgs("not the pd leader anymore")
+			return pdpb.Timestamp{}, errs.ErrGenerateTimestamp.FastGenByArgs("not the tm leader anymore")
 		}
 		// 6. Calibrate the logical part to make the TSO unique globally by giving it a unique suffix in the whole cluster
 		globalTSOResp.Logical = gta.timestampOracle.calibrateLogical(globalTSOResp.GetLogical(), suffixBits)

@@ -185,7 +185,7 @@ func TestFullSyncWithAddMember(t *testing.T) {
 	re.NoError(err)
 	re.Equal("pd1", cluster.WaitLeader())
 
-	// join new PD
+	// join new TM
 	pd2, err := cluster.Join(ctx)
 	re.NoError(err)
 	re.NoError(pd2.Run())
@@ -225,7 +225,7 @@ func TestPrepareChecker(t *testing.T) {
 	time.Sleep(3 * time.Second)
 	re.True(leaderServer.GetRaftCluster().IsPrepared())
 
-	// join new PD
+	// join new TM
 	pd2, err := cluster.Join(ctx)
 	re.NoError(err)
 	err = pd2.Run()

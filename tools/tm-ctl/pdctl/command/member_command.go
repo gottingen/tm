@@ -24,15 +24,15 @@ import (
 )
 
 var (
-	membersPrefix      = "pd/api/v1/members"
-	leaderMemberPrefix = "pd/api/v1/leader"
+	membersPrefix      = "tm/api/v1/members"
+	leaderMemberPrefix = "tm/api/v1/leader"
 )
 
 // NewMemberCommand return a member subcommand of rootCmd
 func NewMemberCommand() *cobra.Command {
 	m := &cobra.Command{
 		Use:   "member [leader|delete|leader_priority]",
-		Short: "show the pd member status",
+		Short: "show the tm member status",
 		Run:   showMemberCommandFunc,
 	}
 	m.AddCommand(NewLeaderMemberCommand())
@@ -78,12 +78,12 @@ func NewLeaderMemberCommand() *cobra.Command {
 	})
 	d.AddCommand(&cobra.Command{
 		Use:   "resign",
-		Short: "resign current leader pd's leadership",
+		Short: "resign current leader tm's leadership",
 		Run:   resignLeaderCommandFunc,
 	})
 	d.AddCommand(&cobra.Command{
 		Use:   "transfer <member_name>",
-		Short: "transfer leadership to another pd",
+		Short: "transfer leadership to another tm",
 		Run:   transferPDLeaderCommandFunc,
 	})
 	return d
@@ -92,7 +92,7 @@ func NewLeaderMemberCommand() *cobra.Command {
 func showMemberCommandFunc(cmd *cobra.Command, args []string) {
 	r, err := doRequest(cmd, membersPrefix, http.MethodGet, http.Header{})
 	if err != nil {
-		cmd.Printf("Failed to get pd members: %s\n", err)
+		cmd.Printf("Failed to get tm members: %s\n", err)
 		return
 	}
 	cmd.Println(r)
@@ -129,7 +129,7 @@ func deleteMemberByIDCommandFunc(cmd *cobra.Command, args []string) {
 func getLeaderMemberCommandFunc(cmd *cobra.Command, args []string) {
 	r, err := doRequest(cmd, leaderMemberPrefix, http.MethodGet, http.Header{})
 	if err != nil {
-		cmd.Printf("Failed to get the leader of pd members: %s\n", err)
+		cmd.Printf("Failed to get the leader of tm members: %s\n", err)
 		return
 	}
 	cmd.Println(r)

@@ -803,7 +803,7 @@ func (suite *operatorControllerTestSuite) TestInvalidStoreId() {
 	tc := mockcluster.NewCluster(suite.ctx, opt)
 	stream := hbstream.NewTestHeartbeatStreams(suite.ctx, tc.ID, tc, false /* no need to run */)
 	oc := NewOperatorController(suite.ctx, tc, stream)
-	// If PD and store 3 are gone, PD will not have info of store 3 after recreating it.
+	// If TM and store 3 are gone, TM will not have info of store 3 after recreating it.
 	tc.AddRegionStore(1, 1)
 	tc.AddRegionStore(2, 1)
 	tc.AddRegionStore(4, 1)
@@ -813,6 +813,6 @@ func (suite *operatorControllerTestSuite) TestInvalidStoreId() {
 	}
 	op := operator.NewTestOperator(1, &metapb.RegionEpoch{}, operator.OpRegion, steps...)
 	suite.True(oc.addOperatorLocked(op))
-	// Although store 3 does not exist in PD, PD can also send op to TiKV.
+	// Although store 3 does not exist in TM, TM can also send op to TiKV.
 	suite.Equal(pdpb.OperatorStatus_RUNNING, oc.GetOperatorStatus(1).Status)
 }

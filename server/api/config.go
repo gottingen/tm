@@ -63,7 +63,7 @@ func (h *confHandler) GetConfig(w http.ResponseWriter, r *http.Request) {
 // @Summary  Get default config.
 // @Produce  json
 // @Success  200  {object}  config.Config
-// @Failure  500  {string}  string  "PD server failed to proceed the request."
+// @Failure  500  {string}  string  "TM server failed to proceed the request."
 // @Router   /config/default [get]
 func (h *confHandler) GetDefaultConfig(w http.ResponseWriter, r *http.Request) {
 	config := config.NewConfig()
@@ -84,7 +84,7 @@ func (h *confHandler) GetDefaultConfig(w http.ResponseWriter, r *http.Request) {
 // @Produce  json
 // @Success  200  {string}  string  "The config is updated."
 // @Failure  400  {string}  string  "The input is invalid."
-// @Failure  500  {string}  string  "PD server failed to proceed the request."
+// @Failure  500  {string}  string  "TM server failed to proceed the request."
 // @Router   /config [post]
 func (h *confHandler) SetConfig(w http.ResponseWriter, r *http.Request) {
 	cfg := h.svr.GetConfig()
@@ -154,7 +154,7 @@ func (h *confHandler) updateConfig(cfg *config.Config, key string, value interfa
 			return errors.Errorf("cannot update config prefix %s", kp[0])
 		}
 		return h.updateReplicationModeConfig(cfg, kp[1:], value)
-	case "pd-server":
+	case "tm-server":
 		return h.updatePDServerConfig(cfg, kp[len(kp)-1], value)
 	case "log":
 		return h.updateLogLevel(kp, value)
@@ -290,8 +290,8 @@ func (h *confHandler) GetScheduleConfig(w http.ResponseWriter, r *http.Request) 
 // @Produce  json
 // @Success  200  {string}  string  "The config is updated."
 // @Failure  400  {string}  string  "The input is invalid."
-// @Failure  500  {string}  string  "PD server failed to proceed the request."
-// @Failure  503  {string}  string  "PD server has no leader."
+// @Failure  500  {string}  string  "TM server failed to proceed the request."
+// @Failure  503  {string}  string  "TM server has no leader."
 // @Router   /config/schedule [post]
 func (h *confHandler) SetScheduleConfig(w http.ResponseWriter, r *http.Request) {
 	data, err := io.ReadAll(r.Body)
@@ -351,8 +351,8 @@ func (h *confHandler) GetReplicationConfig(w http.ResponseWriter, r *http.Reques
 // @Produce  json
 // @Success  200  {string}  string  "The config is updated."
 // @Failure  400  {string}  string  "The input is invalid."
-// @Failure  500  {string}  string  "PD server failed to proceed the request."
-// @Failure  503  {string}  string  "PD server has no leader."
+// @Failure  500  {string}  string  "TM server failed to proceed the request."
+// @Failure  503  {string}  string  "TM server has no leader."
 // @Router   /config/replicate [post]
 func (h *confHandler) SetReplicationConfig(w http.ResponseWriter, r *http.Request) {
 	config := h.svr.GetReplicationConfig()
@@ -382,8 +382,8 @@ func (h *confHandler) GetLabelPropertyConfig(w http.ResponseWriter, r *http.Requ
 // @Param    body  body  object  string  "json params"
 // @Produce  json
 // @Success  200  {string}  string  "The config is updated."
-// @Failure  500  {string}  string  "PD server failed to proceed the request."
-// @Failure  503  {string}  string  "PD server has no leader."
+// @Failure  500  {string}  string  "TM server failed to proceed the request."
+// @Failure  503  {string}  string  "TM server has no leader."
 // @Router   /config/label-property [post]
 func (h *confHandler) SetLabelPropertyConfig(w http.ResponseWriter, r *http.Request) {
 	input := make(map[string]string)
@@ -422,8 +422,8 @@ func (h *confHandler) GetClusterVersion(w http.ResponseWriter, r *http.Request) 
 // @Param    body  body  object  string  "json params"
 // @Produce  json
 // @Success  200  {string}  string  "The cluster version is updated."
-// @Failure  500  {string}  string  "PD server failed to proceed the request."
-// @Failure  503  {string}  string  "PD server has no leader."
+// @Failure  500  {string}  string  "TM server failed to proceed the request."
+// @Failure  503  {string}  string  "TM server has no leader."
 // @Router   /config/cluster-version [post]
 func (h *confHandler) SetClusterVersion(w http.ResponseWriter, r *http.Request) {
 	input := make(map[string]string)
@@ -459,7 +459,7 @@ func (h *confHandler) GetReplicationModeConfig(w http.ResponseWriter, r *http.Re
 // @Param    body  body  object  string  "json params"
 // @Produce  json
 // @Success  200  {string}  string  "The replication mode config is updated."
-// @Failure  500  {string}  string  "PD server failed to proceed the request."
+// @Failure  500  {string}  string  "TM server failed to proceed the request."
 // @Router   /config/replication-mode [post]
 func (h *confHandler) SetReplicationModeConfig(w http.ResponseWriter, r *http.Request) {
 	config := h.svr.GetReplicationModeConfig()
@@ -475,10 +475,10 @@ func (h *confHandler) SetReplicationModeConfig(w http.ResponseWriter, r *http.Re
 }
 
 // @Tags     config
-// @Summary  Get PD server config.
+// @Summary  Get TM server config.
 // @Produce  json
 // @Success  200  {object}  config.PDServerConfig
-// @Router   /config/pd-server [get]
+// @Router   /config/tm-server [get]
 func (h *confHandler) GetPDServerConfig(w http.ResponseWriter, r *http.Request) {
 	h.rd.JSON(w, http.StatusOK, h.svr.GetPDServerConfig())
 }

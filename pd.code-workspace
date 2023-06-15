@@ -1,15 +1,15 @@
 {
 	"folders": [
 		{
-			"name": "pd-server",
+			"name": "tm-server",
 			"path": "."
 		},
 		{
-			"name": "pd-client",
+			"name": "tm-client",
 			"path": "client"
 		},
 		{
-			"name": "pd-client-tests",
+			"name": "tm-client-tests",
 			"path": "tests/integrations/client"
 		},
 		{
@@ -21,8 +21,8 @@
 			"path": "tests/integrations/tso"
 		},
 		{
-			"name": "pd-tso-bench",
-			"path": "tools/pd-tso-bench"
+			"name": "tm-tso-bench",
+			"path": "tools/tm-tso-bench"
 		}
 	],
 	"settings": {}

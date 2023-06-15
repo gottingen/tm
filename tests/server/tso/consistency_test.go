@@ -263,7 +263,7 @@ func (suite *tsoConsistencyTestSuite) TestLocalTSOAfterMemberChanged() {
 	// Wait for all nodes becoming healthy.
 	time.Sleep(time.Second * 5)
 
-	// Mock the situation that the system time of PD nodes in dc-4 is slower than others.
+	// Mock the situation that the system time of TM nodes in dc-4 is slower than others.
 	suite.NoError(failpoint.Enable("github.com/gottingen/tm/pkg/tso/systemTimeSlow", `return(true)`))
 
 	// Join a new dc-location
@@ -321,7 +321,7 @@ func (suite *tsoConsistencyTestSuite) testTSO(cluster *tests.TestCluster, dcLoca
 					suite.Equal(1, tsoutil.CompareTimestamp(ts, lastTS))
 					if previousTS != nil {
 						// Because we have a Global TSO synchronization, even though the system time
-						// of the PD nodes in dc-4 is slower, its TSO will still be big enough.
+						// of the TM nodes in dc-4 is slower, its TSO will still be big enough.
 						suite.Equal(1, tsoutil.CompareTimestamp(ts, previousTS))
 					}
 					lastList[dcLocation] = ts

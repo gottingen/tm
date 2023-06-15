@@ -31,7 +31,7 @@ type ProtoFactory interface {
 type TSOProtoFactory struct {
 }
 
-// PDProtoFactory is the abstract factory for creating tso related data structures defined in the PD grpc service
+// PDProtoFactory is the abstract factory for creating tso related data structures defined in the TM grpc service
 type PDProtoFactory struct {
 }
 

@@ -34,7 +34,7 @@ var (
 	dialClient                = &http.Client{
 		Transport: apiutil.NewComponentSignatureRoundTripper(http.DefaultTransport, pdControllerComponentName),
 	}
-	pingPrefix = "pd/api/v1/ping"
+	pingPrefix = "tm/api/v1/ping"
 )
 
 // InitHTTPSClient creates https client with ca file
@@ -157,9 +157,9 @@ func requestURL(cmd *cobra.Command, endpoint string, f DoFunc) error {
 }
 
 func getEndpoints(cmd *cobra.Command) []string {
-	addrs, err := cmd.Flags().GetString("pd")
+	addrs, err := cmd.Flags().GetString("tm")
 	if err != nil {
-		cmd.Println("get pd address failed, should set flag with '-u'")
+		cmd.Println("get tm address failed, should set flag with '-u'")
 		os.Exit(1)
 	}
 	return strings.Split(addrs, ",")
@@ -236,8 +236,8 @@ func checkURL(endpoint string) (string, error) {
 	}
 	// tolerate some schemes that will be used by users, the TiKV SDK
 	// use 'tikv' as the scheme, it is really confused if we do not
-	// support it by pd-ctl
-	if u.Scheme == "" || u.Scheme == "pd" || u.Scheme == "tikv" {
+	// support it by tm-ctl
+	if u.Scheme == "" || u.Scheme == "tm" || u.Scheme == "tikv" {
 		u.Scheme = "http"
 	}
 

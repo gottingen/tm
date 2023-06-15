@@ -44,7 +44,7 @@ func newCheckerHandler(svr *server.Server, r *render.Render) *checkerHandler {
 // @Produce  json
 // @Success  200  {string}  string  "Pause or resume the scheduler successfully."
 // @Failure  400  {string}  string  "Bad format request."
-// @Failure  500  {string}  string  "PD server failed to proceed the request."
+// @Failure  500  {string}  string  "TM server failed to proceed the request."
 // @Router   /checker/{name} [post]
 func (c *checkerHandler) PauseOrResumeChecker(w http.ResponseWriter, r *http.Request) {
 	var input map[string]int
@@ -79,7 +79,7 @@ func (c *checkerHandler) PauseOrResumeChecker(w http.ResponseWriter, r *http.Req
 // @Param    name  path  string  true  "The name of the scheduler."
 // @Produce  json
 // @Success  200  {string}  string  "Pause or resume the scheduler successfully."
-// @Failure  500  {string}  string  "PD server failed to proceed the request."
+// @Failure  500  {string}  string  "TM server failed to proceed the request."
 // @Router   /checker/{name} [get]
 func (c *checkerHandler) GetCheckerStatus(w http.ResponseWriter, r *http.Request) {
 	name := mux.Vars(r)["name"]

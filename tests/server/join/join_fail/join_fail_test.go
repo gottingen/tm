@@ -35,7 +35,7 @@ func TestFailedPDJoinInStep1(t *testing.T) {
 	re.NoError(err)
 	cluster.WaitLeader()
 
-	// Join the second PD.
+	// Join the second TM.
 	re.NoError(failpoint.Enable("github.com/gottingen/tm/server/join/add-member-failed", `return`))
 	_, err = cluster.Join(ctx)
 	re.Error(err)

@@ -165,7 +165,7 @@ func (m *Manager) needResetAddress(addr string) bool {
 }
 
 func (m *Manager) setNewAddress() {
-	// select the sever with minimum member ID(avoid the PD leader if possible) to run dashboard.
+	// select the sever with minimum member ID(avoid the TM leader if possible) to run dashboard.
 	minMemberIdx := 0
 	if len(m.members) > 1 {
 		leaderID := m.srv.GetMemberInfo().GetMemberId()

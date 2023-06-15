@@ -32,9 +32,9 @@ import (
 )
 
 const (
-	pdRootPath      = "/pd"
-	pdClusterIDPath = "/pd/cluster_id"
-	pdConfigAPIPath = "/pd/api/v1/config"
+	pdRootPath      = "/tm"
+	pdClusterIDPath = "/tm/cluster_id"
+	pdConfigAPIPath = "/tm/api/v1/config"
 )
 
 // BackupInfo is the backup infos.

@@ -415,7 +415,7 @@ func main() {
 		log.Fatal("initialize logger error", zap.Error(err))
 	}
 
-	// let PD have enough time to start
+	// let TM have enough time to start
 	time.Sleep(5 * time.Second)
 	ctx, cancel := context.WithCancel(context.Background())
 	sc := make(chan os.Signal, 1)

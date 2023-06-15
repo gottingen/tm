@@ -31,7 +31,7 @@ import (
 	"go.uber.org/zap"
 )
 
-// CheckPDVersion checks if PD needs to be upgraded.
+// CheckPDVersion checks if TM needs to be upgraded.
 func CheckPDVersion(opt *config.PersistOptions) {
 	pdVersion := versioninfo.MinSupportedVersion(versioninfo.Base)
 	if versioninfo.PDReleaseVersion != "None" {
@@ -41,8 +41,8 @@ func CheckPDVersion(opt *config.PersistOptions) {
 	log.Info("load cluster version", zap.Stringer("cluster-version", clusterVersion))
 	if pdVersion.LessThan(clusterVersion) {
 		log.Warn(
-			"PD version less than cluster version, please upgrade PD",
-			zap.String("PD-version", pdVersion.String()),
+			"TM version less than cluster version, please upgrade TM",
+			zap.String("TM-version", pdVersion.String()),
 			zap.String("cluster-version", clusterVersion.String()))
 	}
 }
@@ -106,15 +106,15 @@ func combineBuilderServerHTTPService(ctx context.Context, svr *Server, serviceBu
 		}
 	}
 
-	// Combine the pd service to the router. the extension service will be added to the userHandlers.
+	// Combine the tm service to the router. the extension service will be added to the userHandlers.
 	for pathPrefix, handler := range registerMap {
 		if strings.Contains(pathPrefix, apiutil.CorePath) || strings.Contains(pathPrefix, apiutil.ExtensionsPath) {
 			router.PathPrefix(pathPrefix).Handler(handler)
 			if pathPrefix == apiutil.CorePath {
 				// Deprecated
-				router.Path("/pd/health").Handler(handler)
+				router.Path("/tm/health").Handler(handler)
 				// Deprecated
-				router.Path("/pd/ping").Handler(handler)
+				router.Path("/tm/ping").Handler(handler)
 			}
 		} else {
 			userHandlers[pathPrefix] = handler

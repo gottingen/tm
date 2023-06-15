@@ -75,7 +75,7 @@ func (rs RegionsInfo) GetValues(tag regionpkg.StatTag) []uint64 {
 
 var emptyRegionsInfo RegionsInfo
 
-// NewCorePeriodicGetter returns the regionpkg.RegionsInfoGenerator interface implemented by PD.
+// NewCorePeriodicGetter returns the regionpkg.RegionsInfoGenerator interface implemented by TM.
 // It gets RegionsInfo directly from memory.
 func NewCorePeriodicGetter(srv *server.Server) regionpkg.RegionsInfoGenerator {
 	return func() (regionpkg.RegionsInfo, error) {

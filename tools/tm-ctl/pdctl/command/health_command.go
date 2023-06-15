@@ -21,14 +21,14 @@ import (
 )
 
 var (
-	healthPrefix = "pd/api/v1/health"
+	healthPrefix = "tm/api/v1/health"
 )
 
 // NewHealthCommand return a health subcommand of rootCmd
 func NewHealthCommand() *cobra.Command {
 	m := &cobra.Command{
 		Use:   "health",
-		Short: "show all node's health information of the pd cluster",
+		Short: "show all node's health information of the tm cluster",
 		Run:   showHealthCommandFunc,
 	}
 	return m

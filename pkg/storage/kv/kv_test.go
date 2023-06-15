@@ -39,7 +39,7 @@ func TestEtcd(t *testing.T) {
 		Endpoints: []string{ep},
 	})
 	re.NoError(err)
-	rootPath := path.Join("/pd", strconv.FormatUint(100, 10))
+	rootPath := path.Join("/tm", strconv.FormatUint(100, 10))
 
 	kv := NewEtcdKVBase(client, rootPath)
 	testReadWrite(re, kv)

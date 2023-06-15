@@ -52,11 +52,11 @@ type EmbeddedEtcdMember struct {
 	etcd     *embed.Etcd
 	client   *clientv3.Client
 	id       uint64       // etcd server id.
-	member   *pdpb.Member // current PD's info.
+	member   *pdpb.Member // current TM's info.
 	rootPath string
 	// memberValue is the serialized string of `member`. It will be save in
-	// etcd leader key when the PD node is successfully elected as the PD leader
-	// of the cluster. Every write will use it to check PD leadership.
+	// etcd leader key when the TM node is successfully elected as the TM leader
+	// of the cluster. Every write will use it to check TM leadership.
 	memberValue string
 	// lastLeaderUpdatedTime is the last time when the leader is updated.
 	lastLeaderUpdatedTime atomic.Value
@@ -106,7 +106,7 @@ func (m *EmbeddedEtcdMember) Client() *clientv3.Client {
 	return m.client
 }
 
-// IsLeader returns whether the server is PD leader or not by checking its leadership's lease and leader info.
+// IsLeader returns whether the server is TM leader or not by checking its leadership's lease and leader info.
 func (m *EmbeddedEtcdMember) IsLeader() bool {
 	return m.leadership.Check() && m.GetLeader().GetMemberId() == m.member.GetMemberId()
 }
@@ -121,12 +121,12 @@ func (m *EmbeddedEtcdMember) GetLeaderListenUrls() []string {
 	return m.GetLeader().GetClientUrls()
 }
 
-// GetLeaderID returns current PD leader's member ID.
+// GetLeaderID returns current TM leader's member ID.
 func (m *EmbeddedEtcdMember) GetLeaderID() uint64 {
 	return m.GetLeader().GetMemberId()
 }
 
-// GetLeader returns current PD leader of PD cluster.
+// GetLeader returns current TM leader of TM cluster.
 func (m *EmbeddedEtcdMember) GetLeader() *pdpb.Member {
 	leader := m.leader.Load()
 	if leader == nil {
@@ -139,29 +139,29 @@ func (m *EmbeddedEtcdMember) GetLeader() *pdpb.Member {
 	return member
 }
 
-// setLeader sets the member's PD leader.
+// setLeader sets the member's TM leader.
 func (m *EmbeddedEtcdMember) setLeader(member *pdpb.Member) {
 	m.leader.Store(member)
 	m.lastLeaderUpdatedTime.Store(time.Now())
 }
 
-// unsetLeader unsets the member's PD leader.
+// unsetLeader unsets the member's TM leader.
 func (m *EmbeddedEtcdMember) unsetLeader() {
 	m.leader.Store(&pdpb.Member{})
 	m.lastLeaderUpdatedTime.Store(time.Now())
 }
 
-// EnableLeader sets the member itself to a PD leader.
+// EnableLeader sets the member itself to a TM leader.
 func (m *EmbeddedEtcdMember) EnableLeader() {
 	m.setLeader(m.member)
 }
 
-// GetLeaderPath returns the path of the PD leader.
+// GetLeaderPath returns the path of the TM leader.
 func (m *EmbeddedEtcdMember) GetLeaderPath() string {
 	return path.Join(m.rootPath, "leader")
 }
 
-// GetLeadership returns the leadership of the PD member.
+// GetLeadership returns the leadership of the TM member.
 func (m *EmbeddedEtcdMember) GetLeadership() *election.Leadership {
 	return m.leadership
 }
@@ -175,13 +175,13 @@ func (m *EmbeddedEtcdMember) GetLastLeaderUpdatedTime() time.Time {
 	return lastLeaderUpdatedTime.(time.Time)
 }
 
-// CampaignLeader is used to campaign a PD member's leadership
-// and make it become a PD leader.
+// CampaignLeader is used to campaign a TM member's leadership
+// and make it become a TM leader.
 func (m *EmbeddedEtcdMember) CampaignLeader(leaseTimeout int64) error {
 	return m.leadership.Campaign(leaseTimeout, m.MemberValue())
 }
 
-// KeepLeader is used to keep the PD leader's leadership.
+// KeepLeader is used to keep the TM leader's leadership.
 func (m *EmbeddedEtcdMember) KeepLeader(ctx context.Context) {
 	m.leadership.Keep(ctx)
 }
@@ -212,14 +212,14 @@ func (m *EmbeddedEtcdMember) getPersistentLeader() (*pdpb.Member, int64, error) 
 // otherwise returns a bool which indicates if it is needed to check later.
 func (m *EmbeddedEtcdMember) CheckLeader() (ElectionLeader, bool) {
 	if err := m.PreCheckLeader(); err != nil {
-		log.Error("failed to pass pre-check, check pd leader later", errs.ZapError(err))
+		log.Error("failed to pass pre-check, check tm leader later", errs.ZapError(err))
 		time.Sleep(200 * time.Millisecond)
 		return nil, true
 	}
 
 	leader, revision, err := m.getPersistentLeader()
 	if err != nil {
-		log.Error("getting pd leader meets error", errs.ZapError(err))
+		log.Error("getting tm leader meets error", errs.ZapError(err))
 		time.Sleep(200 * time.Millisecond)
 		return nil, true
 	}
@@ -229,12 +229,12 @@ func (m *EmbeddedEtcdMember) CheckLeader() (ElectionLeader, bool) {
 	}
 
 	if m.IsSameLeader(leader) {
-		// oh, we are already a PD leader, which indicates we may meet something wrong
+		// oh, we are already a TM leader, which indicates we may meet something wrong
 		// in previous CampaignLeader. We should delete the leadership and campaign again.
-		log.Warn("the pd leader has not changed, delete and campaign again", zap.Stringer("old-pd-leader", leader))
+		log.Warn("the tm leader has not changed, delete and campaign again", zap.Stringer("old-tm-leader", leader))
 		// Delete the leader itself and let others start a new election again.
 		if err = m.leadership.DeleteLeaderKey(); err != nil {
-			log.Error("deleting pd leader key meets error", errs.ZapError(err))
+			log.Error("deleting tm leader key meets error", errs.ZapError(err))
 			time.Sleep(200 * time.Millisecond)
 			return nil, true
 		}
@@ -256,7 +256,7 @@ func (m *EmbeddedEtcdMember) WatchLeader(ctx context.Context, leader *pdpb.Membe
 	m.unsetLeader()
 }
 
-// ResetLeader is used to reset the PD member's current leadership.
+// ResetLeader is used to reset the TM member's current leadership.
 // Basically it will reset the leader lease and unset leader info.
 func (m *EmbeddedEtcdMember) ResetLeader() {
 	m.leadership.Reset()
@@ -324,7 +324,7 @@ func (m *EmbeddedEtcdMember) InitMemberInfo(advertiseClientUrls, advertisePeerUr
 	data, err := leader.Marshal()
 	if err != nil {
 		// can't fail, so panic here.
-		log.Fatal("marshal pd leader meet error", zap.Stringer("pd-leader", leader), errs.ZapError(errs.ErrMarshalLeader, err))
+		log.Fatal("marshal tm leader meet error", zap.Stringer("tm-leader", leader), errs.ZapError(errs.ErrMarshalLeader, err))
 	}
 	m.member = leader
 	m.memberValue = string(data)
@@ -333,10 +333,10 @@ func (m *EmbeddedEtcdMember) InitMemberInfo(advertiseClientUrls, advertisePeerUr
 	log.Info("member joining election", zap.Stringer("member-info", m.member), zap.String("root-path", m.rootPath))
 }
 
-// ResignEtcdLeader resigns current PD's etcd leadership. If nextLeader is empty, all
-// other pd-servers can campaign.
+// ResignEtcdLeader resigns current TM's etcd leadership. If nextLeader is empty, all
+// other tm-servers can campaign.
 func (m *EmbeddedEtcdMember) ResignEtcdLeader(ctx context.Context, from string, nextEtcdLeader string) error {
-	log.Info("try to resign etcd leader to next pd-server", zap.String("from", from), zap.String("to", nextEtcdLeader))
+	log.Info("try to resign etcd leader to next tm-server", zap.String("from", from), zap.String("to", nextEtcdLeader))
 	// Determine next etcd leader candidates.
 	var etcdLeaderIDs []uint64
 	res, err := etcdutil.ListEtcdMembers(m.client)
@@ -355,7 +355,7 @@ func (m *EmbeddedEtcdMember) ResignEtcdLeader(ctx context.Context, from string, 
 		}
 	}
 	if len(etcdLeaderIDs) == 0 {
-		return errors.New("no valid pd to transfer etcd leader")
+		return errors.New("no valid tm to transfer etcd leader")
 	}
 	r := rand.New(rand.NewSource(time.Now().UnixNano()))
 	nextEtcdLeaderID := etcdLeaderIDs[r.Intn(len(etcdLeaderIDs))]
@@ -384,7 +384,7 @@ func (m *EmbeddedEtcdMember) SetMemberLeaderPriority(id uint64, priority int) er
 		return errs.ErrEtcdTxnInternal.Wrap(err).GenWithStackByCause()
 	}
 	if !res.Succeeded {
-		log.Error("save etcd leader priority failed, maybe not pd leader")
+		log.Error("save etcd leader priority failed, maybe not tm leader")
 		return errs.ErrEtcdTxnConflict.FastGenByArgs()
 	}
 	return nil
@@ -398,7 +398,7 @@ func (m *EmbeddedEtcdMember) DeleteMemberLeaderPriority(id uint64) error {
 		return errs.ErrEtcdTxnInternal.Wrap(err).GenWithStackByCause()
 	}
 	if !res.Succeeded {
-		log.Error("delete etcd leader priority failed, maybe not pd leader")
+		log.Error("delete etcd leader priority failed, maybe not tm leader")
 		return errs.ErrEtcdTxnConflict.FastGenByArgs()
 	}
 	return nil
@@ -412,7 +412,7 @@ func (m *EmbeddedEtcdMember) DeleteMemberDCLocationInfo(id uint64) error {
 		return errs.ErrEtcdTxnInternal.Wrap(err).GenWithStackByCause()
 	}
 	if !res.Succeeded {
-		log.Error("delete dc-location info failed, maybe not pd leader")
+		log.Error("delete dc-location info failed, maybe not tm leader")
 		return errs.ErrEtcdTxnConflict.FastGenByArgs()
 	}
 	return nil

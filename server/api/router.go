@@ -82,7 +82,7 @@ func getFunctionName(f interface{}) string {
 // @contact.email  info@pingcap.com
 // @license.name   Apache 2.0
 // @license.url    http://www.apache.org/licenses/LICENSE-2.0.html
-// @BasePath       /pd/api/v1
+// @BasePath       /tm/api/v1
 func createRouter(prefix string, svr *server.Server) *mux.Router {
 	serviceMiddle := newServiceMiddlewareBuilder(svr)
 	registerPrefix := func(router *mux.Router, prefixPath string,
@@ -160,7 +160,7 @@ func createRouter(prefix string, svr *server.Server) *mux.Router {
 	registerFunc(apiRouter, "/config/default", confHandler.GetDefaultConfig, setMethods(http.MethodGet), setAuditBackend(prometheus))
 	registerFunc(apiRouter, "/config/schedule", confHandler.GetScheduleConfig, setMethods(http.MethodGet), setAuditBackend(prometheus))
 	registerFunc(apiRouter, "/config/schedule", confHandler.SetScheduleConfig, setMethods(http.MethodPost), setAuditBackend(localLog, prometheus))
-	registerFunc(apiRouter, "/config/pd-server", confHandler.GetPDServerConfig, setMethods(http.MethodGet), setAuditBackend(prometheus))
+	registerFunc(apiRouter, "/config/tm-server", confHandler.GetPDServerConfig, setMethods(http.MethodGet), setAuditBackend(prometheus))
 	registerFunc(apiRouter, "/config/replicate", confHandler.GetReplicationConfig, setMethods(http.MethodGet), setAuditBackend(prometheus))
 	registerFunc(apiRouter, "/config/replicate", confHandler.SetReplicationConfig, setMethods(http.MethodPost), setAuditBackend(localLog, prometheus))
 	registerFunc(apiRouter, "/config/label-property", confHandler.GetLabelPropertyConfig, setMethods(http.MethodGet), setAuditBackend(prometheus))
@@ -372,9 +372,9 @@ func createRouter(prefix string, svr *server.Server) *mux.Router {
 		}), setAuditBackend("test"))
 	})
 
-	// Deprecated: use /pd/api/v1/health instead.
+	// Deprecated: use /tm/api/v1/health instead.
 	rootRouter.HandleFunc("/health", healthHandler.GetHealthStatus).Methods(http.MethodGet)
-	// Deprecated: use /pd/api/v1/ping instead.
+	// Deprecated: use /tm/api/v1/ping instead.
 	rootRouter.HandleFunc("/ping", func(w http.ResponseWriter, r *http.Request) {}).Methods(http.MethodGet)
 
 	rootRouter.Walk(func(route *mux.Route, router *mux.Router, ancestors []*mux.Route) error {

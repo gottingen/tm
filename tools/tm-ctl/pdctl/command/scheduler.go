@@ -30,9 +30,9 @@ import (
 )
 
 var (
-	schedulersPrefix          = "pd/api/v1/schedulers"
-	schedulerConfigPrefix     = "pd/api/v1/scheduler-config"
-	schedulerDiagnosticPrefix = "pd/api/v1/schedulers/diagnostic"
+	schedulersPrefix          = "tm/api/v1/schedulers"
+	schedulerConfigPrefix     = "tm/api/v1/scheduler-config"
+	schedulerDiagnosticPrefix = "tm/api/v1/schedulers/diagnostic"
 	evictLeaderSchedulerName  = "evict-leader-scheduler"
 	grantLeaderSchedulerName  = "grant-leader-scheduler"
 )

@@ -44,7 +44,7 @@ func (suite *balanceWitnessSchedulerTestSuite) SetupTest() {
 	suite.cancel, suite.conf, suite.tc, suite.oc = prepareSchedulersTest()
 	suite.tc.RuleManager.SetRules([]*placement.Rule{
 		{
-			GroupID: "pd",
+			GroupID: "tm",
 			ID:      "default",
 			Role:    placement.Voter,
 			Count:   4,

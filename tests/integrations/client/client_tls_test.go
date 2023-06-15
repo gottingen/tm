@@ -25,7 +25,7 @@ import (
 	"testing"
 	"time"
 
-	pd "github.com/gottingen/tm/client"
+	tm "github.com/gottingen/tm/client"
 	"github.com/gottingen/tm/pkg/utils/grpcutil"
 	"github.com/gottingen/tm/pkg/utils/netutil"
 	"github.com/gottingen/tm/server/config"
@@ -37,8 +37,8 @@ import (
 
 var (
 	testTLSInfo = transport.TLSInfo{
-		KeyFile:       "./cert/pd-server-key.pem",
-		CertFile:      "./cert/pd-server.pem",
+		KeyFile:       "./cert/tm-server-key.pem",
+		CertFile:      "./cert/tm-server.pem",
 		TrustedCAFile: "./cert/ca.pem",
 	}
 
@@ -49,8 +49,8 @@ var (
 	}
 
 	testTLSInfoExpired = transport.TLSInfo{
-		KeyFile:       "./cert-expired/pd-server-key.pem",
-		CertFile:      "./cert-expired/pd-server.pem",
+		KeyFile:       "./cert-expired/tm-server-key.pem",
+		CertFile:      "./cert-expired/tm-server.pem",
 		TrustedCAFile: "./cert-expired/ca.pem",
 	}
 )
@@ -144,11 +144,11 @@ func testTLSReload(
 	go func() {
 		for {
 			dctx, dcancel := context.WithTimeout(ctx, time.Second)
-			cli, err := pd.NewClientWithContext(dctx, endpoints, pd.SecurityOption{
+			cli, err := tm.NewClientWithContext(dctx, endpoints, tm.SecurityOption{
 				CAPath:   testClientTLSInfo.TrustedCAFile,
 				CertPath: testClientTLSInfo.CertFile,
 				KeyPath:  testClientTLSInfo.KeyFile,
-			}, pd.WithGRPCDialOptions(grpc.WithBlock()))
+			}, tm.WithGRPCDialOptions(grpc.WithBlock()))
 			if err != nil {
 				errc <- err
 				dcancel()
@@ -175,11 +175,11 @@ func testTLSReload(
 
 	// 6. new requests should trigger listener to reload valid certs
 	dctx, dcancel := context.WithTimeout(ctx, 5*time.Second)
-	cli, err := pd.NewClientWithContext(dctx, endpoints, pd.SecurityOption{
+	cli, err := tm.NewClientWithContext(dctx, endpoints, tm.SecurityOption{
 		CAPath:   testClientTLSInfo.TrustedCAFile,
 		CertPath: testClientTLSInfo.CertFile,
 		KeyPath:  testClientTLSInfo.KeyFile,
-	}, pd.WithGRPCDialOptions(grpc.WithBlock()))
+	}, tm.WithGRPCDialOptions(grpc.WithBlock()))
 	re.NoError(err)
 	dcancel()
 	cli.Close()
@@ -188,11 +188,11 @@ func testTLSReload(
 	caData, certData, keyData := loadTLSContent(re,
 		testClientTLSInfo.TrustedCAFile, testClientTLSInfo.CertFile, testClientTLSInfo.KeyFile)
 	ctx1, cancel1 := context.WithTimeout(ctx, 2*time.Second)
-	_, err = pd.NewClientWithContext(ctx1, endpoints, pd.SecurityOption{
+	_, err = tm.NewClientWithContext(ctx1, endpoints, tm.SecurityOption{
 		SSLCABytes:   caData,
 		SSLCertBytes: certData,
 		SSLKEYBytes:  keyData,
-	}, pd.WithGRPCDialOptions(grpc.WithBlock()))
+	}, tm.WithGRPCDialOptions(grpc.WithBlock()))
 	re.NoError(err)
 	cancel1()
 }
@@ -211,8 +211,8 @@ func loadTLSContent(re *require.Assertions, caPath, certPath, keyPath string) (c
 // copyTLSFiles clones certs files to dst directory.
 func copyTLSFiles(ti transport.TLSInfo, dst string) (transport.TLSInfo, error) {
 	ci := transport.TLSInfo{
-		KeyFile:        filepath.Join(dst, "pd-server-key.pem"),
-		CertFile:       filepath.Join(dst, "pd-server.pem"),
+		KeyFile:        filepath.Join(dst, "tm-server-key.pem"),
+		CertFile:       filepath.Join(dst, "tm-server.pem"),
 		TrustedCAFile:  filepath.Join(dst, "ca.pem"),
 		ClientCertAuth: ti.ClientCertAuth,
 	}

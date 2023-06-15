@@ -31,10 +31,10 @@ import (
 )
 
 var (
-	storesPrefix       = "pd/api/v1/stores"
-	storesLimitPrefix  = "pd/api/v1/stores/limit"
-	storePrefix        = "pd/api/v1/store/%v"
-	storeUpStatePrefix = "pd/api/v1/store/%v/state?state=Up"
+	storesPrefix       = "tm/api/v1/stores"
+	storesLimitPrefix  = "tm/api/v1/stores/limit"
+	storePrefix        = "tm/api/v1/store/%v"
+	storeUpStatePrefix = "tm/api/v1/store/%v/state?state=Up"
 	maxStoreLimit      = float64(200)
 )
 

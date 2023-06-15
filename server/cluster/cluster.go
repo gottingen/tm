@@ -779,7 +779,7 @@ func (c *RaftCluster) GetScheduleConfig() *config.ScheduleConfig {
 	return c.opt.GetScheduleConfig()
 }
 
-// SetScheduleConfig sets the PD scheduling configuration.
+// SetScheduleConfig sets the TM scheduling configuration.
 func (c *RaftCluster) SetScheduleConfig(cfg *config.ScheduleConfig) {
 	c.opt.SetScheduleConfig(cfg)
 }
@@ -789,12 +789,12 @@ func (c *RaftCluster) GetReplicationConfig() *config.ReplicationConfig {
 	return c.opt.GetReplicationConfig()
 }
 
-// GetPDServerConfig returns pd server configurations.
+// GetPDServerConfig returns tm server configurations.
 func (c *RaftCluster) GetPDServerConfig() *config.PDServerConfig {
 	return c.opt.GetPDServerConfig()
 }
 
-// SetPDServerConfig sets the PD configuration.
+// SetPDServerConfig sets the TM configuration.
 func (c *RaftCluster) SetPDServerConfig(cfg *config.PDServerConfig) {
 	c.opt.SetPDServerConfig(cfg)
 }
@@ -950,8 +950,8 @@ func (c *RaftCluster) HandleStoreHeartbeat(heartbeat *pdpb.StoreHeartbeatRequest
 		// Eg: the total duration is 20s, the executing duration is 10s, the error is 0s.
 		// Eg: the total duration is 20s, the executing duration is 8s, the error is -4s.
 		// Eg: the total duration is 10s, the executing duration is 12s, the error is 4s.
-		// if error is positive, it means the most time cost in executing, pd should send more snapshot to this tikv.
-		// if error is negative, it means the most time cost in waiting, pd should send less snapshot to this tikv.
+		// if error is positive, it means the most time cost in executing, tm should send more snapshot to this tikv.
+		// if error is negative, it means the most time cost in waiting, tm should send less snapshot to this tikv.
 		e := int64(dur)*2 - int64(stat.GetTotalDurationSec())
 		store.Feedback(float64(e))
 	}
@@ -1379,7 +1379,7 @@ func (c *RaftCluster) checkStoreLabels(s *core.StoreInfo) error {
 				zap.Stringer("store", s.GetMeta()),
 				zap.String("label-key", key))
 			if c.opt.GetStrictlyMatchLabel() {
-				return errors.Errorf("key matching the label was not found in the PD, store label key: %s ", key)
+				return errors.Errorf("key matching the label was not found in the TM, store label key: %s ", key)
 			}
 		}
 	}
@@ -2199,7 +2199,7 @@ func (c *RaftCluster) onStoreVersionChangeLocked() {
 		}
 	}
 	clusterVersion := c.opt.GetClusterVersion()
-	// If the cluster version of PD is less than the minimum version of all stores,
+	// If the cluster version of TM is less than the minimum version of all stores,
 	// it will update the cluster version.
 	failpoint.Inject("versionChangeConcurrency", func() {
 		time.Sleep(500 * time.Millisecond)
@@ -2633,7 +2633,7 @@ func (c *RaftCluster) GetProgressByAction(action string) (process, ls, cs float6
 	return
 }
 
-var healthURL = "/pd/api/v1/ping"
+var healthURL = "/tm/api/v1/ping"
 
 // CheckHealth checks if members are healthy.
 func CheckHealth(client *http.Client, members []*pdpb.Member) map[uint64]*pdpb.Member {

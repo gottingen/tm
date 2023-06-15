@@ -103,7 +103,7 @@ func (r *TSOProtoRequest) postProcess(countSum, physical, firstLogical int64, su
 	return countSum, nil
 }
 
-// PDProtoRequest wraps the request and stream channel in the PD grpc service
+// PDProtoRequest wraps the request and stream channel in the TM grpc service
 type PDProtoRequest struct {
 	forwardedHost string
 	clientConn    *grpc.ClientConn

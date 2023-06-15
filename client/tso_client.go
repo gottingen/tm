@@ -12,7 +12,7 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-package pd
+package tm
 
 import (
 	"context"
@@ -31,13 +31,13 @@ import (
 
 // TSOClient is the client used to get timestamps.
 type TSOClient interface {
-	// GetTS gets a timestamp from PD.
+	// GetTS gets a timestamp from TM.
 	GetTS(ctx context.Context) (int64, int64, error)
-	// GetTSAsync gets a timestamp from PD, without block the caller.
+	// GetTSAsync gets a timestamp from TM, without block the caller.
 	GetTSAsync(ctx context.Context) TSFuture
-	// GetLocalTS gets a local timestamp from PD.
+	// GetLocalTS gets a local timestamp from TM.
 	GetLocalTS(ctx context.Context, dcLocation string) (int64, int64, error)
-	// GetLocalTSAsync gets a local timestamp from PD, without block the caller.
+	// GetLocalTSAsync gets a local timestamp from TM, without block the caller.
 	GetLocalTSAsync(ctx context.Context, dcLocation string) TSFuture
 }
 

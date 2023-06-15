@@ -26,7 +26,7 @@ import (
 	"testing"
 	"time"
 
-	pd "github.com/gottingen/tm/client"
+	tm "github.com/gottingen/tm/client"
 	"github.com/gottingen/tm/pkg/core"
 	"github.com/gottingen/tm/pkg/mcs/discovery"
 	tsoapi "github.com/gottingen/tm/pkg/mcs/tso/server/apis/v1"
@@ -187,7 +187,7 @@ type APIServerForwardTestSuite struct {
 	cluster          *tests.TestCluster
 	pdLeader         *tests.TestServer
 	backendEndpoints string
-	pdClient         pd.Client
+	pdClient         tm.Client
 }
 
 func TestAPIServerForwardTestSuite(t *testing.T) {
@@ -210,8 +210,8 @@ func (suite *APIServerForwardTestSuite) SetupSuite() {
 	suite.NoError(suite.pdLeader.BootstrapCluster())
 	suite.addRegions()
 
-	suite.pdClient, err = pd.NewClientWithContext(context.Background(),
-		[]string{suite.backendEndpoints}, pd.SecurityOption{}, pd.WithMaxErrorRetry(1))
+	suite.pdClient, err = tm.NewClientWithContext(context.Background(),
+		[]string{suite.backendEndpoints}, tm.SecurityOption{}, tm.WithMaxErrorRetry(1))
 	suite.NoError(err)
 }
 

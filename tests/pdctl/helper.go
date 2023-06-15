@@ -20,7 +20,6 @@ import (
 	"fmt"
 	"sort"
 
-	"github.com/docker/go-units"
 	"github.com/gottingen/tm/pkg/core"
 	"github.com/gottingen/tm/pkg/utils/typeutil"
 	"github.com/gottingen/tm/pkg/versioninfo"
@@ -43,7 +42,7 @@ func ExecuteCommand(root *cobra.Command, args ...string) (output []byte, err err
 }
 
 // CheckStoresInfo is used to check the test results.
-// CheckStoresInfo will not check Store.State because this field has been omitted pd-ctl output
+// CheckStoresInfo will not check Store.State because this field has been omitted tm-ctl output
 func CheckStoresInfo(re *require.Assertions, stores []*api.StoreInfo, want []*api.StoreInfo) {
 	re.Len(stores, len(want))
 	mapWant := make(map[uint64]*api.StoreInfo)

@@ -24,7 +24,7 @@ import (
 )
 
 var (
-	operatorsPrefix = "pd/api/v1/operators"
+	operatorsPrefix = "tm/api/v1/operators"
 	peerRoles       = map[string]struct{}{
 		"leader":   {},
 		"voter":    {},

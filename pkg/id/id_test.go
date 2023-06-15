@@ -27,8 +27,8 @@ import (
 )
 
 const (
-	rootPath   = "/pd"
-	leaderPath = "/pd/leader"
+	rootPath   = "/tm"
+	leaderPath = "/tm/leader"
 	allocPath  = "alloc_id"
 	label      = "idalloc"
 	memberVal  = "member"

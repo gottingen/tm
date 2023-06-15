@@ -1,6 +1,6 @@
 # How to contribute
 
-Thanks for your interest in contributing to PD!
+Thanks for your interest in contributing to TM!
 
 ## Finding something to work on
 
@@ -34,9 +34,9 @@ Thanks for your contributions!
 
 ### Code style
 
-The coding style suggested by the Golang community is used in PD. See the [style doc](https://github.com/golang/go/wiki/CodeReviewComments) for details.
+The coding style suggested by the Golang community is used in TM. See the [style doc](https://github.com/golang/go/wiki/CodeReviewComments) for details.
 
-Please follow this style to make PD easy to review, maintain and develop.
+Please follow this style to make TM easy to review, maintain and develop.
 
 ### Linking issues
 
@@ -90,7 +90,7 @@ the final commit message body
 
 The first line is the subject (the pull request title) and should be no longer than 70 characters, the second line is always blank, and other lines should be wrapped at 80 characters. This allows the message to be easier to read on GitHub as well as in various git tools.
 
-If the change affects more than one subsystem, you can use a comma to separate them like `server, pd-client:`.
+If the change affects more than one subsystem, you can use a comma to separate them like `server, tm-client:`.
 
 If the change affects many subsystems, you can use ```*``` instead, like ```*:```.
 

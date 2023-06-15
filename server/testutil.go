@@ -36,7 +36,7 @@ import (
 	"go.etcd.io/etcd/embed"
 )
 
-// NewTestServer creates a pd server for testing.
+// NewTestServer creates a tm server for testing.
 func NewTestServer(re *require.Assertions, c *assertutil.Checker) (*Server, testutil.CleanupFunc, error) {
 	ctx, cancel := context.WithCancel(context.Background())
 	cfg := NewTestSingleConfig(c)
@@ -61,12 +61,12 @@ func NewTestServer(re *require.Assertions, c *assertutil.Checker) (*Server, test
 
 var zapLogOnce sync.Once
 
-// NewTestSingleConfig is only for test to create one pd.
-// Because PD client also needs this, so export here.
+// NewTestSingleConfig is only for test to create one tm.
+// Because TM client also needs this, so export here.
 func NewTestSingleConfig(c *assertutil.Checker) *config.Config {
 	schedulers.Register()
 	cfg := &config.Config{
-		Name:       "pd",
+		Name:       "tm",
 		ClientUrls: tempurl.Alloc(),
 		PeerUrls:   tempurl.Alloc(),
 
@@ -79,7 +79,7 @@ func NewTestSingleConfig(c *assertutil.Checker) *config.Config {
 	cfg.AdvertiseClientUrls = cfg.ClientUrls
 	cfg.AdvertisePeerUrls = cfg.PeerUrls
 	cfg.DataDir, _ = os.MkdirTemp("/tmp", "test_pd")
-	cfg.InitialCluster = fmt.Sprintf("pd=%s", cfg.PeerUrls)
+	cfg.InitialCluster = fmt.Sprintf("tm=%s", cfg.PeerUrls)
 	cfg.DisableStrictReconfigCheck = true
 	cfg.TickInterval = typeutil.NewDuration(100 * time.Millisecond)
 	cfg.ElectionInterval = typeutil.NewDuration(3 * time.Second)
@@ -95,15 +95,15 @@ func NewTestSingleConfig(c *assertutil.Checker) *config.Config {
 	return cfg
 }
 
-// NewTestMultiConfig is only for test to create multiple pd configurations.
-// Because PD client also needs this, so export here.
+// NewTestMultiConfig is only for test to create multiple tm configurations.
+// Because TM client also needs this, so export here.
 func NewTestMultiConfig(c *assertutil.Checker, count int) []*config.Config {
 	cfgs := make([]*config.Config, count)
 
 	clusters := []string{}
 	for i := 1; i <= count; i++ {
 		cfg := NewTestSingleConfig(c)
-		cfg.Name = fmt.Sprintf("pd%d", i)
+		cfg.Name = fmt.Sprintf("tm%d", i)
 
 		clusters = append(clusters, fmt.Sprintf("%s=%s", cfg.Name, cfg.PeerUrls))
 
@@ -140,7 +140,7 @@ func MustWaitLeader(re *require.Assertions, svrs []*Server) *Server {
 func CreateMockHandler(re *require.Assertions, ip string) HandlerBuilder {
 	return func(ctx context.Context, s *Server) (http.Handler, apiutil.APIServiceGroup, error) {
 		mux := http.NewServeMux()
-		mux.HandleFunc("/pd/apis/mock/v1/hello", func(w http.ResponseWriter, r *http.Request) {
+		mux.HandleFunc("/tm/apis/mock/v1/hello", func(w http.ResponseWriter, r *http.Request) {
 			fmt.Fprintln(w, "Hello World")
 			// test getting ip
 			clientIP := apiutil.GetIPAddrFromHTTPRequest(r)

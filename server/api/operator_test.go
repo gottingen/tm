@@ -384,7 +384,7 @@ func (suite *transferRegionOperatorTestSuite) TestTransferRegionWithPlacementRul
 			// add customized rule first and then remove default rule
 			err := suite.svr.GetRaftCluster().GetRuleManager().SetRules(testCase.rules)
 			suite.NoError(err)
-			err = suite.svr.GetRaftCluster().GetRuleManager().DeleteRule("pd", "default")
+			err = suite.svr.GetRaftCluster().GetRuleManager().DeleteRule("tm", "default")
 			suite.NoError(err)
 		}
 		var err error

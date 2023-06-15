@@ -24,7 +24,7 @@ import (
 )
 
 var (
-	input    = flag.String("input", "", "input pd log file, required")
+	input    = flag.String("input", "", "input tm log file, required")
 	output   = flag.String("output", "", "output file, default output to stdout")
 	logLevel = flag.String("logLevel", "info", "log level, default info")
 	style    = flag.String("style", "", "analysis style, e.g. transfer-counter")
@@ -48,7 +48,7 @@ func main() {
 	InitLogger(*logLevel)
 	analysis.GetTransferCounter().Init(0, 0)
 	if *input == "" {
-		Logger.Fatal("need to specify one input pd log")
+		Logger.Fatal("need to specify one input tm log")
 	}
 	if *output != "" {
 		f, err := os.OpenFile(*output, os.O_WRONLY|os.O_CREATE|os.O_SYNC|os.O_APPEND, 0600)

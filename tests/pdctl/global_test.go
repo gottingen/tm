@@ -34,7 +34,7 @@ func TestSendAndGetComponent(t *testing.T) {
 	re := require.New(t)
 	handler := func(ctx context.Context, s *server.Server) (http.Handler, apiutil.APIServiceGroup, error) {
 		mux := http.NewServeMux()
-		mux.HandleFunc("/pd/api/v1/health", func(w http.ResponseWriter, r *http.Request) {
+		mux.HandleFunc("/tm/api/v1/health", func(w http.ResponseWriter, r *http.Request) {
 			component := apiutil.GetComponentNameOnHTTP(r)
 			for k := range r.Header {
 				log.Info("header", zap.String("key", k))

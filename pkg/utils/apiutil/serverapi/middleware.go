@@ -28,8 +28,8 @@ import (
 
 // HTTP headers.
 const (
-	PDRedirectorHeader    = "PD-Redirector"
-	PDAllowFollowerHandle = "PD-Allow-follower-handle"
+	PDRedirectorHeader    = "TM-Redirector"
+	PDAllowFollowerHandle = "TM-Allow-follower-handle"
 )
 
 type runtimeServiceValidator struct {

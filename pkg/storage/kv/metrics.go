@@ -19,7 +19,7 @@ import "github.com/prometheus/client_golang/prometheus"
 var (
 	txnCounter = prometheus.NewCounterVec(
 		prometheus.CounterOpts{
-			Namespace: "pd",
+			Namespace: "tm",
 			Subsystem: "txn",
 			Name:      "txns_count",
 			Help:      "Counter of txns.",
@@ -27,7 +27,7 @@ var (
 
 	txnDuration = prometheus.NewHistogramVec(
 		prometheus.HistogramOpts{
-			Namespace: "pd",
+			Namespace: "tm",
 			Subsystem: "txn",
 			Name:      "handle_txns_duration_seconds",
 			Help:      "Bucketed histogram of processing time (s) of handled txns.",

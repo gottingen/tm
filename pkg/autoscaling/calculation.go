@@ -35,7 +35,7 @@ import (
 
 const (
 	groupLabelKey                  = "group"
-	autoScalingGroupLabelKeyPrefix = "pd-auto-scaling"
+	autoScalingGroupLabelKeyPrefix = "tm-auto-scaling"
 	resourceTypeLabelKey           = "resource-type"
 	milliCores                     = 1000
 )

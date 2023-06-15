@@ -1,4 +1,4 @@
-module github.com/tools/pd-tso-bench
+module github.com/tools/tm-tso-bench
 
 go 1.16
 

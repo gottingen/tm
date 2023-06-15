@@ -17,7 +17,6 @@ package cases
 import (
 	"time"
 
-	"github.com/docker/go-units"
 	"github.com/gottingen/tm/pkg/core"
 	"github.com/gottingen/tm/pkg/schedule/placement"
 	"github.com/gottingen/tm/tools/tm-simulator/simulator/info"
@@ -46,7 +45,7 @@ func newRule1() *Case {
 		},
 		LocationLabels: []string{"host"},
 	}, &placement.Rule{
-		GroupID:     "pd",
+		GroupID:     "tm",
 		ID:          "default",
 		StartKeyHex: "",
 		EndKeyHex:   "",

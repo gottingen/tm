@@ -34,7 +34,7 @@ import (
 )
 
 const (
-	keyspaceGroupsPrefix = "/pd/api/v2/tso/keyspace-groups"
+	keyspaceGroupsPrefix = "/tm/api/v2/tso/keyspace-groups"
 )
 
 type keyspaceGroupTestSuite struct {

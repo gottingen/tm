@@ -18,7 +18,6 @@ import (
 	"context"
 	"testing"
 
-	"github.com/docker/go-units"
 	"github.com/gottingen/tm/pkg/core"
 	"github.com/gottingen/tm/pkg/mock/mockcluster"
 	"github.com/gottingen/tm/pkg/mock/mockconfig"
@@ -262,13 +261,13 @@ func TestShuffleRegionRole(t *testing.T) {
 	// update rule to 1leader+1follower+1learner
 	tc.SetEnablePlacementRules(true)
 	tc.RuleManager.SetRule(&placement.Rule{
-		GroupID: "pd",
+		GroupID: "tm",
 		ID:      "default",
 		Role:    placement.Voter,
 		Count:   2,
 	})
 	tc.RuleManager.SetRule(&placement.Rule{
-		GroupID: "pd",
+		GroupID: "tm",
 		ID:      "learner",
 		Role:    placement.Learner,
 		Count:   1,
@@ -429,7 +428,7 @@ func TestBalanceLeaderWithConflictRule(t *testing.T) {
 		{
 			name: "default Rule",
 			rule: &placement.Rule{
-				GroupID:        "pd",
+				GroupID:        "tm",
 				ID:             "default",
 				Index:          1,
 				StartKey:       []byte(""),
@@ -443,7 +442,7 @@ func TestBalanceLeaderWithConflictRule(t *testing.T) {
 		{
 			name: "single store allowed to be placed leader",
 			rule: &placement.Rule{
-				GroupID:  "pd",
+				GroupID:  "tm",
 				ID:       "default",
 				Index:    1,
 				StartKey: []byte(""),
@@ -464,7 +463,7 @@ func TestBalanceLeaderWithConflictRule(t *testing.T) {
 		{
 			name: "2 store allowed to be placed leader",
 			rule: &placement.Rule{
-				GroupID:  "pd",
+				GroupID:  "tm",
 				ID:       "default",
 				Index:    1,
 				StartKey: []byte(""),

@@ -140,7 +140,7 @@ func (suite *dashboardTestSuite) testDashboard(internalProxy bool) {
 	// auto select node
 	dashboardAddress1 := suite.checkServiceIsStarted(internalProxy, servers, leader)
 
-	// pd-ctl set another addr
+	// tm-ctl set another addr
 	var dashboardAddress2 string
 	for _, srv := range servers {
 		if srv.GetAddr() != dashboardAddress1 {
@@ -154,7 +154,7 @@ func (suite *dashboardTestSuite) testDashboard(internalProxy bool) {
 	suite.checkServiceIsStarted(internalProxy, servers, leader)
 	suite.Equal(dashboardAddress2, leader.GetServer().GetPersistOptions().GetDashboardAddress())
 
-	// pd-ctl set stop
+	// tm-ctl set stop
 	args = []string{"-u", leaderAddr, "config", "set", "dashboard-address", "none"}
 	_, err = pdctl.ExecuteCommand(cmd, args...)
 	suite.NoError(err)

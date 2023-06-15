@@ -12,7 +12,7 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-package pd
+package tm
 
 import (
 	"context"
@@ -23,7 +23,6 @@ import (
 
 	"github.com/gottingen/tm/client/errs"
 	"github.com/gottingen/tm/client/grpcutil"
-	"github.com/opentracing/opentracing-go"
 	"github.com/pingcap/errors"
 	"github.com/pingcap/failpoint"
 	"github.com/pingcap/log"
@@ -230,7 +229,7 @@ func (c *tsoClient) checkAllocator(
 	cc, u := c.GetTSOAllocatorClientConnByDCLocation(dc)
 	healthCli := healthpb.NewHealthClient(cc)
 	for {
-		// the pd/allocator leader change, we need to re-establish the stream
+		// the tm/allocator leader change, we need to re-establish the stream
 		if u != url {
 			log.Info("[tso] the leader of the allocator leader is changed", zap.String("dc", dc), zap.String("origin", url), zap.String("new", u))
 			return
@@ -497,7 +496,7 @@ func (c *tsoClient) chooseStream(connectionCtxs *sync.Map) (connectionCtx *tsoCo
 
 type tsoConnectionContext struct {
 	streamAddr string
-	// Current stream to send gRPC requests, pdpb.PD_TsoClient for a leader/follower in the PD cluster,
+	// Current stream to send gRPC requests, pdpb.PD_TsoClient for a leader/follower in the TM cluster,
 	// or tsopb.TSO_TsoClient for a primary/secondary in the TSO cluster
 	stream tsoStream
 	ctx    context.Context

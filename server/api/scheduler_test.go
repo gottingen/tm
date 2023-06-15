@@ -279,7 +279,7 @@ func (suite *scheduleTestSuite) TestAPI() {
 				exceptMap["1"] = []interface{}{map[string]interface{}{"end-key": "", "start-key": ""}}
 				suite.Equal(exceptMap, resp["store-id-ranges"])
 
-				// using /pd/v1/schedule-config/grant-leader-scheduler/config to add new store to grant-leader-scheduler
+				// using /tm/v1/schedule-config/grant-leader-scheduler/config to add new store to grant-leader-scheduler
 				input := make(map[string]interface{})
 				input["name"] = "grant-leader-scheduler"
 				input["store_id"] = 2
@@ -292,7 +292,7 @@ func (suite *scheduleTestSuite) TestAPI() {
 				exceptMap["2"] = []interface{}{map[string]interface{}{"end-key": "", "start-key": ""}}
 				suite.Equal(exceptMap, resp["store-id-ranges"])
 
-				// using /pd/v1/schedule-config/grant-leader-scheduler/config to delete exists store from grant-leader-scheduler
+				// using /tm/v1/schedule-config/grant-leader-scheduler/config to delete exists store from grant-leader-scheduler
 				deleteURL := fmt.Sprintf("%s%s%s/%s/delete/%s", suite.svr.GetAddr(), apiPrefix, server.SchedulerConfigHandlerPath, name, "2")
 				_, err = apiutil.DoDelete(testDialClient, deleteURL)
 				suite.NoError(err)
@@ -343,7 +343,7 @@ func (suite *scheduleTestSuite) TestAPI() {
 				exceptMap["1"] = []interface{}{map[string]interface{}{"end-key": "", "start-key": ""}}
 				suite.Equal(exceptMap, resp["store-id-ranges"])
 
-				// using /pd/v1/schedule-config/evict-leader-scheduler/config to add new store to evict-leader-scheduler
+				// using /tm/v1/schedule-config/evict-leader-scheduler/config to add new store to evict-leader-scheduler
 				input := make(map[string]interface{})
 				input["name"] = "evict-leader-scheduler"
 				input["store_id"] = 2
@@ -356,7 +356,7 @@ func (suite *scheduleTestSuite) TestAPI() {
 				exceptMap["2"] = []interface{}{map[string]interface{}{"end-key": "", "start-key": ""}}
 				suite.Equal(exceptMap, resp["store-id-ranges"])
 
-				// using /pd/v1/schedule-config/evict-leader-scheduler/config to delete exist store from evict-leader-scheduler
+				// using /tm/v1/schedule-config/evict-leader-scheduler/config to delete exist store from evict-leader-scheduler
 				deleteURL := fmt.Sprintf("%s%s%s/%s/delete/%s", suite.svr.GetAddr(), apiPrefix, server.SchedulerConfigHandlerPath, name, "2")
 				_, err = apiutil.DoDelete(testDialClient, deleteURL)
 				suite.NoError(err)

@@ -26,7 +26,7 @@ const (
 	completionLongDesc = `
 Output shell completion code for the specified shell (bash or zsh).
 The shell code must be evaluated to provide interactive
-completion of pd-ctl commands.  This can be done by sourcing it from
+completion of tm-ctl commands.  This can be done by sourcing it from
 the .bash_profile.
 
 Note for zsh users: [1] zsh completions are only supported in versions of zsh >= 5.2
@@ -39,26 +39,26 @@ Note for zsh users: [1] zsh completions are only supported in versions of zsh >=
 	## or, if running Bash 4.1+
 	    brew install bash-completion@2
 	## If you've installed via other means, you may need add the completion to your completion directory
-	    pd-ctl completion bash > $(brew --prefix)/etc/bash_completion.d/pd-ctl
+	    tm-ctl completion bash > $(brew --prefix)/etc/bash_completion.d/tm-ctl
 
 
 	# Installing bash completion on Linux
 	## If bash-completion is not installed on Linux, please install the 'bash-completion' package
 	## via your distribution's package manager.
-	## Load the pd-ctl completion code for bash into the current shell
-	    source <(pd-ctl completion bash)
+	## Load the tm-ctl completion code for bash into the current shell
+	    source <(tm-ctl completion bash)
 	## Write bash completion code to a file and source if from .bash_profile
-		pd-ctl completion bash > ~/completion.bash.inc
+		tm-ctl completion bash > ~/completion.bash.inc
 		printf "
-		# pd-ctl shell completion
+		# tm-ctl shell completion
 		source '$HOME/completion.bash.inc'
 		" >> $HOME/.bash_profile
 		source $HOME/.bash_profile
 
-	# Load the pd-ctl completion code for zsh[1] into the current shell
-	    source <(pd-ctl completion zsh)
-	# Set the pd-ctl completion code for zsh[1] to autoload on startup
-	    pd-ctl completion zsh > "${fpath[1]}/_pd-ctl"
+	# Load the tm-ctl completion code for zsh[1] into the current shell
+	    source <(tm-ctl completion zsh)
+	# Set the tm-ctl completion code for zsh[1] to autoload on startup
+	    tm-ctl completion zsh > "${fpath[1]}/_pd-ctl"
 `
 )
 
@@ -116,7 +116,7 @@ func runCompletionBash(out io.Writer, cmd *cobra.Command) error {
 }
 
 func runCompletionZsh(out io.Writer, cmd *cobra.Command) error {
-	zshHead := "#compdef pd-ctl\n"
+	zshHead := "#compdef tm-ctl\n"
 
 	if _, err := out.Write([]byte(zshHead)); err != nil {
 		return err
@@ -281,7 +281,7 @@ BASH_COMPLETION_EOF
 }
 
 __pd-ctl_bash_source <(__pd-ctl_convert_bash_to_zsh)
-_complete pd-ctl 2>/dev/null
+_complete tm-ctl 2>/dev/null
 `
 	if _, err := out.Write([]byte(zshTail)); err != nil {
 		return err

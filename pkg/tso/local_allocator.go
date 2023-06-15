@@ -34,15 +34,15 @@ import (
 
 // LocalTSOAllocator is the DC-level local TSO allocator,
 // which is only used to allocate TSO in one DC each.
-// One PD server may hold multiple Local TSO Allocators.
+// One TM server may hold multiple Local TSO Allocators.
 type LocalTSOAllocator struct {
 	allocatorManager *AllocatorManager
 	// leadership is used to campaign the corresponding DC's Local TSO Allocator.
 	leadership      *election.Leadership
 	timestampOracle *timestampOracle
 	// for election use, notice that the leadership that member holds is
-	// the leadership for PD leader. Local TSO Allocator's leadership is for the
-	// election of Local TSO Allocator leader among several PD servers and
+	// the leadership for TM leader. Local TSO Allocator's leadership is for the
+	// election of Local TSO Allocator leader among several TM servers and
 	// Local TSO Allocator only use member's some etcd and pbpd.Member info.
 	// So it's not conflicted.
 	rootPath        string
@@ -91,7 +91,7 @@ func (lta *LocalTSOAllocator) IsInitialize() bool {
 }
 
 // UpdateTSO is used to update the TSO in memory and the time window in etcd
-// for all local TSO allocators this PD server hold.
+// for all local TSO allocators this TM server hold.
 func (lta *LocalTSOAllocator) UpdateTSO() error {
 	return lta.timestampOracle.UpdateTimestamp(lta.leadership)
 }
@@ -107,7 +107,7 @@ func (lta *LocalTSOAllocator) GenerateTSO(count uint32) (pdpb.Timestamp, error) 
 	if !lta.leadership.Check() {
 		tsoCounter.WithLabelValues("not_leader", lta.timestampOracle.dcLocation).Inc()
 		return pdpb.Timestamp{}, errs.ErrGenerateTimestamp.FastGenByArgs(
-			fmt.Sprintf("requested pd %s of %s allocator", errs.NotLeaderErr, lta.timestampOracle.dcLocation))
+			fmt.Sprintf("requested tm %s of %s allocator", errs.NotLeaderErr, lta.timestampOracle.dcLocation))
 	}
 	return lta.timestampOracle.getTS(lta.leadership, count, lta.allocatorManager.GetSuffixBits())
 }
@@ -174,7 +174,7 @@ func (lta *LocalTSOAllocator) CampaignAllocatorLeader(leaseTimeout int64, cmps .
 	return lta.leadership.Campaign(leaseTimeout, lta.allocatorManager.member.MemberValue(), cmps...)
 }
 
-// KeepAllocatorLeader is used to keep the PD leader's leadership.
+// KeepAllocatorLeader is used to keep the TM leader's leadership.
 func (lta *LocalTSOAllocator) KeepAllocatorLeader(ctx context.Context) {
 	defer logutil.LogPanic()
 	lta.leadership.Keep(ctx)
@@ -217,7 +217,7 @@ func (lta *LocalTSOAllocator) CheckAllocatorLeader() (*pdpb.Member, int64, bool)
 			// which means the election and initialization are not completed fully. By this mean, we should
 			// re-campaign by deleting the current allocator leader.
 			log.Warn("the local tso allocator leader has not changed, delete and campaign again",
-				zap.String("dc-location", lta.timestampOracle.dcLocation), zap.Stringer("old-pd-leader", allocatorLeader))
+				zap.String("dc-location", lta.timestampOracle.dcLocation), zap.Stringer("old-tm-leader", allocatorLeader))
 			// Delete the leader itself and let others start a new election again.
 			if err = lta.leadership.DeleteLeaderKey(); err != nil {
 				log.Error("deleting local tso allocator leader key meets error", errs.ZapError(err))

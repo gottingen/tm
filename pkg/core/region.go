@@ -867,7 +867,7 @@ func (r *RegionsInfo) GetRelevantRegions(region *RegionInfo) (origin *RegionInfo
 
 func check(region, origin *RegionInfo, overlaps []*regionItem) error {
 	for _, item := range overlaps {
-		// PD ignores stale regions' heartbeats, unless it is recreated recently by unsafe recover operation.
+		// TM ignores stale regions' heartbeats, unless it is recreated recently by unsafe recover operation.
 		if region.GetRegionEpoch().GetVersion() < item.GetRegionEpoch().GetVersion() && !region.isRegionRecreated() {
 			return errRegionIsStale(region.GetMeta(), item.GetMeta())
 		}

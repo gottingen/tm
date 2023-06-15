@@ -12,7 +12,7 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-package pd
+package tm
 
 import (
 	"context"
@@ -26,7 +26,6 @@ import (
 	"github.com/gottingen/tm/client/errs"
 	"github.com/gottingen/tm/client/grpcutil"
 	"github.com/gottingen/tm/client/tlsutil"
-	"github.com/opentracing/opentracing-go"
 	"github.com/pingcap/errors"
 	"github.com/pingcap/failpoint"
 	"github.com/pingcap/kvproto/pkg/metapb"
@@ -43,7 +42,7 @@ import (
 const (
 	// defaultKeyspaceID is the default key space id.
 	// Valid keyspace id range is [0, 0xFFFFFF](uint24max, or 16777215)
-	// ​0 is reserved for default keyspace with the name "DEFAULT", It's initialized when PD bootstrap and reserved for users who haven't been assigned keyspace.
+	// ​0 is reserved for default keyspace with the name "DEFAULT", It's initialized when TM bootstrap and reserved for users who haven't been assigned keyspace.
 	defaultKeyspaceID = uint32(0)
 )
 
@@ -64,38 +63,38 @@ type GlobalConfigItem struct {
 	PayLoad   []byte
 }
 
-// Client is a PD (Placement Driver) client.
+// Client is a TM (Placement Driver) client.
 // It should not be used after calling Close().
 type Client interface {
-	// GetClusterID gets the cluster ID from PD.
+	// GetClusterID gets the cluster ID from TM.
 	GetClusterID(ctx context.Context) uint64
-	// GetAllMembers gets the members Info from PD
+	// GetAllMembers gets the members Info from TM
 	GetAllMembers(ctx context.Context) ([]*pdpb.Member, error)
 	// GetLeaderAddr returns current leader's address. It returns "" before
 	// syncing leader from server.
 	GetLeaderAddr() string
-	// GetRegion gets a region and its leader Peer from PD by key.
+	// GetRegion gets a region and its leader Peer from TM by key.
 	// The region may expire after split. Caller is responsible for caching and
 	// taking care of region change.
-	// Also it may return nil if PD finds no Region for the key temporarily,
+	// Also it may return nil if TM finds no Region for the key temporarily,
 	// client should retry later.
 	GetRegion(ctx context.Context, key []byte, opts ...GetRegionOption) (*Region, error)
 	// GetRegionFromMember gets a region from certain members.
 	GetRegionFromMember(ctx context.Context, key []byte, memberURLs []string) (*Region, error)
 	// GetPrevRegion gets the previous region and its leader Peer of the region where the key is located.
 	GetPrevRegion(ctx context.Context, key []byte, opts ...GetRegionOption) (*Region, error)
-	// GetRegionByID gets a region and its leader Peer from PD by id.
+	// GetRegionByID gets a region and its leader Peer from TM by id.
 	GetRegionByID(ctx context.Context, regionID uint64, opts ...GetRegionOption) (*Region, error)
 	// ScanRegion gets a list of regions, starts from the region that contains key.
 	// Limit limits the maximum number of regions returned.
 	// If a region has no leader, corresponding leader will be placed by a peer
 	// with empty value (PeerID is 0).
 	ScanRegions(ctx context.Context, key, endKey []byte, limit int) ([]*Region, error)
-	// GetStore gets a store from PD by store id.
+	// GetStore gets a store from TM by store id.
 	// The store may expire later. Caller is responsible for caching and taking care
 	// of store change.
 	GetStore(ctx context.Context, storeID uint64) (*metapb.Store, error)
-	// GetAllStores gets all stores from pd.
+	// GetAllStores gets all stores from tm.
 	// The store may expire later. Caller is responsible for caching and taking care
 	// of store change.
 	GetAllStores(ctx context.Context, opts ...GetStoreOption) ([]*metapb.Store, error)
@@ -197,14 +196,14 @@ func WithBuckets() GetRegionOption {
 var LeaderHealthCheckInterval = time.Second
 
 var (
-	// errUnmatchedClusterID is returned when found a PD with a different cluster ID.
-	errUnmatchedClusterID = errors.New("[pd] unmatched cluster id")
-	// errFailInitClusterID is returned when failed to load clusterID from all supplied PD addresses.
-	errFailInitClusterID = errors.New("[pd] failed to get cluster id")
+	// errUnmatchedClusterID is returned when found a TM with a different cluster ID.
+	errUnmatchedClusterID = errors.New("[tm] unmatched cluster id")
+	// errFailInitClusterID is returned when failed to load clusterID from all supplied TM addresses.
+	errFailInitClusterID = errors.New("[tm] failed to get cluster id")
 	// errClosing is returned when request is canceled when client is closing.
-	errClosing = errors.New("[pd] closing")
+	errClosing = errors.New("[tm] closing")
 	// errTSOLength is returned when the number of response timestamps is inconsistent with request.
-	errTSOLength = errors.New("[pd] tso length in rpc response is incorrect")
+	errTSOLength = errors.New("[tm] tso length in rpc response is incorrect")
 )
 
 // ClientOption configures client.
@@ -296,19 +295,19 @@ type SecurityOption struct {
 	SSLKEYBytes  []byte
 }
 
-// NewClient creates a PD client.
+// NewClient creates a TM client.
 func NewClient(svrAddrs []string, security SecurityOption, opts ...ClientOption) (Client, error) {
 	return NewClientWithContext(context.Background(), svrAddrs, security, opts...)
 }
 
-// NewClientWithContext creates a PD client with context. This API uses the default keyspace id 0.
+// NewClientWithContext creates a TM client with context. This API uses the default keyspace id 0.
 func NewClientWithContext(ctx context.Context, svrAddrs []string, security SecurityOption, opts ...ClientOption) (Client, error) {
 	return NewClientWithKeyspace(ctx, defaultKeyspaceID, svrAddrs, security, opts...)
 }
 
 // NewClientWithKeyspace creates a client with context and the specified keyspace id.
 func NewClientWithKeyspace(ctx context.Context, keyspaceID uint32, svrAddrs []string, security SecurityOption, opts ...ClientOption) (Client, error) {
-	log.Info("[pd] create pd client with endpoints and keyspace", zap.Strings("pd-address", svrAddrs), zap.Uint32("keyspace-id", keyspaceID))
+	log.Info("[tm] create tm client with endpoints and keyspace", zap.Strings("tm-address", svrAddrs), zap.Uint32("keyspace-id", keyspaceID))
 
 	tlsCfg := &tlsutil.TLSConfig{
 		CAPath:   security.CAPath,
@@ -383,7 +382,7 @@ func (c *client) setServiceMode(newMode pdpb.ServiceMode) {
 	if newMode == c.serviceMode {
 		return
 	}
-	log.Info("[pd] changing service mode",
+	log.Info("[tm] changing service mode",
 		zap.String("old-mode", c.serviceMode.String()),
 		zap.String("new-mode", newMode.String()))
 	// Re-create a new TSO client.
@@ -401,12 +400,12 @@ func (c *client) setServiceMode(newMode pdpb.ServiceMode) {
 		newTSOCli = newTSOClient(c.ctx, c.option, c.keyspaceID,
 			newTSOSvcDiscovery, &tsoTSOStreamBuilderFactory{})
 		if err := newTSOSvcDiscovery.Init(); err != nil {
-			log.Error("[pd] failed to initialize tso service discovery. keep the current service mode",
+			log.Error("[tm] failed to initialize tso service discovery. keep the current service mode",
 				zap.Strings("svr-urls", c.svrUrls), zap.String("current-mode", c.serviceMode.String()), zap.Error(err))
 			return
 		}
 	case pdpb.ServiceMode_UNKNOWN_SVC_MODE:
-		log.Warn("[pd] intend to switch to unknown service mode, just return")
+		log.Warn("[tm] intend to switch to unknown service mode, just return")
 		return
 	}
 	newTSOCli.Setup()
@@ -425,7 +424,7 @@ func (c *client) setServiceMode(newMode pdpb.ServiceMode) {
 		}
 	}
 	c.serviceMode = newMode
-	log.Info("[pd] service mode changed",
+	log.Info("[tm] service mode changed",
 		zap.String("old-mode", c.serviceMode.String()),
 		zap.String("new-mode", newMode.String()))
 }
@@ -465,7 +464,7 @@ func (c *client) UpdateOption(option DynamicOption, value interface{}) error {
 	case MaxTSOBatchWaitInterval:
 		interval, ok := value.(time.Duration)
 		if !ok {
-			return errors.New("[pd] invalid value type for MaxTSOBatchWaitInterval option, it should be time.Duration")
+			return errors.New("[tm] invalid value type for MaxTSOBatchWaitInterval option, it should be time.Duration")
 		}
 		if err := c.option.setMaxTSOBatchWaitInterval(interval); err != nil {
 			return err
@@ -473,11 +472,11 @@ func (c *client) UpdateOption(option DynamicOption, value interface{}) error {
 	case EnableTSOFollowerProxy:
 		enable, ok := value.(bool)
 		if !ok {
-			return errors.New("[pd] invalid value type for EnableTSOFollowerProxy option, it should be bool")
+			return errors.New("[tm] invalid value type for EnableTSOFollowerProxy option, it should be bool")
 		}
 		c.option.setEnableTSOFollowerProxy(enable)
 	default:
-		return errors.New("[pd] unsupported client option")
+		return errors.New("[tm] unsupported client option")
 	}
 	return nil
 }
@@ -540,7 +539,7 @@ func (c *client) GetAllMembers(ctx context.Context) ([]*pdpb.Member, error) {
 	return resp.GetMembers(), nil
 }
 
-// leaderClient gets the client of current PD leader.
+// leaderClient gets the client of current TM leader.
 func (c *client) leaderClient() pdpb.PDClient {
 	if client := c.pdSvcDiscovery.GetServingEndpointClientConn(); client != nil {
 		return pdpb.NewPDClient(client)
@@ -579,7 +578,7 @@ func (c *client) getClient() pdpb.PDClient {
 	if c.option.enableForwarding && atomic.LoadInt32(&c.leaderNetworkFailure) == 1 {
 		backupClientConn, addr := c.backupClientConn()
 		if backupClientConn != nil {
-			log.Debug("[pd] use follower client", zap.String("addr", addr))
+			log.Debug("[tm] use follower client", zap.String("addr", addr))
 			return pdpb.NewPDClient(backupClientConn)
 		}
 	}
@@ -695,7 +694,7 @@ func (c *client) GetRegionFromMember(ctx context.Context, key []byte, memberURLs
 	for _, url := range memberURLs {
 		conn, err := c.pdSvcDiscovery.GetOrCreateGRPCConn(url)
 		if err != nil {
-			log.Error("[pd] can't get grpc connection", zap.String("member-URL", url), errs.ZapError(err))
+			log.Error("[tm] can't get grpc connection", zap.String("member-URL", url), errs.ZapError(err))
 			continue
 		}
 		cc := pdpb.NewPDClient(conn)
@@ -704,7 +703,7 @@ func (c *client) GetRegionFromMember(ctx context.Context, key []byte, memberURLs
 			RegionKey: key,
 		})
 		if err != nil || resp.GetHeader().GetError() != nil {
-			log.Error("[pd] can't get region info", zap.String("member-URL", url), errs.ZapError(err))
+			log.Error("[tm] can't get region info", zap.String("member-URL", url), errs.ZapError(err))
 			continue
 		}
 		if resp != nil {
@@ -715,7 +714,7 @@ func (c *client) GetRegionFromMember(ctx context.Context, key []byte, memberURLs
 	if resp == nil {
 		cmdFailDurationGetRegion.Observe(time.Since(start).Seconds())
 		c.pdSvcDiscovery.ScheduleCheckMemberChanged()
-		errorMsg := fmt.Sprintf("[pd] can't get region info from member URLs: %+v", memberURLs)
+		errorMsg := fmt.Sprintf("[tm] can't get region info from member URLs: %+v", memberURLs)
 		return nil, errors.WithStack(errors.New(errorMsg))
 	}
 	return handleRegionResponse(resp), nil
@@ -881,7 +880,7 @@ func (c *client) GetStore(ctx context.Context, storeID uint64) (*metapb.Store, e
 func handleStoreResponse(resp *pdpb.GetStoreResponse) (*metapb.Store, error) {
 	store := resp.GetStore()
 	if store == nil {
-		return nil, errors.New("[pd] store field in rpc response not set")
+		return nil, errors.New("[tm] store field in rpc response not set")
 	}
 	if store.GetNodeState() == metapb.NodeState_Removed {
 		return nil, nil
@@ -1239,7 +1238,7 @@ func (c *client) WatchGlobalConfig(ctx context.Context, configPath string, revis
 		defer func() {
 			close(globalConfigWatcherCh)
 			if r := recover(); r != nil {
-				log.Error("[pd] panic in client `WatchGlobalConfig`", zap.Any("error", r))
+				log.Error("[tm] panic in client `WatchGlobalConfig`", zap.Any("error", r))
 				return
 			}
 		}()
@@ -1281,7 +1280,7 @@ func (c *client) GetExternalTimestamp(ctx context.Context) (uint64, error) {
 	}
 	resErr := resp.GetHeader().GetError()
 	if resErr != nil {
-		return 0, errors.Errorf("[pd]" + resErr.Message)
+		return 0, errors.Errorf("[tm]" + resErr.Message)
 	}
 	return resp.GetTimestamp(), nil
 }
@@ -1300,7 +1299,7 @@ func (c *client) SetExternalTimestamp(ctx context.Context, timestamp uint64) err
 	}
 	resErr := resp.GetHeader().GetError()
 	if resErr != nil {
-		return errors.Errorf("[pd]" + resErr.Message)
+		return errors.Errorf("[tm]" + resErr.Message)
 	}
 	return nil
 }

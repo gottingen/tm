@@ -44,7 +44,7 @@ import (
 
 func main() {
 	rootCmd := &cobra.Command{
-		Use:   "pd-server",
+		Use:   "tm-server",
 		Short: "Placement Driver server",
 		Run:   createServerWrapper,
 	}
@@ -122,13 +122,13 @@ func addFlags(cmd *cobra.Command) {
 	cmd.Flags().BoolP("version", "V", false, "print version information and exit")
 	cmd.Flags().StringP("config", "", "", "config file")
 	cmd.Flags().BoolP("config-check", "", false, "check config file validity and exit")
-	cmd.Flags().StringP("name", "", "", "human-readable name for this pd member")
+	cmd.Flags().StringP("name", "", "", "human-readable name for this tm member")
 	cmd.Flags().StringP("data-dir", "", "", "path to the data directory (default 'default.${name}')")
 	cmd.Flags().StringP("client-urls", "", "", "urls for client traffic")
 	cmd.Flags().StringP("advertise-client-urls", "", "", "advertise urls for client traffic (default '${client-urls}')")
 	cmd.Flags().StringP("peer-urls", "", "", "urls for peer traffic")
 	cmd.Flags().StringP("advertise-peer-urls", "", "", "advertise urls for peer traffic (default '${peer-urls}')")
-	cmd.Flags().StringP("initial-cluster", "", "", "initial cluster configuration for bootstrapping, e,g. pd=http://127.0.0.1:2380")
+	cmd.Flags().StringP("initial-cluster", "", "", "initial cluster configuration for bootstrapping, e,g. tm=http://127.0.0.1:2380")
 	cmd.Flags().StringP("join", "", "", "join to an existing cluster (usage: cluster's '${advertise-client-urls}'")
 	cmd.Flags().StringP("metrics-addr", "", "", "prometheus pushgateway address, leaves it empty will disable prometheus push")
 	cmd.Flags().StringP("log-level", "L", "info", "log level: debug, info, warn, error, fatal (default 'info')")

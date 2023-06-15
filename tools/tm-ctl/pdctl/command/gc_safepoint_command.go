@@ -21,7 +21,7 @@ import (
 )
 
 var (
-	serviceGCSafepointPrefix = "pd/api/v1/gc/safepoint"
+	serviceGCSafepointPrefix = "tm/api/v1/gc/safepoint"
 )
 
 // NewServiceGCSafepointCommand return a service gc safepoint subcommand of rootCmd

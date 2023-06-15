@@ -71,7 +71,7 @@ func (o *PersistOptions) GetScheduleConfig() *ScheduleConfig {
 	return o.schedule.Load().(*ScheduleConfig)
 }
 
-// SetScheduleConfig sets the PD scheduling configuration.
+// SetScheduleConfig sets the TM scheduling configuration.
 func (o *PersistOptions) SetScheduleConfig(cfg *ScheduleConfig) {
 	o.schedule.Store(cfg)
 }
@@ -81,17 +81,17 @@ func (o *PersistOptions) GetReplicationConfig() *ReplicationConfig {
 	return o.replication.Load().(*ReplicationConfig)
 }
 
-// SetReplicationConfig sets the PD replication configuration.
+// SetReplicationConfig sets the TM replication configuration.
 func (o *PersistOptions) SetReplicationConfig(cfg *ReplicationConfig) {
 	o.replication.Store(cfg)
 }
 
-// GetPDServerConfig returns pd server configurations.
+// GetPDServerConfig returns tm server configurations.
 func (o *PersistOptions) GetPDServerConfig() *PDServerConfig {
 	return o.pdServerConfig.Load().(*PDServerConfig)
 }
 
-// SetPDServerConfig sets the PD configuration.
+// SetPDServerConfig sets the TM configuration.
 func (o *PersistOptions) SetPDServerConfig(cfg *PDServerConfig) {
 	o.pdServerConfig.Store(cfg)
 }
@@ -664,7 +664,7 @@ func (o *PersistOptions) GetSchedulers() SchedulerConfigs {
 	return o.GetScheduleConfig().Schedulers
 }
 
-// GetHotRegionsWriteInterval gets interval for PD to store Hot Region information.
+// GetHotRegionsWriteInterval gets interval for TM to store Hot Region information.
 func (o *PersistOptions) GetHotRegionsWriteInterval() time.Duration {
 	return o.GetScheduleConfig().HotRegionsWriteInterval.Duration
 }
@@ -790,7 +790,7 @@ func (o *PersistOptions) CheckLabelProperty(typ string, labels []*metapb.StoreLa
 	return false
 }
 
-// GetMinResolvedTSPersistenceInterval gets the interval for PD to save min resolved ts.
+// GetMinResolvedTSPersistenceInterval gets the interval for TM to save min resolved ts.
 func (o *PersistOptions) GetMinResolvedTSPersistenceInterval() time.Duration {
 	return o.GetPDServerConfig().MinResolvedTSPersistenceInterval.Duration
 }

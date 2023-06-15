@@ -32,26 +32,26 @@ import (
 )
 
 var (
-	configPrefix          = "pd/api/v1/config"
-	schedulePrefix        = "pd/api/v1/config/schedule"
-	replicatePrefix       = "pd/api/v1/config/replicate"
-	labelPropertyPrefix   = "pd/api/v1/config/label-property"
-	clusterVersionPrefix  = "pd/api/v1/config/cluster-version"
-	rulesPrefix           = "pd/api/v1/config/rules"
-	rulesBatchPrefix      = "pd/api/v1/config/rules/batch"
-	rulePrefix            = "pd/api/v1/config/rule"
-	ruleGroupPrefix       = "pd/api/v1/config/rule_group"
-	ruleGroupsPrefix      = "pd/api/v1/config/rule_groups"
-	replicationModePrefix = "pd/api/v1/config/replication-mode"
-	ruleBundlePrefix      = "pd/api/v1/config/placement-rule"
-	pdServerPrefix        = "pd/api/v1/config/pd-server"
+	configPrefix          = "tm/api/v1/config"
+	schedulePrefix        = "tm/api/v1/config/schedule"
+	replicatePrefix       = "tm/api/v1/config/replicate"
+	labelPropertyPrefix   = "tm/api/v1/config/label-property"
+	clusterVersionPrefix  = "tm/api/v1/config/cluster-version"
+	rulesPrefix           = "tm/api/v1/config/rules"
+	rulesBatchPrefix      = "tm/api/v1/config/rules/batch"
+	rulePrefix            = "tm/api/v1/config/rule"
+	ruleGroupPrefix       = "tm/api/v1/config/rule_group"
+	ruleGroupsPrefix      = "tm/api/v1/config/rule_groups"
+	replicationModePrefix = "tm/api/v1/config/replication-mode"
+	ruleBundlePrefix      = "tm/api/v1/config/placement-rule"
+	pdServerPrefix        = "tm/api/v1/config/tm-server"
 )
 
 // NewConfigCommand return a config subcommand of rootCmd
 func NewConfigCommand() *cobra.Command {
 	conf := &cobra.Command{
 		Use:   "config <subcommand>",
-		Short: "tune pd configs",
+		Short: "tune tm configs",
 	}
 	conf.AddCommand(NewShowConfigCommand())
 	conf.AddCommand(NewSetConfigCommand())
@@ -64,7 +64,7 @@ func NewConfigCommand() *cobra.Command {
 func NewShowConfigCommand() *cobra.Command {
 	sc := &cobra.Command{
 		Use:   "show [replication|label-property|all]",
-		Short: "show replication and schedule config of PD",
+		Short: "show replication and schedule config of TM",
 		Run:   showConfigCommandFunc,
 	}
 	sc.AddCommand(NewShowAllConfigCommand())
@@ -81,7 +81,7 @@ func NewShowConfigCommand() *cobra.Command {
 func NewShowAllConfigCommand() *cobra.Command {
 	sc := &cobra.Command{
 		Use:   "all",
-		Short: "show all config of PD",
+		Short: "show all config of TM",
 		Run:   showAllConfigCommandFunc,
 	}
 	return sc
@@ -91,7 +91,7 @@ func NewShowAllConfigCommand() *cobra.Command {
 func NewShowScheduleConfigCommand() *cobra.Command {
 	sc := &cobra.Command{
 		Use:   "schedule",
-		Short: "show schedule config of PD",
+		Short: "show schedule config of TM",
 		Run:   showScheduleConfigCommandFunc,
 	}
 	return sc
@@ -101,7 +101,7 @@ func NewShowScheduleConfigCommand() *cobra.Command {
 func NewShowReplicationConfigCommand() *cobra.Command {
 	sc := &cobra.Command{
 		Use:   "replication",
-		Short: "show replication config of PD",
+		Short: "show replication config of TM",
 		Run:   showReplicationConfigCommandFunc,
 	}
 	return sc
@@ -139,7 +139,7 @@ func newShowReplicationModeCommand() *cobra.Command {
 func NewShowServerConfigCommand() *cobra.Command {
 	return &cobra.Command{
 		Use:   "server",
-		Short: "show PD server config",
+		Short: "show TM server config",
 		Run:   showServerCommandFunc,
 	}
 }

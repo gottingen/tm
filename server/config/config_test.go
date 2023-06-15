@@ -151,7 +151,7 @@ name = ""
 lease = 0
 max-request-bytes = 20000000
 
-[pd-server]
+[tm-server]
 metric-storage = "http://127.0.0.1:9090"
 
 [schedule]
@@ -192,7 +192,7 @@ leader-schedule-limit = 0
 
 	// Check undefined config fields
 	cfgData = `
-type = "pd"
+type = "tm"
 name = ""
 lease = 0
 
@@ -256,7 +256,7 @@ func TestMigrateFlags(t *testing.T) {
 		return cfg, err
 	}
 	cfg, err := load(`
-[pd-server]
+[tm-server]
 trace-region-flow = false
 [schedule]
 disable-remove-down-replica = true
@@ -292,7 +292,7 @@ func TestPDServerConfig(t *testing.T) {
 	}{
 		{
 			`
-[pd-server]
+[tm-server]
 dashboard-address = "http://127.0.0.1:2379"
 `,
 			false,
@@ -300,7 +300,7 @@ dashboard-address = "http://127.0.0.1:2379"
 		},
 		{
 			`
-[pd-server]
+[tm-server]
 dashboard-address = "auto"
 `,
 			false,
@@ -308,7 +308,7 @@ dashboard-address = "auto"
 		},
 		{
 			`
-[pd-server]
+[tm-server]
 dashboard-address = "none"
 `,
 			false,
@@ -321,7 +321,7 @@ dashboard-address = "none"
 		},
 		{
 			`
-[pd-server]
+[tm-server]
 dashboard-address = "127.0.0.1:2379"
 `,
 			true,
@@ -329,7 +329,7 @@ dashboard-address = "127.0.0.1:2379"
 		},
 		{
 			`
-[pd-server]
+[tm-server]
 dashboard-address = "foo"
 `,
 			true,

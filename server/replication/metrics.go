@@ -19,7 +19,7 @@ import "github.com/prometheus/client_golang/prometheus"
 var (
 	drTickCounter = prometheus.NewCounter(
 		prometheus.CounterOpts{
-			Namespace: "pd",
+			Namespace: "tm",
 			Subsystem: "replication",
 			Name:      "dr_tick_total",
 			Help:      "Counter of background state check count",
@@ -27,7 +27,7 @@ var (
 
 	drRecoverProgressGauge = prometheus.NewGauge(
 		prometheus.GaugeOpts{
-			Namespace: "pd",
+			Namespace: "tm",
 			Subsystem: "replication",
 			Name:      "dr_recover_progress",
 			Help:      "Progress of sync_recover process",

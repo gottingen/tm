@@ -12,14 +12,13 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-package pd
+package tm
 
 import (
 	"context"
 	"time"
 
 	"github.com/gottingen/tm/client/grpcutil"
-	"github.com/opentracing/opentracing-go"
 	"github.com/pingcap/errors"
 	"github.com/pingcap/kvproto/pkg/meta_storagepb"
 	"github.com/pingcap/log"
@@ -37,7 +36,7 @@ type MetaStorageClient interface {
 	Put(ctx context.Context, key []byte, value []byte, opts ...OpOption) (*meta_storagepb.PutResponse, error)
 }
 
-// metaStorageClient gets the meta storage client from current PD leader.
+// metaStorageClient gets the meta storage client from current TM leader.
 func (c *client) metaStorageClient() meta_storagepb.MetaStorageClient {
 	if client := c.pdSvcDiscovery.GetServingEndpointClientConn(); client != nil {
 		return meta_storagepb.NewMetaStorageClient(client)
@@ -191,7 +190,7 @@ func (c *client) Watch(ctx context.Context, key []byte, opts ...OpOption) (chan 
 		defer func() {
 			close(eventCh)
 			if r := recover(); r != nil {
-				log.Error("[pd] panic in client `Watch`", zap.Any("error", r))
+				log.Error("[tm] panic in client `Watch`", zap.Any("error", r))
 				return
 			}
 		}()

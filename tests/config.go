@@ -36,7 +36,7 @@ type serverConfig struct {
 }
 
 func newServerConfig(name string, cc *clusterConfig, join bool) *serverConfig {
-	tempDir, _ := os.MkdirTemp("/tmp", "pd-tests")
+	tempDir, _ := os.MkdirTemp("/tmp", "tm-tests")
 	return &serverConfig{
 		Name:          name,
 		DataDir:       tempDir,
@@ -66,13 +66,13 @@ func (c *serverConfig) Generate(opts ...ConfigOption) (*config.Config, error) {
 	flagSet.BoolP("version", "V", false, "print version information and exit")
 	flagSet.StringP("config", "", "", "config file")
 	flagSet.BoolP("config-check", "", false, "check config file validity and exit")
-	flagSet.StringP("name", "", "", "human-readable name for this pd member")
+	flagSet.StringP("name", "", "", "human-readable name for this tm member")
 	flagSet.StringP("data-dir", "", "", "path to the data directory (default 'default.${name}')")
 	flagSet.StringP("client-urls", "", "http://127.0.0.1:2379", "url for client traffic")
 	flagSet.StringP("advertise-client-urls", "", "", "advertise url for client traffic (default '${client-urls}')")
 	flagSet.StringP("peer-urls", "", "http://127.0.0.1:2379", "url for peer traffic")
 	flagSet.StringP("advertise-peer-urls", "", "", "advertise url for peer traffic (default '${peer-urls}')")
-	flagSet.StringP("initial-cluster", "", "", "initial cluster configuration for bootstrapping, e,g. pd=http://127.0.0.1:2380")
+	flagSet.StringP("initial-cluster", "", "", "initial cluster configuration for bootstrapping, e,g. tm=http://127.0.0.1:2380")
 	flagSet.StringP("join", "", "", "join to an existing cluster (usage: cluster's '${advertise-client-urls}'")
 	flagSet.StringP("metrics-addr", "", "", "prometheus pushgateway address, leaves it empty will disable prometheus push")
 	flagSet.StringP("log-level", "L", "info", "log level: debug, info, warn, error, fatal (default 'info')")
@@ -117,7 +117,7 @@ func (c *clusterConfig) Join() *serverConfig {
 }
 
 func (c *clusterConfig) nextServerName() string {
-	return fmt.Sprintf("pd%d", len(c.InitialServers)+len(c.JoinServers)+1)
+	return fmt.Sprintf("tm%d", len(c.InitialServers)+len(c.JoinServers)+1)
 }
 
 func (c *clusterConfig) GetServerAddrs() string {

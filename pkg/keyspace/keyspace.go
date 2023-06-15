@@ -34,7 +34,7 @@ import (
 
 const (
 	// AllocStep set idAllocator's step when write persistent window boundary.
-	// Use a lower value for denser idAllocation in the event of frequent pd leader change.
+	// Use a lower value for denser idAllocation in the event of frequent tm leader change.
 	AllocStep = uint64(100)
 	// AllocLabel is used to label keyspace idAllocator's metrics.
 	AllocLabel = "keyspace-idAlloc"
@@ -124,7 +124,7 @@ func (manager *Manager) Bootstrap() error {
 	}
 	defaultKeyspaceMeta.Config = config
 	err = manager.saveNewKeyspace(defaultKeyspaceMeta)
-	// It's possible that default keyspace already exists in the storage (e.g. PD restart/recover),
+	// It's possible that default keyspace already exists in the storage (e.g. TM restart/recover),
 	// so we ignore the keyspaceExists error.
 	if err != nil && err != ErrKeyspaceExists {
 		return err

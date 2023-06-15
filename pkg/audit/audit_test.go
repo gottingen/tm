@@ -46,10 +46,10 @@ func TestPrometheusHistogramBackend(t *testing.T) {
 	re := require.New(t)
 	serviceAuditHistogramTest := prometheus.NewHistogramVec(
 		prometheus.HistogramOpts{
-			Namespace: "pd",
+			Namespace: "tm",
 			Subsystem: "service",
 			Name:      "audit_handling_seconds_test",
-			Help:      "PD server service handling audit",
+			Help:      "TM server service handling audit",
 			Buckets:   prometheus.DefBuckets,
 		}, []string{"service", "method", "component", "ip"})
 

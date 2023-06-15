@@ -32,21 +32,21 @@ import (
 )
 
 var (
-	regionsPrefix           = "pd/api/v1/regions"
-	regionsStorePrefix      = "pd/api/v1/regions/store"
-	regionsCheckPrefix      = "pd/api/v1/regions/check"
-	regionsWriteFlowPrefix  = "pd/api/v1/regions/writeflow"
-	regionsReadFlowPrefix   = "pd/api/v1/regions/readflow"
-	regionsConfVerPrefix    = "pd/api/v1/regions/confver"
-	regionsVersionPrefix    = "pd/api/v1/regions/version"
-	regionsSizePrefix       = "pd/api/v1/regions/size"
-	regionTopKeysPrefix     = "pd/api/v1/regions/keys"
-	regionTopCPUPrefix      = "pd/api/v1/regions/cpu"
-	regionsKeyPrefix        = "pd/api/v1/regions/key"
-	regionsSiblingPrefix    = "pd/api/v1/regions/sibling"
-	regionsRangeHolesPrefix = "pd/api/v1/regions/range-holes"
-	regionIDPrefix          = "pd/api/v1/region/id"
-	regionKeyPrefix         = "pd/api/v1/region/key"
+	regionsPrefix           = "tm/api/v1/regions"
+	regionsStorePrefix      = "tm/api/v1/regions/store"
+	regionsCheckPrefix      = "tm/api/v1/regions/check"
+	regionsWriteFlowPrefix  = "tm/api/v1/regions/writeflow"
+	regionsReadFlowPrefix   = "tm/api/v1/regions/readflow"
+	regionsConfVerPrefix    = "tm/api/v1/regions/confver"
+	regionsVersionPrefix    = "tm/api/v1/regions/version"
+	regionsSizePrefix       = "tm/api/v1/regions/size"
+	regionTopKeysPrefix     = "tm/api/v1/regions/keys"
+	regionTopCPUPrefix      = "tm/api/v1/regions/cpu"
+	regionsKeyPrefix        = "tm/api/v1/regions/key"
+	regionsSiblingPrefix    = "tm/api/v1/regions/sibling"
+	regionsRangeHolesPrefix = "tm/api/v1/regions/range-holes"
+	regionIDPrefix          = "tm/api/v1/region/id"
+	regionKeyPrefix         = "tm/api/v1/region/key"
 )
 
 // NewRegionCommand returns a region subcommand of rootCmd
@@ -464,10 +464,10 @@ func showRegionWithStoreCommandFunc(cmd *cobra.Command, args []string) {
 }
 
 const (
-	rangeHolesLongDesc = `There are some cases that the region range is not continuous, for example, the region doesn't send the heartbeat to PD after a splitting.
+	rangeHolesLongDesc = `There are some cases that the region range is not continuous, for example, the region doesn't send the heartbeat to TM after a splitting.
 This command will output all empty ranges without any region info.`
 	rangeHolesExample = `
-  If PD now holds the region ranges info like ["", "a"], ["b", "x"], ["x", "z"]. The the output will be like:
+  If TM now holds the region ranges info like ["", "a"], ["b", "x"], ["x", "z"]. The the output will be like:
 
   [
     [

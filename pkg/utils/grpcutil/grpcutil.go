@@ -28,8 +28,8 @@ import (
 	"google.golang.org/grpc/metadata"
 )
 
-// ForwardMetadataKey is used to record the forwarded host of PD.
-const ForwardMetadataKey = "pd-forwarded-host"
+// ForwardMetadataKey is used to record the forwarded host of TM.
+const ForwardMetadataKey = "tm-forwarded-host"
 
 // TLSConfig is the configuration for supporting tls.
 type TLSConfig struct {

@@ -27,8 +27,8 @@ import (
 )
 
 var (
-	labelsPrefix      = "pd/api/v1/labels"
-	labelsStorePrefix = "pd/api/v1/labels/stores"
+	labelsPrefix      = "tm/api/v1/labels"
+	labelsStorePrefix = "tm/api/v1/labels/stores"
 )
 
 // NewLabelCommand return a member subcommand of rootCmd

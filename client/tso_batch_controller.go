@@ -12,7 +12,7 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-package pd
+package tm
 
 import (
 	"context"
@@ -69,7 +69,7 @@ fetchPendingRequestsLoop:
 	}
 
 	// Check whether we should fetch more pending TSO requests from the channel.
-	// TODO: maybe consider the actual load that returns through a TSO response from PD server.
+	// TODO: maybe consider the actual load that returns through a TSO response from TM server.
 	if tbc.collectedRequestCount >= tbc.maxBatchSize || maxBatchWaitInterval <= 0 {
 		return nil
 	}

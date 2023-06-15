@@ -86,7 +86,7 @@ func newTrendHandler(s *server.Server, rd *render.Render) *trendHandler {
 // @Produce  json
 // @Success  200  {object}  Trend
 // @Failure  400  {string}  string  "The request is invalid."
-// @Failure  500  {string}  string  "PD server failed to proceed the request."
+// @Failure  500  {string}  string  "TM server failed to proceed the request."
 // @Router   /trend [get]
 func (h *trendHandler) GetTrend(w http.ResponseWriter, r *http.Request) {
 	var from time.Time

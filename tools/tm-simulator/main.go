@@ -43,10 +43,10 @@ import (
 )
 
 var (
-	pdAddr                      = flag.String("pd", "", "pd address")
+	pdAddr                      = flag.String("tm", "", "tm address")
 	configFile                  = flag.String("config", "conf/simconfig.toml", "config file")
 	caseName                    = flag.String("case", "", "case name")
-	serverLogLevel              = flag.String("serverLog", "info", "pd server log level")
+	serverLogLevel              = flag.String("serverLog", "info", "tm server log level")
 	simLogLevel                 = flag.String("simLog", "info", "simulator log level")
 	simLogFile                  = flag.String("log-file", "", "simulator log file")
 	regionNum                   = flag.Int("regionNum", 0, "regionNum of one store")
@@ -56,7 +56,7 @@ var (
 )
 
 func main() {
-	// wait PD start. Otherwise it will happen error when getting cluster ID.
+	// wait TM start. Otherwise it will happen error when getting cluster ID.
 	time.Sleep(3 * time.Second)
 	// ignore some undefined flag
 	flag.CommandLine.ParseErrorsWhitelist.UnknownFlags = true
@@ -132,7 +132,7 @@ func runHTTPServer() {
 	http.ListenAndServe(*statusAddress, nil)
 }
 
-// NewSingleServer creates a pd server for simulator.
+// NewSingleServer creates a tm server for simulator.
 func NewSingleServer(ctx context.Context, simConfig *simulator.SimConfig) (*server.Server, testutil.CleanupFunc) {
 	err := logutil.SetupLogger(simConfig.ServerConfig.Log, &simConfig.ServerConfig.Logger, &simConfig.ServerConfig.LogProps)
 	if err == nil {

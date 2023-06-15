@@ -55,7 +55,7 @@ func (ms mockStoresSet) GetStore(id uint64) *core.StoreInfo {
 func addExtraRules(extraRules int) []*Rule {
 	rules := make([]*Rule, 0)
 	rules = append(rules, &Rule{
-		GroupID:        "pd",
+		GroupID:        "tm",
 		ID:             "default",
 		Role:           Voter,
 		Count:          3,
@@ -110,7 +110,7 @@ func BenchmarkFitRegion(b *testing.B) {
 	region := mockRegion(3, 0)
 	rules := []*Rule{
 		{
-			GroupID:        "pd",
+			GroupID:        "tm",
 			ID:             "default",
 			Role:           Voter,
 			Count:          3,
@@ -129,7 +129,7 @@ func BenchmarkFitRegionMoreStores(b *testing.B) {
 	region := mockRegion(3, 0)
 	rules := []*Rule{
 		{
-			GroupID:        "pd",
+			GroupID:        "tm",
 			ID:             "default",
 			Role:           Voter,
 			Count:          3,
@@ -148,7 +148,7 @@ func BenchmarkFitRegionMorePeers(b *testing.B) {
 	region := mockRegion(5, 0)
 	rules := []*Rule{
 		{
-			GroupID:        "pd",
+			GroupID:        "tm",
 			ID:             "default",
 			Role:           Voter,
 			Count:          5,
@@ -167,14 +167,14 @@ func BenchmarkFitRegionMorePeersEquals(b *testing.B) {
 	region := mockRegion(3, 0)
 	rules := []*Rule{
 		{
-			GroupID:        "pd",
+			GroupID:        "tm",
 			ID:             "default",
 			Role:           Leader,
 			Count:          1,
 			LocationLabels: []string{},
 		},
 		{
-			GroupID:        "pd",
+			GroupID:        "tm",
 			ID:             "default-2",
 			Role:           Follower,
 			Count:          4,
@@ -193,7 +193,7 @@ func BenchmarkFitRegionMorePeersSplitRules(b *testing.B) {
 	region := mockRegion(3, 0)
 	rules := []*Rule{
 		{
-			GroupID:        "pd",
+			GroupID:        "tm",
 			ID:             "default",
 			Role:           Leader,
 			Count:          1,
@@ -202,7 +202,7 @@ func BenchmarkFitRegionMorePeersSplitRules(b *testing.B) {
 	}
 	for i := 0; i < 4; i++ {
 		rules = append(rules, &Rule{
-			GroupID:        "pd",
+			GroupID:        "tm",
 			ID:             fmt.Sprintf("%v", i),
 			Role:           Follower,
 			Count:          1,
@@ -221,7 +221,7 @@ func BenchmarkFitRegionMoreVotersSplitRules(b *testing.B) {
 	region := mockRegion(5, 0)
 	rules := []*Rule{
 		{
-			GroupID:        "pd",
+			GroupID:        "tm",
 			ID:             "default",
 			Role:           Voter,
 			Count:          1,
@@ -230,7 +230,7 @@ func BenchmarkFitRegionMoreVotersSplitRules(b *testing.B) {
 	}
 	for i := 0; i < 4; i++ {
 		rules = append(rules, &Rule{
-			GroupID:        "pd",
+			GroupID:        "tm",
 			ID:             fmt.Sprintf("%v", i),
 			Role:           Voter,
 			Count:          1,
@@ -260,7 +260,7 @@ func BenchmarkFitRegionCrossRegion(b *testing.B) {
 	region := mockRegion(5, 0)
 	rules := make([]*Rule, 0)
 	rules = append(rules, &Rule{
-		GroupID:        "pd",
+		GroupID:        "tm",
 		ID:             "1",
 		Role:           Leader,
 		Count:          1,
@@ -268,7 +268,7 @@ func BenchmarkFitRegionCrossRegion(b *testing.B) {
 	})
 	for i := 0; i < 2; i++ {
 		rules = append(rules, &Rule{
-			GroupID:        "pd",
+			GroupID:        "tm",
 			ID:             fmt.Sprintf("%v", i),
 			Role:           Follower,
 			Count:          1,
@@ -289,7 +289,7 @@ func BenchmarkFitRegionWithMoreRulesAndStoreLabels(b *testing.B) {
 	// create 100 rules, with each rule has 101 LabelConstraints.
 	for i := 0; i < 100; i++ {
 		rule := &Rule{
-			GroupID:          "pd",
+			GroupID:          "tm",
 			ID:               fmt.Sprintf("%v", i),
 			Role:             Follower,
 			Count:            3,
@@ -351,7 +351,7 @@ func BenchmarkFitRegionWithLocationLabels(b *testing.B) {
 	region := mockRegion(5, 5)
 	rules := []*Rule{}
 	rule := &Rule{
-		GroupID:          "pd",
+		GroupID:          "tm",
 		ID:               "followers",
 		Role:             Follower,
 		Count:            3,
@@ -360,7 +360,7 @@ func BenchmarkFitRegionWithLocationLabels(b *testing.B) {
 	}
 	rules = append(rules, rule)
 	rule = &Rule{
-		GroupID:          "pd",
+		GroupID:          "tm",
 		ID:               "learner",
 		Role:             Learner,
 		Count:            3,
@@ -369,7 +369,7 @@ func BenchmarkFitRegionWithLocationLabels(b *testing.B) {
 	}
 	rules = append(rules, rule)
 	rule = &Rule{
-		GroupID:          "pd",
+		GroupID:          "tm",
 		ID:               "voters",
 		Role:             Voter,
 		Count:            4,

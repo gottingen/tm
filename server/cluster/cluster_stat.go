@@ -34,7 +34,7 @@ import (
 // the load for the whole cluster.
 //
 // Now we just support CPU as the measurement of the load. The CPU information
-// is reported by each store with a heartbeat message which sending to PD every
+// is reported by each store with a heartbeat message which sending to TM every
 // interval(10s). There is no synchronization between each store, so the stores
 // could not send heartbeat messages at the same time, and the collected
 // information has time shift.

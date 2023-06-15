@@ -43,7 +43,7 @@ var (
 
 const (
 	etcdTimeout     = 1200 * time.Second
-	pdRootPath      = "/pd"
+	pdRootPath      = "/tm"
 	minKVRangeLimit = 100
 	clusterPath     = "raft"
 )

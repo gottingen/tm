@@ -39,7 +39,7 @@ func TestSaveLoadTimestamp(t *testing.T) {
 		Endpoints: []string{ep},
 	})
 	re.NoError(err)
-	rootPath := path.Join("/pd", strconv.FormatUint(100, 10))
+	rootPath := path.Join("/tm", strconv.FormatUint(100, 10))
 	storage := NewStorageWithEtcdBackend(client, rootPath)
 
 	key := "timestamp"
@@ -64,7 +64,7 @@ func TestGlobalLocalTimestamp(t *testing.T) {
 		Endpoints: []string{ep},
 	})
 	re.NoError(err)
-	rootPath := path.Join("/pd", strconv.FormatUint(100, 10))
+	rootPath := path.Join("/tm", strconv.FormatUint(100, 10))
 	storage := NewStorageWithEtcdBackend(client, rootPath)
 
 	ltaKey := "lta"
@@ -105,7 +105,7 @@ func TestTimestampTxn(t *testing.T) {
 		Endpoints: []string{ep},
 	})
 	re.NoError(err)
-	rootPath := path.Join("/pd", strconv.FormatUint(100, 10))
+	rootPath := path.Join("/tm", strconv.FormatUint(100, 10))
 	storage := NewStorageWithEtcdBackend(client, rootPath)
 
 	timestampKey := "timestamp"

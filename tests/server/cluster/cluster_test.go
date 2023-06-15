@@ -451,7 +451,7 @@ func testRemoveStore(re *require.Assertions, clusterID uint64, rc *cluster.RaftC
 	}
 }
 
-// Make sure PD will not panic if it start and stop again and again.
+// Make sure TM will not panic if it start and stop again and again.
 func TestRaftClusterRestart(t *testing.T) {
 	re := require.New(t)
 	ctx, cancel := context.WithCancel(context.Background())
@@ -481,7 +481,7 @@ func TestRaftClusterRestart(t *testing.T) {
 	rc.Stop()
 }
 
-// Make sure PD will not deadlock if it start and stop again and again.
+// Make sure TM will not deadlock if it start and stop again and again.
 func TestRaftClusterMultipleRestart(t *testing.T) {
 	re := require.New(t)
 	ctx, cancel := context.WithCancel(context.Background())
@@ -1168,7 +1168,7 @@ func TestUpgradeStoreLimit(t *testing.T) {
 	err = rc.HandleRegionHeartbeat(region)
 	re.NoError(err)
 
-	// restart PD
+	// restart TM
 	// Here we use an empty storelimit to simulate the upgrade progress.
 	scheduleCfg := rc.GetScheduleConfig().Clone()
 	scheduleCfg.StoreLimit = map[uint64]config.StoreLimitConfig{}
@@ -1459,7 +1459,7 @@ func TestTransferLeaderBack(t *testing.T) {
 	re.NoError(rc.RemoveStore(1, false))
 	re.Equal(metapb.StoreState_Offline, rc.GetStore(1).GetState())
 
-	// transfer PD leader to another PD
+	// transfer TM leader to another TM
 	tc.ResignLeader()
 	tc.WaitLeader()
 	leaderServer = tc.GetServer(tc.GetLeader())
@@ -1472,7 +1472,7 @@ func TestTransferLeaderBack(t *testing.T) {
 	re.NoError(rc1.BuryStore(1, false))
 	re.NoError(rc1.RemoveTombStoneRecords())
 
-	// transfer PD leader back to the previous PD
+	// transfer TM leader back to the previous TM
 	tc.ResignLeader()
 	tc.WaitLeader()
 	leaderServer = tc.GetServer(tc.GetLeader())

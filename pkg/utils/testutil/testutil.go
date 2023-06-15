@@ -29,7 +29,7 @@ const (
 	defaultTickInterval = time.Millisecond * 100
 )
 
-// CleanupFunc closes test pd server(s) and deletes any files left behind.
+// CleanupFunc closes test tm server(s) and deletes any files left behind.
 type CleanupFunc func()
 
 // WaitOp represents available options when execute Eventually.
@@ -74,7 +74,7 @@ func NewRequestHeader(clusterID uint64) *pdpb.RequestHeader {
 	}
 }
 
-// MustNewGrpcClient must create a new PD grpc client.
+// MustNewGrpcClient must create a new TM grpc client.
 func MustNewGrpcClient(re *require.Assertions, addr string) pdpb.PDClient {
 	conn, err := grpc.Dial(strings.TrimPrefix(addr, "http://"), grpc.WithInsecure())
 	re.NoError(err)

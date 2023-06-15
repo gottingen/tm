@@ -32,8 +32,8 @@ import (
 
 const (
 	dialTimeout = 3 * time.Second
-	// ForwardMetadataKey is used to record the forwarded host of PD.
-	ForwardMetadataKey = "pd-forwarded-host"
+	// ForwardMetadataKey is used to record the forwarded host of TM.
+	ForwardMetadataKey = "tm-forwarded-host"
 )
 
 // GetClientConn returns a gRPC client connection.

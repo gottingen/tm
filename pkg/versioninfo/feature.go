@@ -31,12 +31,12 @@ const (
 	Base Feature = iota
 	Version2_0
 	// RegionMerge supports the adjacent regions to be merged.
-	// and PD will periodically check if there is enough small
+	// and TM will periodically check if there is enough small
 	// region to be merged. if there is, will send the corresponding
 	// merge command to the TiKV.
 	RegionMerge
 	// BatchSplit can speed up the region split.
-	// and PD will response the BatchSplit request.
+	// and TM will response the BatchSplit request.
 	BatchSplit
 	Version3_0
 	Version4_0

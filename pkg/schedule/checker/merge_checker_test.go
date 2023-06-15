@@ -189,7 +189,7 @@ func (suite *mergeCheckerTestSuite) TestBasic() {
 	// merge cannot across rule key.
 	suite.cluster.SetEnablePlacementRules(true)
 	suite.cluster.RuleManager.SetRule(&placement.Rule{
-		GroupID:     "pd",
+		GroupID:     "tm",
 		ID:          "test",
 		Index:       1,
 		Override:    true,
@@ -203,7 +203,7 @@ func (suite *mergeCheckerTestSuite) TestBasic() {
 	suite.NotNil(ops)
 	suite.Equal(suite.regions[2].GetID(), ops[0].RegionID())
 	suite.Equal(suite.regions[1].GetID(), ops[1].RegionID())
-	suite.cluster.RuleManager.DeleteRule("pd", "test")
+	suite.cluster.RuleManager.DeleteRule("tm", "test")
 
 	//  check 'merge_option' label
 	suite.cluster.GetRegionLabeler().SetLabelRule(&labeler.LabelRule{

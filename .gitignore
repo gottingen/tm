@@ -2,7 +2,7 @@ bin
 *.iml
 .idea
 default.etcd
-default.pd
+default.tm
 *.swp
 .DS_Store
 tags

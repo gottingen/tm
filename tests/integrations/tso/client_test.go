@@ -23,7 +23,7 @@ import (
 	"testing"
 	"time"
 
-	pd "github.com/gottingen/tm/client"
+	tm "github.com/gottingen/tm/client"
 	"github.com/gottingen/tm/client/testutil"
 	tso "github.com/gottingen/tm/pkg/mcs/tso/server"
 	"github.com/gottingen/tm/pkg/utils/tempurl"
@@ -41,7 +41,7 @@ type tsoClientTestSuite struct {
 
 	ctx    context.Context
 	cancel context.CancelFunc
-	// The PD cluster.
+	// The TM cluster.
 	cluster *tests.TestCluster
 	// The TSO service in microservice mode.
 	tsoServer        *tso.Server
@@ -49,7 +49,7 @@ type tsoClientTestSuite struct {
 
 	backendEndpoints string
 
-	client pd.TSOClient
+	client tm.TSOClient
 }
 
 func TestLegacyTSOClient(t *testing.T) {
@@ -82,7 +82,7 @@ func (suite *tsoClientTestSuite) SetupSuite() {
 	re.NoError(pdLeader.BootstrapCluster())
 	suite.backendEndpoints = pdLeader.GetAddr()
 	if suite.legacy {
-		suite.client, err = pd.NewClientWithContext(suite.ctx, strings.Split(suite.backendEndpoints, ","), pd.SecurityOption{})
+		suite.client, err = tm.NewClientWithContext(suite.ctx, strings.Split(suite.backendEndpoints, ","), tm.SecurityOption{})
 		re.NoError(err)
 	} else {
 		suite.tsoServer, suite.tsoServerCleanup = mcs.StartSingleTSOTestServer(suite.ctx, re, suite.backendEndpoints, tempurl.Alloc())
@@ -123,7 +123,7 @@ func (suite *tsoClientTestSuite) TestGetTSAsync() {
 	for i := 0; i < tsoRequestConcurrencyNumber; i++ {
 		go func() {
 			defer wg.Done()
-			tsFutures := make([]pd.TSFuture, tsoRequestRound)
+			tsFutures := make([]tm.TSFuture, tsoRequestRound)
 			for i := range tsFutures {
 				tsFutures[i] = suite.client.GetTSAsync(suite.ctx)
 			}
@@ -223,7 +223,7 @@ func (suite *tsoClientTestSuite) TestRandomShutdown() {
 				suite.tsoServer.Close()
 			}
 		} else {
-			// close pd leader server
+			// close tm leader server
 			suite.cluster.GetServer(suite.cluster.GetLeader()).GetServer().Close()
 		}
 		cancel()
@@ -235,7 +235,7 @@ func (suite *tsoClientTestSuite) TestRandomShutdown() {
 	suite.SetupSuite()
 }
 
-// When we upgrade the PD cluster, there may be a period of time that the old and new PDs are running at the same time.
+// When we upgrade the TM cluster, there may be a period of time that the old and new PDs are running at the same time.
 func TestMixedTSODeployment(t *testing.T) {
 	re := require.New(t)
 

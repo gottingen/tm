@@ -32,7 +32,7 @@ func TestParseTimestamp(t *testing.T) {
 		re.NoError(err)
 		re.True(nt.Equal(t))
 	}
-	data := []byte("pd")
+	data := []byte("tm")
 	nt, err := ParseTimestamp(data)
 	re.Error(err)
 	re.True(nt.Equal(ZeroTime))

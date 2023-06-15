@@ -28,10 +28,10 @@ import (
 )
 
 const (
-	hotReadRegionsPrefix    = "pd/api/v1/hotspot/regions/read"
-	hotWriteRegionsPrefix   = "pd/api/v1/hotspot/regions/write"
-	hotStoresPrefix         = "pd/api/v1/hotspot/stores"
-	hotRegionsHistoryPrefix = "pd/api/v1/hotspot/regions/history"
+	hotReadRegionsPrefix    = "tm/api/v1/hotspot/regions/read"
+	hotWriteRegionsPrefix   = "tm/api/v1/hotspot/regions/write"
+	hotStoresPrefix         = "tm/api/v1/hotspot/stores"
+	hotRegionsHistoryPrefix = "tm/api/v1/hotspot/regions/history"
 )
 
 // NewHotSpotCommand return a hot subcommand of rootCmd

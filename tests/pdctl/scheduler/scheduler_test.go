@@ -438,7 +438,7 @@ func TestScheduler(t *testing.T) {
 	re.Contains(echo, "Success!")
 	echo = mustExec([]string{"-u", pdAddr, "scheduler", "remove", "balance-leader-scheduler"}, nil)
 	re.Contains(echo, "404")
-	re.Contains(echo, "PD:scheduler:ErrSchedulerNotFound]scheduler not found")
+	re.Contains(echo, "TM:scheduler:ErrSchedulerNotFound]scheduler not found")
 	echo = mustExec([]string{"-u", pdAddr, "scheduler", "config", "balance-leader-scheduler"}, nil)
 	re.Contains(echo, "404")
 	re.Contains(echo, "scheduler not found")

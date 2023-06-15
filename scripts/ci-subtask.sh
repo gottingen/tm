@@ -23,13 +23,13 @@ if [[ $3 ]]; then
 else
     # Get package test list.
     packages=($(go list ./...))
-    dirs=($(find . -iname "*_test.go" -exec dirname {} \; | sort -u | sed -e "s/^\./github.com\/tikv\/pd/"))
+    dirs=($(find . -iname "*_test.go" -exec dirname {} \; | sort -u | sed -e "s/^\./github.com\/tikv\/tm/"))
     tasks=($(comm -12 <(printf "%s\n" "${packages[@]}") <(printf "%s\n" "${dirs[@]}")))
 
     weight() {
         [[ $1 == "github.com/gottingen/tm/server/api" ]] && return 30
         [[ $1 == "github.com/gottingen/tm/pkg/schedule" ]] && return 30
-        [[ $1 =~ "pd/tests" ]] && return 5
+        [[ $1 =~ "tm/tests" ]] && return 5
         return 1
     }
 

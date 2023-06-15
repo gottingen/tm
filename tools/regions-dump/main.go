@@ -47,7 +47,7 @@ var (
 const (
 	etcdTimeout = 1200 * time.Second
 
-	pdRootPath      = "/pd"
+	pdRootPath      = "/tm"
 	maxKVRangeLimit = 10000
 	minKVRangeLimit = 100
 )

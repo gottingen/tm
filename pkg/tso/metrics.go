@@ -25,7 +25,7 @@ var (
 	// TODO: pre-allocate gauge metrics
 	tsoCounter = prometheus.NewCounterVec(
 		prometheus.CounterOpts{
-			Namespace: "pd",
+			Namespace: "tm",
 			Subsystem: "tso",
 			Name:      "events",
 			Help:      "Counter of tso events",
@@ -33,7 +33,7 @@ var (
 
 	tsoGauge = prometheus.NewGaugeVec(
 		prometheus.GaugeOpts{
-			Namespace: "pd",
+			Namespace: "tm",
 			Subsystem: "cluster",
 			Name:      "tso",
 			Help:      "Record of tso metadata.",
@@ -41,7 +41,7 @@ var (
 
 	tsoGap = prometheus.NewGaugeVec(
 		prometheus.GaugeOpts{
-			Namespace: "pd",
+			Namespace: "tm",
 			Subsystem: "cluster",
 			Name:      "tso_gap_millionseconds",
 			Help:      "The minimal (non-zero) TSO gap for each DC.",
@@ -49,10 +49,10 @@ var (
 
 	tsoAllocatorRole = prometheus.NewGaugeVec(
 		prometheus.GaugeOpts{
-			Namespace: "pd",
+			Namespace: "tm",
 			Subsystem: "tso",
 			Name:      "role",
-			Help:      "Indicate the PD server role info, whether it's a TSO allocator.",
+			Help:      "Indicate the TM server role info, whether it's a TSO allocator.",
 		}, []string{dcLabel})
 )
 

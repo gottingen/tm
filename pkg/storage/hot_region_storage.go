@@ -83,7 +83,7 @@ type HistoryHotRegion struct {
 	EndKey        string  `json:"end_key"`
 	// Encryption metadata for start_key and end_key. encryption_meta.iv is IV for start_key.
 	// IV for end_key is calculated from (encryption_meta.iv + len(start_key)).
-	// The field is only used by PD and should be ignored otherwise.
+	// The field is only used by TM and should be ignored otherwise.
 	// If encryption_meta is empty (i.e. nil), it means start_key and end_key are unencrypted.
 	EncryptionMeta *encryptionpb.EncryptionMeta `json:"encryption_meta,omitempty"`
 }
@@ -96,7 +96,7 @@ type HotRegionStorageHandler interface {
 	PackHistoryHotWriteRegions() ([]HistoryHotRegion, error)
 	// IsLeader return true means this server is leader.
 	IsLeader() bool
-	// GetHotRegionWriteInterval gets interval for PD to store Hot Region information..
+	// GetHotRegionWriteInterval gets interval for TM to store Hot Region information..
 	GetHotRegionsWriteInterval() time.Duration
 	// GetHotRegionsReservedDays gets days hot region information is kept.
 	GetHotRegionsReservedDays() uint64
@@ -189,7 +189,7 @@ func (h *HotRegionStorage) backgroundDelete() {
 			}
 			if curReservedDays == 0 {
 				log.Warn(`hot region reserved days is 0, if previous reserved days is non 0,
-				 there may be residual hot regions, you can remove it manually, [pd-dir]/data/hot-region.`)
+				 there may be residual hot regions, you can remove it manually, [tm-dir]/data/hot-region.`)
 				continue
 			}
 			h.delete(int(curReservedDays))

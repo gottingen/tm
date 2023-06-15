@@ -68,7 +68,7 @@ type AllocatorParams struct {
 	RootPath  string
 	AllocPath string // AllocPath specifies path to the persistent window boundary.
 	Label     string // Label used to label metrics and logs.
-	Member    string // Member value, used to check if current pd leader.
+	Member    string // Member value, used to check if current tm leader.
 	Step      uint64 // Step size of each persistent window boundary increment, default 1000.
 }
 
@@ -170,7 +170,6 @@ func (alloc *allocatorImpl) rebaseLocked(checkCurrEnd bool) error {
 	alloc.end = end
 	alloc.base = end - alloc.step
 	// please do not reorder the first field, it's need when getting the new-end
-	// see: https://docs.pingcap.com/tidb/dev/pd-recover#get-allocated-id-from-pd-log
 	log.Info("idAllocator allocates a new id", zap.Uint64("new-end", end), zap.Uint64("new-base", alloc.base),
 		zap.String("label", alloc.label), zap.Bool("check-curr-end", checkCurrEnd))
 	return nil

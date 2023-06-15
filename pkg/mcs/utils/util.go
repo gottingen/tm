@@ -29,7 +29,7 @@ const (
 	// maxRetryTimes is the max retry times for initializing the cluster ID.
 	maxRetryTimes = 5
 	// clusterIDPath is the path to store cluster id
-	clusterIDPath = "/pd/cluster_id"
+	clusterIDPath = "/tm/cluster_id"
 	// retryInterval is the interval to retry.
 	retryInterval = time.Second
 )

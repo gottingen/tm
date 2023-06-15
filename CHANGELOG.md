@@ -1,3 +1,3 @@
-# PD Change Log
+# TM Change Log
 
-The details about PD change log can be found in [Release list](https://github.com/gottingen/tm/releases).
+The details about TM change log can be found in [Release list](https://github.com/gottingen/tm/releases).

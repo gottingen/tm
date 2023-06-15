@@ -1534,7 +1534,7 @@ func TestCalculateStoreSize1(t *testing.T) {
 	}
 
 	cluster.ruleManager.SetRule(
-		&placement.Rule{GroupID: "pd", ID: "zone1", StartKey: []byte(""), EndKey: []byte(""), Role: "voter", Count: 2,
+		&placement.Rule{GroupID: "tm", ID: "zone1", StartKey: []byte(""), EndKey: []byte(""), Role: "voter", Count: 2,
 			LabelConstraints: []placement.LabelConstraint{
 				{Key: "zone", Op: "in", Values: []string{"zone1"}},
 			},
@@ -1542,7 +1542,7 @@ func TestCalculateStoreSize1(t *testing.T) {
 	)
 
 	cluster.ruleManager.SetRule(
-		&placement.Rule{GroupID: "pd", ID: "zone2", StartKey: []byte(""), EndKey: []byte(""), Role: "voter", Count: 2,
+		&placement.Rule{GroupID: "tm", ID: "zone2", StartKey: []byte(""), EndKey: []byte(""), Role: "voter", Count: 2,
 			LabelConstraints: []placement.LabelConstraint{
 				{Key: "zone", Op: "in", Values: []string{"zone2"}},
 			},
@@ -1550,13 +1550,13 @@ func TestCalculateStoreSize1(t *testing.T) {
 	)
 
 	cluster.ruleManager.SetRule(
-		&placement.Rule{GroupID: "pd", ID: "zone3", StartKey: []byte(""), EndKey: []byte(""), Role: "follower", Count: 1,
+		&placement.Rule{GroupID: "tm", ID: "zone3", StartKey: []byte(""), EndKey: []byte(""), Role: "follower", Count: 1,
 			LabelConstraints: []placement.LabelConstraint{
 				{Key: "zone", Op: "in", Values: []string{"zone3"}},
 			},
 			LocationLabels: []string{"rack", "host"}},
 	)
-	cluster.ruleManager.DeleteRule("pd", "default")
+	cluster.ruleManager.DeleteRule("tm", "default")
 
 	regions := newTestRegions(100, 10, 5)
 	for _, region := range regions {
@@ -1615,7 +1615,7 @@ func TestCalculateStoreSize2(t *testing.T) {
 	}
 
 	cluster.ruleManager.SetRule(
-		&placement.Rule{GroupID: "pd", ID: "dc1", StartKey: []byte(""), EndKey: []byte(""), Role: "voter", Count: 2,
+		&placement.Rule{GroupID: "tm", ID: "dc1", StartKey: []byte(""), EndKey: []byte(""), Role: "voter", Count: 2,
 			LabelConstraints: []placement.LabelConstraint{
 				{Key: "dc", Op: "in", Values: []string{"dc1"}},
 			},
@@ -1623,7 +1623,7 @@ func TestCalculateStoreSize2(t *testing.T) {
 	)
 
 	cluster.ruleManager.SetRule(
-		&placement.Rule{GroupID: "pd", ID: "logic3", StartKey: []byte(""), EndKey: []byte(""), Role: "voter", Count: 1,
+		&placement.Rule{GroupID: "tm", ID: "logic3", StartKey: []byte(""), EndKey: []byte(""), Role: "voter", Count: 1,
 			LabelConstraints: []placement.LabelConstraint{
 				{Key: "logic", Op: "in", Values: []string{"logic3"}},
 			},
@@ -1631,13 +1631,13 @@ func TestCalculateStoreSize2(t *testing.T) {
 	)
 
 	cluster.ruleManager.SetRule(
-		&placement.Rule{GroupID: "pd", ID: "logic4", StartKey: []byte(""), EndKey: []byte(""), Role: "learner", Count: 1,
+		&placement.Rule{GroupID: "tm", ID: "logic4", StartKey: []byte(""), EndKey: []byte(""), Role: "learner", Count: 1,
 			LabelConstraints: []placement.LabelConstraint{
 				{Key: "logic", Op: "in", Values: []string{"logic4"}},
 			},
 			LocationLabels: []string{"dc", "logic", "rack", "host"}},
 	)
-	cluster.ruleManager.DeleteRule("pd", "default")
+	cluster.ruleManager.DeleteRule("tm", "default")
 
 	regions := newTestRegions(100, 10, 5)
 	for _, region := range regions {

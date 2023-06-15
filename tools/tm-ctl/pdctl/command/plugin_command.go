@@ -24,7 +24,7 @@ import (
 )
 
 var (
-	pluginPrefix = "pd/api/v1/plugin"
+	pluginPrefix = "tm/api/v1/plugin"
 )
 
 // NewPluginCommand a set subcommand of plugin command
@@ -42,7 +42,7 @@ func NewPluginCommand() *cobra.Command {
 func NewLoadPluginCommand() *cobra.Command {
 	r := &cobra.Command{
 		Use:   "load <plugin_path>",
-		Short: "load a plugin, path must begin with ./pd/plugin/",
+		Short: "load a plugin, path must begin with ./tm/plugin/",
 		Run:   loadPluginCommandFunc,
 	}
 	return r
@@ -52,7 +52,7 @@ func NewLoadPluginCommand() *cobra.Command {
 func NewUnloadPluginCommand() *cobra.Command {
 	r := &cobra.Command{
 		Use:   "unload <plugin_path>",
-		Short: "unload a plugin, path must begin with ./pd/plugin/",
+		Short: "unload a plugin, path must begin with ./tm/plugin/",
 		Run:   unloadPluginCommandFunc,
 	}
 	return r

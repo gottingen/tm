@@ -21,7 +21,7 @@ import (
 )
 
 var (
-	minResolvedTSPrefix = "pd/api/v1/min-resolved-ts"
+	minResolvedTSPrefix = "tm/api/v1/min-resolved-ts"
 )
 
 // NewMinResolvedTSCommand return min resolved ts subcommand of rootCmd

@@ -106,7 +106,7 @@ func (d *Driver) Prepare() error {
 	}
 	ctx, cancel = context.WithTimeout(context.Background(), requestTimeout)
 	clusterID := d.client.GetClusterID(ctx)
-	rootPath := path.Join("/pd", strconv.FormatUint(clusterID, 10))
+	rootPath := path.Join("/tm", strconv.FormatUint(clusterID, 10))
 	allocIDPath := path.Join(rootPath, "alloc_id")
 	_, err = etcdClient.Put(ctx, allocIDPath, string(typeutil.Uint64ToBytes(maxID+1000)))
 	if err != nil {
@@ -175,7 +175,7 @@ func (d *Driver) Start() error {
 	return nil
 }
 
-// ChangePDConfig changes pd config
+// ChangePDConfig changes tm config
 func (d *Driver) ChangePDConfig() error {
 	d.client.PutPDConfig(d.pdConfig)
 	return nil

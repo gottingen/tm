@@ -37,12 +37,12 @@ func NewServiceMiddlewarePersistOptions(cfg *ServiceMiddlewareConfig) *ServiceMi
 	return o
 }
 
-// GetAuditConfig returns pd service middleware configurations.
+// GetAuditConfig returns tm service middleware configurations.
 func (o *ServiceMiddlewarePersistOptions) GetAuditConfig() *AuditConfig {
 	return o.audit.Load().(*AuditConfig)
 }
 
-// SetAuditConfig sets the PD service middleware configuration.
+// SetAuditConfig sets the TM service middleware configuration.
 func (o *ServiceMiddlewarePersistOptions) SetAuditConfig(cfg *AuditConfig) {
 	o.audit.Store(cfg)
 }
@@ -52,12 +52,12 @@ func (o *ServiceMiddlewarePersistOptions) IsAuditEnabled() bool {
 	return o.GetAuditConfig().EnableAudit
 }
 
-// GetRateLimitConfig returns pd service middleware configurations.
+// GetRateLimitConfig returns tm service middleware configurations.
 func (o *ServiceMiddlewarePersistOptions) GetRateLimitConfig() *RateLimitConfig {
 	return o.rateLimit.Load().(*RateLimitConfig)
 }
 
-// SetRateLimitConfig sets the PD service middleware configuration.
+// SetRateLimitConfig sets the TM service middleware configuration.
 func (o *ServiceMiddlewarePersistOptions) SetRateLimitConfig(cfg *RateLimitConfig) {
 	o.rateLimit.Store(cfg)
 }

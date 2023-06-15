@@ -35,11 +35,11 @@ func init() {
 // GetRootCmd is exposed for integration tests. But it can be embedded into another suite, too.
 func GetRootCmd() *cobra.Command {
 	rootCmd := &cobra.Command{
-		Use:   "pd-ctl",
+		Use:   "tm-ctl",
 		Short: "Placement Driver control",
 	}
 
-	rootCmd.PersistentFlags().StringP("pd", "u", "http://127.0.0.1:2379", "address of pd")
+	rootCmd.PersistentFlags().StringP("tm", "u", "http://127.0.0.1:2379", "address of tm")
 	rootCmd.PersistentFlags().String("cacert", "", "path of file that contains list of trusted SSL CAs")
 	rootCmd.PersistentFlags().String("cert", "", "path of file that contains X509 certificate in PEM format")
 	rootCmd.PersistentFlags().String("key", "", "path of file that contains X509 key in PEM format")
@@ -145,7 +145,7 @@ func loop(persistentFlags *pflag.FlagSet, readlineCompleter readline.AutoComplet
 				rootCmd.PersistentFlags().Set(flag.Name, flag.Value.String())
 			}
 		})
-		rootCmd.LocalFlags().MarkHidden("pd")
+		rootCmd.LocalFlags().MarkHidden("tm")
 		rootCmd.LocalFlags().MarkHidden("cacert")
 		rootCmd.LocalFlags().MarkHidden("cert")
 		rootCmd.LocalFlags().MarkHidden("key")

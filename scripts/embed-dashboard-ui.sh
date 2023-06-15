@@ -64,8 +64,8 @@ function download_embed_asset {
         echo 'This may be caused by using a non-release version of TiDB Dashboard, or the release is still in progress.'
       fi
       echo
-      echo -e "To compile PD without TiDB Dashboard:                       ${YELLOW}DASHBOARD=0 make${NC}"
-      echo -e "To compile PD by building TiDB Dashboard assets on-the-fly: ${YELLOW}DASHBOARD=COMPILE make${NC}  or  ${YELLOW}NO_MINIMIZE=1 DASHBOARD=COMPILE make${NC}"
+      echo -e "To compile TM without TiDB Dashboard:                       ${YELLOW}DASHBOARD=0 make${NC}"
+      echo -e "To compile TM by building TiDB Dashboard assets on-the-fly: ${YELLOW}DASHBOARD=COMPILE make${NC}  or  ${YELLOW}NO_MINIMIZE=1 DASHBOARD=COMPILE make${NC}"
       exit 1
     fi
 

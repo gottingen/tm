@@ -14,7 +14,7 @@ var (
 
 	schedulingCounter = prometheus.NewCounterVec(
 		prometheus.CounterOpts{
-			Namespace: "pd",
+			Namespace: "tm",
 			Subsystem: "schedule",
 			Name:      "scheduling_count",
 			Help:      "Counter of region scheduling",
@@ -22,7 +22,7 @@ var (
 
 	snapshotCounter = prometheus.NewCounterVec(
 		prometheus.CounterOpts{
-			Namespace: "pd",
+			Namespace: "tm",
 			Subsystem: "schedule",
 			Name:      "snapshot_count",
 			Help:      "Counter of region snapshot",

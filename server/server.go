@@ -85,18 +85,18 @@ import (
 
 const (
 	serverMetricsInterval = time.Minute
-	// pdRootPath for all pd servers.
-	pdRootPath      = "/pd"
-	pdAPIPrefix     = "/pd/"
-	pdClusterIDPath = "/pd/cluster_id"
+	// pdRootPath for all tm servers.
+	pdRootPath      = "/tm"
+	pdAPIPrefix     = "/tm/"
+	pdClusterIDPath = "/tm/cluster_id"
 	// idAllocPath for idAllocator to save persistent window's end.
 	idAllocPath  = "alloc_id"
 	idAllocLabel = "idalloc"
 
 	recoveringMarkPath = "cluster/markers/snapshot-recovering"
 
-	// PDMode represents that server is in PD mode.
-	PDMode = "PD"
+	// PDMode represents that server is in TM mode.
+	PDMode = "TM"
 	// APIServiceMode represents that server is in API service mode.
 	APIServiceMode = "API service"
 
@@ -122,7 +122,7 @@ var (
 	etcdCommittedIndexGauge = etcdStateGauge.WithLabelValues("committedIndex")
 )
 
-// Server is the pd server. It implements bs.Server
+// Server is the tm server. It implements bs.Server
 // nolint
 type Server struct {
 	diagnosticspb.DiagnosticsServer
@@ -146,7 +146,7 @@ type Server struct {
 	serverLoopCancel func()
 	serverLoopWg     sync.WaitGroup
 
-	// for PD leader election.
+	// for TM leader election.
 	member *member.EmbeddedEtcdMember
 	// etcd client
 	client *clientv3.Client
@@ -154,7 +154,7 @@ type Server struct {
 	electionClient *clientv3.Client
 	// http client
 	httpClient *http.Client
-	clusterID  uint64 // pd cluster id.
+	clusterID  uint64 // tm cluster id.
 	rootPath   string
 
 	// Server services.
@@ -209,7 +209,7 @@ type Server struct {
 	// related data structures defined in the TSO grpc service
 	tsoProtoFactory *tsoutil.TSOProtoFactory
 	// pdProtoFactory is the abstract factory for creating tso
-	// related data structures defined in the PD grpc service
+	// related data structures defined in the TM grpc service
 	pdProtoFactory *tsoutil.PDProtoFactory
 
 	serviceRateLimiter *ratelimit.Limiter
@@ -231,7 +231,7 @@ type Server struct {
 // HandlerBuilder builds a server HTTP handler.
 type HandlerBuilder func(context.Context, *Server) (http.Handler, apiutil.APIServiceGroup, error)
 
-// CreateServer creates the UNINITIALIZED pd server with given configuration.
+// CreateServer creates the UNINITIALIZED tm server with given configuration.
 func CreateServer(ctx context.Context, cfg *config.Config, services []string, legacyServiceBuilders ...HandlerBuilder) (*Server, error) {
 	var mode string
 	if len(services) == 0 {
@@ -550,7 +550,7 @@ func (s *Server) IsClosed() bool {
 	return atomic.LoadInt64(&s.isRunning) == 0
 }
 
-// Run runs the pd server.
+// Run runs the tm server.
 func (s *Server) Run() error {
 	go systimemon.StartMonitor(s.ctx, time.Now, func() {
 		log.Error("system time jumps backward", errs.ZapError(errs.ErrIncorrectSystemTime))
@@ -783,7 +783,7 @@ func (s *Server) GetHTTPClient() *http.Client {
 	return s.httpClient
 }
 
-// GetLeader returns the leader of PD cluster(i.e the PD leader).
+// GetLeader returns the leader of TM cluster(i.e the TM leader).
 func (s *Server) GetLeader() *pdpb.Member {
 	return s.member.GetLeader()
 }
@@ -869,7 +869,7 @@ func (s *Server) StartTimestamp() int64 {
 	return s.startTimestamp
 }
 
-// GetMembers returns PD server list.
+// GetMembers returns TM server list.
 func (s *Server) GetMembers() ([]*pdpb.Member, error) {
 	if s.IsClosed() {
 		return nil, errs.ErrServerNotStarted.FastGenByArgs()
@@ -985,7 +985,7 @@ func (s *Server) SetReplicationConfig(cfg config.ReplicationConfig) error {
 	var rule *placement.Rule
 	if cfg.EnablePlacementRules {
 		// replication.MaxReplicas won't work when placement rule is enabled and not only have one default rule.
-		defaultRule := s.GetRaftCluster().GetRuleManager().GetRule("pd", "default")
+		defaultRule := s.GetRaftCluster().GetRuleManager().GetRule("tm", "default")
 
 		CheckInDefaultRule := func() error {
 			// replication config  won't work when placement rule is enabled and exceeds one default rule
@@ -1139,7 +1139,7 @@ func (s *Server) SetPDServerConfig(cfg config.PDServerConfig) error {
 			errs.ZapError(err))
 		return err
 	}
-	log.Info("PD server config is updated", zap.Reflect("new", cfg), zap.Reflect("old", old))
+	log.Info("TM server config is updated", zap.Reflect("new", cfg), zap.Reflect("old", old))
 	return nil
 }
 
@@ -1402,8 +1402,8 @@ func (s *Server) SetReplicationModeConfig(cfg config.ReplicationModeConfig) erro
 			// revert to old config
 			// NOTE: since we can't put the 2 storage mutations in a batch, it
 			// is possible that memory and persistent data become different
-			// (when below revert fail). They will become the same after PD is
-			// restart or PD leader is changed.
+			// (when below revert fail). They will become the same after TM is
+			// restart or TM leader is changed.
 			s.persistOptions.SetReplicationModeConfig(old)
 			revertErr := s.persistOptions.Persist(s.storage)
 			if revertErr != nil {
@@ -1455,21 +1455,21 @@ func (s *Server) leaderLoop() {
 				continue
 			}
 			if !s.IsAPIServiceMode() {
-				// Check the cluster dc-location after the PD leader is elected
+				// Check the cluster dc-location after the TM leader is elected
 				go s.tsoAllocatorManager.ClusterDCLocationChecker()
 			}
 			syncer := s.cluster.GetRegionSyncer()
 			if s.persistOptions.IsUseRegionStorage() {
 				syncer.StartSyncWithLeader(leader.GetListenUrls()[0])
 			}
-			log.Info("start to watch pd leader", zap.Stringer("pd-leader", leader))
-			// WatchLeader will keep looping and never return unless the PD leader has changed.
+			log.Info("start to watch tm leader", zap.Stringer("tm-leader", leader))
+			// WatchLeader will keep looping and never return unless the TM leader has changed.
 			leader.Watch(s.serverLoopCtx)
 			syncer.StopSyncWithLeader()
-			log.Info("pd leader has changed, try to re-campaign a pd leader")
+			log.Info("tm leader has changed, try to re-campaign a tm leader")
 		}
 
-		// To make sure the etcd leader and PD leader are on the same server.
+		// To make sure the etcd leader and TM leader are on the same server.
 		etcdLeader := s.member.GetEtcdLeader()
 		if etcdLeader != s.member.ID() {
 			if s.member.GetLeader() == nil {
@@ -1482,7 +1482,7 @@ func (s *Server) leaderLoop() {
 					randomTimeout = time.Duration(rand.Intn(10))*time.Millisecond + 100*time.Millisecond
 				})
 				if lastUpdated.Add(randomTimeout).Before(time.Now()) && !lastUpdated.IsZero() && etcdLeader != 0 {
-					log.Info("the pd leader is lost for a long time, try to re-campaign a pd leader with resign etcd leader",
+					log.Info("the tm leader is lost for a long time, try to re-campaign a tm leader with resign etcd leader",
 						zap.Duration("timeout", randomTimeout),
 						zap.Time("last-updated", lastUpdated),
 						zap.String("current-leader-member-id", types.ID(etcdLeader).String()),
@@ -1491,7 +1491,7 @@ func (s *Server) leaderLoop() {
 					s.member.MoveEtcdLeader(s.ctx, etcdLeader, s.member.ID())
 				}
 			}
-			log.Info("skip campaigning of pd leader and check later",
+			log.Info("skip campaigning of tm leader and check later",
 				zap.String("server-name", s.Name()),
 				zap.Uint64("etcd-leader-id", etcdLeader),
 				zap.Uint64("member-id", s.member.ID()))
@@ -1506,7 +1506,7 @@ func (s *Server) campaignLeader() {
 	log.Info(fmt.Sprintf("start to campaign %s leader", s.mode), zap.String("campaign-leader-name", s.Name()))
 	if err := s.member.CampaignLeader(s.cfg.LeaderLease); err != nil {
 		if err.Error() == errs.ErrEtcdTxnConflict.Error() {
-			log.Info(fmt.Sprintf("campaign %s leader meets error due to txn conflict, another PD/API server may campaign successfully", s.mode),
+			log.Info(fmt.Sprintf("campaign %s leader meets error due to txn conflict, another TM/API server may campaign successfully", s.mode),
 				zap.String("campaign-leader-name", s.Name()))
 		} else {
 			log.Error(fmt.Sprintf("campaign %s leader meets error due to etcd error", s.mode),
@@ -1517,7 +1517,7 @@ func (s *Server) campaignLeader() {
 	}
 
 	// Start keepalive the leadership and enable TSO service.
-	// TSO service is strictly enabled/disabled by PD leader lease for 2 reasons:
+	// TSO service is strictly enabled/disabled by TM leader lease for 2 reasons:
 	//   1. lease based approach is not affected by thread pause, slow runtime schedule, etc.
 	//   2. load region could be slow. Based on lease we can recover TSO service faster.
 	ctx, cancel := context.WithCancel(s.serverLoopCtx)
@@ -1527,7 +1527,7 @@ func (s *Server) campaignLeader() {
 		s.member.ResetLeader()
 	})
 
-	// maintain the PD leadership, after this, TSO can be service.
+	// maintain the TM leadership, after this, TSO can be service.
 	s.member.KeepLeader(ctx)
 	log.Info(fmt.Sprintf("campaign %s leader ok", s.mode), zap.String("campaign-leader-name", s.Name()))
 
@@ -1584,7 +1584,7 @@ func (s *Server) campaignLeader() {
 	// EnableLeader to accept the remaining service, such as GetStore, GetRegion.
 	s.member.EnableLeader()
 	if !s.IsAPIServiceMode() {
-		// Check the cluster dc-location after the PD leader is elected.
+		// Check the cluster dc-location after the TM leader is elected.
 		go s.tsoAllocatorManager.ClusterDCLocationChecker()
 	}
 	defer resetLeaderOnce.Do(func() {
@@ -1604,7 +1604,7 @@ func (s *Server) campaignLeader() {
 		select {
 		case <-leaderTicker.C:
 			if !s.member.IsLeader() {
-				log.Info("no longer a leader because lease has expired, pd leader will step down")
+				log.Info("no longer a leader because lease has expired, tm leader will step down")
 				return
 			}
 			// add failpoint to test exit leader, failpoint judge the member is the give value, then break
@@ -1612,14 +1612,14 @@ func (s *Server) campaignLeader() {
 				memberString := val.(string)
 				memberID, _ := strconv.ParseUint(memberString, 10, 64)
 				if s.member.ID() == memberID {
-					log.Info("exit PD leader")
+					log.Info("exit TM leader")
 					failpoint.Return()
 				}
 			})
 
 			etcdLeader := s.member.GetEtcdLeader()
 			if etcdLeader != s.member.ID() {
-				log.Info("etcd leader changed, resigns pd leadership", zap.String("old-pd-leader-name", s.Name()))
+				log.Info("etcd leader changed, resigns tm leadership", zap.String("old-tm-leader-name", s.Name()))
 				return
 			}
 		case <-ctx.Done():
@@ -1686,9 +1686,9 @@ func (s *Server) ReplicateFileToMember(ctx context.Context, member *pdpb.Member,
 		log.Warn("failed to replicate file", zap.String("name", name), zap.String("member", member.GetName()))
 		return errs.ErrClientURLEmpty.FastGenByArgs()
 	}
-	url := clientUrls[0] + filepath.Join("/pd/api/v1/admin/persist-file", name)
+	url := clientUrls[0] + filepath.Join("/tm/api/v1/admin/persist-file", name)
 	req, _ := http.NewRequestWithContext(ctx, http.MethodPost, url, bytes.NewBuffer(data))
-	req.Header.Set("PD-Allow-follower-handle", "true")
+	req.Header.Set("TM-Allow-follower-handle", "true")
 	res, err := s.httpClient.Do(req)
 	if err != nil {
 		log.Warn("failed to replicate file", zap.String("name", name), zap.String("member", member.GetName()), errs.ZapError(err))
@@ -1734,7 +1734,7 @@ func (s *Server) IsTTLConfigExist(key string) bool {
 	return false
 }
 
-// MarkSnapshotRecovering mark pd that we're recovering
+// MarkSnapshotRecovering mark tm that we're recovering
 // tikv will get this state during BR EBS restore.
 // we write this info into etcd for simplicity, the key only stays inside etcd temporary
 // during BR EBS restore in which period the cluster is not able to serve request.

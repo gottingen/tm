@@ -23,7 +23,7 @@ import (
 	"github.com/stretchr/testify/require"
 )
 
-// A PD joins itself.
+// A TM joins itself.
 func TestPDJoinsItself(t *testing.T) {
 	re := require.New(t)
 	cfg := server.NewTestSingleConfig(assertutil.CheckerWithNilAssert(re))

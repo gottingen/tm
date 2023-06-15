@@ -1449,7 +1449,7 @@ func (s *GrpcServer) invalidValue(msg string) *pdpb.ResponseHeader {
 // Only used for the TestLocalAllocatorLeaderChange.
 var mockLocalAllocatorLeaderChangeFlag = false
 
-// SyncMaxTS will check whether MaxTS is the biggest one among all Local TSOs this PD is holding when skipCheck is set,
+// SyncMaxTS will check whether MaxTS is the biggest one among all Local TSOs this TM is holding when skipCheck is set,
 // and write it into all Local TSO Allocators then if it's indeed the biggest one.
 func (s *GrpcServer) SyncMaxTS(_ context.Context, request *pdpb.SyncMaxTSRequest) (*pdpb.SyncMaxTSResponse, error) {
 	// TODO: support local tso forward in api service mode in the future.
@@ -1617,7 +1617,7 @@ func scatterRegions(cluster *cluster.RaftCluster, regionsID []uint64, group stri
 	return percentage, nil
 }
 
-// GetDCLocationInfo gets the dc-location info of the given dc-location from PD leader's TSO allocator manager.
+// GetDCLocationInfo gets the dc-location info of the given dc-location from TM leader's TSO allocator manager.
 func (s *GrpcServer) GetDCLocationInfo(ctx context.Context, request *pdpb.GetDCLocationInfoRequest) (*pdpb.GetDCLocationInfoResponse, error) {
 	// TODO: support local tso forward in api service mode in the future.
 	var err error
@@ -1657,12 +1657,12 @@ func (s *GrpcServer) GetDCLocationInfo(ctx context.Context, request *pdpb.GetDCL
 }
 
 // validateInternalRequest checks if server is closed, which is used to validate
-// the gRPC communication between PD servers internally.
+// the gRPC communication between TM servers internally.
 func (s *GrpcServer) validateInternalRequest(header *pdpb.RequestHeader, onlyAllowLeader bool) error {
 	if s.IsClosed() {
 		return ErrNotStarted
 	}
-	// If onlyAllowLeader is true, check whether the sender is PD leader.
+	// If onlyAllowLeader is true, check whether the sender is TM leader.
 	if onlyAllowLeader {
 		leaderID := s.GetLeader().GetMemberId()
 		if leaderID != header.GetSenderId() {
@@ -1966,7 +1966,7 @@ func (s *GrpcServer) WatchGlobalConfig(req *pdpb.WatchGlobalConfigRequest, serve
 }
 
 // Evict the leaders when the store is damaged. Damaged regions are emergency errors
-// and requires user to manually remove the `evict-leader-scheduler` with pd-ctl
+// and requires user to manually remove the `evict-leader-scheduler` with tm-ctl
 func (s *GrpcServer) handleDamagedStore(stats *pdpb.StoreStats) {
 	// TODO: regions have no special process for the time being
 	// and need to be removed in the future

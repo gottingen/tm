@@ -254,8 +254,8 @@ func (u *unsafeRecoveryController) getReportStatus() StageOutput {
 			}
 		}
 		status.Details = append(status.Details, "Stores that have not dispatched plan: "+strings.Trim(undispatched, ", "))
-		status.Details = append(status.Details, "Stores that have reported to PD: "+strings.Trim(reported, ", "))
-		status.Details = append(status.Details, "Stores that have not reported to PD: "+strings.Trim(unreported, ", "))
+		status.Details = append(status.Details, "Stores that have reported to TM: "+strings.Trim(reported, ", "))
+		status.Details = append(status.Details, "Stores that have not reported to TM: "+strings.Trim(unreported, ", "))
 	} else {
 		status.Info = fmt.Sprintf("Collected reports from all %d alive stores", len(u.storeReports))
 	}

@@ -483,7 +483,7 @@ func (f *hotPeerCache) updateHotPeerStat(region *core.RegionInfo, newItem, oldIt
 		// not update hot degree and anti count
 		f.inheritItem(newItem, oldItem)
 	} else {
-		// If item is inCold, it means the pd didn't recv this item in the store heartbeat,
+		// If item is inCold, it means the tm didn't recv this item in the store heartbeat,
 		// thus we make it colder
 		if newItem.inCold {
 			f.coldItem(newItem, oldItem)

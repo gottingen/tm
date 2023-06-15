@@ -253,7 +253,7 @@ func createEtcdClientWithMultiEndpoint(tlsConfig *tls.Config, acUrls []url.URL) 
 }
 
 // CreateEtcdClient creates etcd v3 client.
-// Note: it will be used by legacy pd-server, and only connect to leader only.
+// Note: it will be used by legacy tm-server, and only connect to leader only.
 func CreateEtcdClient(tlsConfig *tls.Config, acURL url.URL) (*clientv3.Client, error) {
 	lgc := zap.NewProductionConfig()
 	lgc.Encoding = log.ZapEncodingName

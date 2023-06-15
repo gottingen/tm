@@ -106,7 +106,7 @@ docker-image:
 	@if [ $(DOCKER_PS_EXIT_CODE) -ne 0 ]; then \
 	echo "Encountered problem while invoking docker cli. Is the docker daemon running?"; \
 	fi
-	docker build --no-cache -t tikv/pd .
+	docker build --no-cache -t tikv/tm .
 
 .PHONY: docker-image
 
@@ -195,7 +195,7 @@ failpoint-disable: install-tools
 
 PACKAGE_DIRECTORIES := $(subst $(TM-PKG)/,,$(PACKAGES))
 TEST_PKGS := $(filter $(shell find . -iname "*_test.go" -exec dirname {} \; | \
-                     sort -u | sed -e "s/^\./github.com\/tikv\/pd/"),$(PACKAGES))
+                     sort -u | sed -e "s/^\./github.com\/tikv\/tm/"),$(PACKAGES))
 BASIC_TEST_PKGS := $(filter-out $(TM-PKG)/tests%,$(TEST_PKGS))
 
 SUBMODULES := $(filter $(shell find . -iname "go.mod" -exec dirname {} \;),\

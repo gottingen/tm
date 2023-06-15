@@ -51,7 +51,7 @@ func TestSimpleJoin(t *testing.T) {
 	re.NoError(err)
 	re.Len(members.Members, 1)
 
-	// Join the second PD.
+	// Join the second TM.
 	pd2, err := cluster.Join(ctx)
 	re.NoError(err)
 	err = pd2.Run()
@@ -66,7 +66,7 @@ func TestSimpleJoin(t *testing.T) {
 	// Wait for all nodes becoming healthy.
 	time.Sleep(time.Second * 5)
 
-	// Join another PD.
+	// Join another TM.
 	pd3, err := cluster.Join(ctx)
 	re.NoError(err)
 	err = pd3.Run()
@@ -79,7 +79,7 @@ func TestSimpleJoin(t *testing.T) {
 	re.Equal(pd1.GetClusterID(), pd3.GetClusterID())
 }
 
-// A failed PD tries to join the previous cluster but it has been deleted
+// A failed TM tries to join the previous cluster but it has been deleted
 // during its downtime.
 func TestFailedAndDeletedPDJoinsPreviousCluster(t *testing.T) {
 	re := require.New(t)
@@ -113,7 +113,7 @@ func TestFailedAndDeletedPDJoinsPreviousCluster(t *testing.T) {
 	re.Len(members.Members, 2)
 }
 
-// A deleted PD joins the previous cluster.
+// A deleted TM joins the previous cluster.
 func TestDeletedPDJoinsPreviousCluster(t *testing.T) {
 	re := require.New(t)
 	ctx, cancel := context.WithCancel(context.Background())
@@ -157,7 +157,7 @@ func TestFailedPDJoinsPreviousCluster(t *testing.T) {
 	re.NoError(cluster.RunInitialServers())
 	cluster.WaitLeader()
 
-	// Join the second PD.
+	// Join the second TM.
 	pd2, err := cluster.Join(ctx)
 	re.NoError(err)
 	re.NoError(pd2.Run())

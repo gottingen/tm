@@ -81,7 +81,7 @@ type ModeManager struct {
 	// they are accessed without locks as they are only used by background job.
 	drRecoverKey   []byte // all regions that has startKey < drRecoverKey are successfully recovered
 	drRecoverCount int    // number of regions that has startKey < drRecoverKey
-	// When find a region that is not recovered, PD will not check all the
+	// When find a region that is not recovered, TM will not check all the
 	// remaining regions, but read a region to estimate the overall progress
 	drSampleRecoverCount int // number of regions that are recovered in sample
 	drSampleTotalRegion  int // number of regions in sample
@@ -337,7 +337,7 @@ func (m *ModeManager) drPersistStatusWithLock(status drAutoSyncStatus) {
 			// primary and dr DC are disconnected. This will result in the
 			// inability to accurately determine whether data is fully
 			// synchronized when using dr DC to disaster recovery.
-			// Since the member will not be in `replicatedMembers` list, PD will
+			// Since the member will not be in `replicatedMembers` list, TM will
 			// try to replicate state file later.
 		} else {
 			m.replicatedMembers = append(m.replicatedMembers, member.GetMemberId())

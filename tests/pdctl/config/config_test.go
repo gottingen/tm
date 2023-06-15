@@ -316,7 +316,7 @@ func TestPlacementRules(t *testing.T) {
 	re.NoError(err)
 	re.NoError(json.Unmarshal(output, &rules))
 	re.Len(rules, 1)
-	re.Equal([2]string{"pd", "default"}, rules[0].Key())
+	re.Equal([2]string{"tm", "default"}, rules[0].Key())
 
 	f, _ := os.CreateTemp("/tmp", "pd_tests")
 	fname := f.Name()
@@ -328,11 +328,11 @@ func TestPlacementRules(t *testing.T) {
 	b, _ := os.ReadFile(fname)
 	re.NoError(json.Unmarshal(b, &rules))
 	re.Len(rules, 1)
-	re.Equal([2]string{"pd", "default"}, rules[0].Key())
+	re.Equal([2]string{"tm", "default"}, rules[0].Key())
 
 	// test save
 	rules = append(rules, placement.Rule{
-		GroupID: "pd",
+		GroupID: "tm",
 		ID:      "test1",
 		Role:    "voter",
 		Count:   1,
@@ -349,12 +349,12 @@ func TestPlacementRules(t *testing.T) {
 
 	// test show group
 	var rules2 []placement.Rule
-	output, err = pdctl.ExecuteCommand(cmd, "-u", pdAddr, "config", "placement-rules", "show", "--group=pd")
+	output, err = pdctl.ExecuteCommand(cmd, "-u", pdAddr, "config", "placement-rules", "show", "--group=tm")
 	re.NoError(err)
 	re.NoError(json.Unmarshal(output, &rules2))
 	re.Len(rules2, 2)
-	re.Equal([2]string{"pd", "default"}, rules2[0].Key())
-	re.Equal([2]string{"pd", "test1"}, rules2[1].Key())
+	re.Equal([2]string{"tm", "default"}, rules2[0].Key())
+	re.Equal([2]string{"tm", "test1"}, rules2[1].Key())
 
 	// test rule region detail
 	pdctl.MustPutRegion(re, cluster, 1, 1, []byte("a"), []byte("b"))
@@ -365,7 +365,7 @@ func TestPlacementRules(t *testing.T) {
 	re.NoError(err)
 	re.NoError(json.Unmarshal(output, fit))
 	re.Len(fit.RuleFits, 3)
-	re.Equal([2]string{"pd", "default"}, fit.RuleFits[0].Rule.Key())
+	re.Equal([2]string{"tm", "default"}, fit.RuleFits[0].Rule.Key())
 
 	// test delete
 	rules[0].Count = 0
@@ -373,11 +373,11 @@ func TestPlacementRules(t *testing.T) {
 	os.WriteFile(fname, b, 0600)
 	_, err = pdctl.ExecuteCommand(cmd, "-u", pdAddr, "config", "placement-rules", "save", "--in="+fname)
 	re.NoError(err)
-	output, err = pdctl.ExecuteCommand(cmd, "-u", pdAddr, "config", "placement-rules", "show", "--group=pd")
+	output, err = pdctl.ExecuteCommand(cmd, "-u", pdAddr, "config", "placement-rules", "show", "--group=tm")
 	re.NoError(err)
 	re.NoError(json.Unmarshal(output, &rules))
 	re.Len(rules, 1)
-	re.Equal([2]string{"pd", "test1"}, rules[0].Key())
+	re.Equal([2]string{"tm", "test1"}, rules[0].Key())
 }
 
 func TestPlacementRuleGroups(t *testing.T) {
@@ -409,13 +409,13 @@ func TestPlacementRuleGroups(t *testing.T) {
 
 	// test show
 	var group placement.RuleGroup
-	output, err = pdctl.ExecuteCommand(cmd, "-u", pdAddr, "config", "placement-rules", "rule-group", "show", "pd")
+	output, err = pdctl.ExecuteCommand(cmd, "-u", pdAddr, "config", "placement-rules", "rule-group", "show", "tm")
 	re.NoError(err)
 	re.NoError(json.Unmarshal(output, &group))
-	re.Equal(placement.RuleGroup{ID: "pd"}, group)
+	re.Equal(placement.RuleGroup{ID: "tm"}, group)
 
 	// test set
-	output, err = pdctl.ExecuteCommand(cmd, "-u", pdAddr, "config", "placement-rules", "rule-group", "set", "pd", "42", "true")
+	output, err = pdctl.ExecuteCommand(cmd, "-u", pdAddr, "config", "placement-rules", "rule-group", "set", "tm", "42", "true")
 	re.NoError(err)
 	re.Contains(string(output), "Success!")
 	output, err = pdctl.ExecuteCommand(cmd, "-u", pdAddr, "config", "placement-rules", "rule-group", "set", "group2", "100", "false")
@@ -431,7 +431,7 @@ func TestPlacementRuleGroups(t *testing.T) {
 	re.NoError(err)
 	re.NoError(json.Unmarshal(output, &groups))
 	re.Equal([]placement.RuleGroup{
-		{ID: "pd", Index: 42, Override: true},
+		{ID: "tm", Index: 42, Override: true},
 		{ID: "group2", Index: 100, Override: false},
 		{ID: "group3", Index: 200, Override: false},
 	}, groups)
@@ -484,10 +484,10 @@ func TestPlacementRuleBundle(t *testing.T) {
 
 	// test get
 	var bundle placement.GroupBundle
-	output, err = pdctl.ExecuteCommand(cmd, "-u", pdAddr, "config", "placement-rules", "rule-bundle", "get", "pd")
+	output, err = pdctl.ExecuteCommand(cmd, "-u", pdAddr, "config", "placement-rules", "rule-bundle", "get", "tm")
 	re.NoError(err)
 	re.NoError(json.Unmarshal(output, &bundle))
-	re.Equal(placement.GroupBundle{ID: "pd", Index: 0, Override: false, Rules: []*placement.Rule{{GroupID: "pd", ID: "default", Role: "voter", Count: 3}}}, bundle)
+	re.Equal(placement.GroupBundle{ID: "tm", Index: 0, Override: false, Rules: []*placement.Rule{{GroupID: "tm", ID: "default", Role: "voter", Count: 3}}}, bundle)
 
 	f, err := os.CreateTemp("/tmp", "pd_tests")
 	re.NoError(err)
@@ -504,7 +504,7 @@ func TestPlacementRuleBundle(t *testing.T) {
 	b, _ := os.ReadFile(fname)
 	re.NoError(json.Unmarshal(b, &bundles))
 	re.Len(bundles, 1)
-	re.Equal(placement.GroupBundle{ID: "pd", Index: 0, Override: false, Rules: []*placement.Rule{{GroupID: "pd", ID: "default", Role: "voter", Count: 3}}}, bundles[0])
+	re.Equal(placement.GroupBundle{ID: "tm", Index: 0, Override: false, Rules: []*placement.Rule{{GroupID: "tm", ID: "default", Role: "voter", Count: 3}}}, bundles[0])
 
 	// test set
 	bundle.ID = "pe"
@@ -520,12 +520,12 @@ func TestPlacementRuleBundle(t *testing.T) {
 	b, _ = os.ReadFile(fname)
 	re.NoError(json.Unmarshal(b, &bundles))
 	assertBundles(re, bundles, []placement.GroupBundle{
-		{ID: "pd", Index: 0, Override: false, Rules: []*placement.Rule{{GroupID: "pd", ID: "default", Role: "voter", Count: 3}}},
+		{ID: "tm", Index: 0, Override: false, Rules: []*placement.Rule{{GroupID: "tm", ID: "default", Role: "voter", Count: 3}}},
 		{ID: "pe", Index: 0, Override: false, Rules: []*placement.Rule{{GroupID: "pe", ID: "default", Role: "voter", Count: 3}}},
 	})
 
 	// test delete
-	_, err = pdctl.ExecuteCommand(cmd, "-u", pdAddr, "config", "placement-rules", "rule-bundle", "delete", "pd")
+	_, err = pdctl.ExecuteCommand(cmd, "-u", pdAddr, "config", "placement-rules", "rule-bundle", "delete", "tm")
 	re.NoError(err)
 
 	_, err = pdctl.ExecuteCommand(cmd, "-u", pdAddr, "config", "placement-rules", "rule-bundle", "load", "--out="+fname)
@@ -694,7 +694,7 @@ func TestUpdateDefaultReplicaConfig(t *testing.T) {
 	}
 
 	checkRuleCount := func(expect int) {
-		args := []string{"-u", pdAddr, "config", "placement-rules", "show", "--group", "pd", "--id", "default"}
+		args := []string{"-u", pdAddr, "config", "placement-rules", "show", "--group", "tm", "--id", "default"}
 		output, err := pdctl.ExecuteCommand(cmd, args...)
 		re.NoError(err)
 		rule := placement.Rule{}
@@ -703,7 +703,7 @@ func TestUpdateDefaultReplicaConfig(t *testing.T) {
 	}
 
 	checkRuleLocationLabels := func(expect int) {
-		args := []string{"-u", pdAddr, "config", "placement-rules", "show", "--group", "pd", "--id", "default"}
+		args := []string{"-u", pdAddr, "config", "placement-rules", "show", "--group", "tm", "--id", "default"}
 		output, err := pdctl.ExecuteCommand(cmd, args...)
 		re.NoError(err)
 		rule := placement.Rule{}
@@ -743,7 +743,7 @@ func TestUpdateDefaultReplicaConfig(t *testing.T) {
 	fname := t.TempDir()
 	rules := []placement.Rule{
 		{
-			GroupID: "pd",
+			GroupID: "tm",
 			ID:      "test1",
 			Role:    "voter",
 			Count:   1,

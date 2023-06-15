@@ -46,11 +46,11 @@ func (h *queryMetric) QueryMetric(w http.ResponseWriter, r *http.Request) {
 
 	switch u.Scheme {
 	case "http", "https":
-		// Replace the pd path with the prometheus http API path.
-		r.URL.Path = strings.Replace(r.URL.Path, "pd/api/v1/metric", "api/v1", 1)
+		// Replace the tm path with the prometheus http API path.
+		r.URL.Path = strings.Replace(r.URL.Path, "tm/api/v1/metric", "api/v1", 1)
 		apiutil.NewCustomReverseProxies(h.s.GetHTTPClient(), []url.URL{*u}).ServeHTTP(w, r)
 	default:
-		// TODO: Support read data by self after support store metric data in PD/TiKV.
+		// TODO: Support read data by self after support store metric data in TM/TiKV.
 		http.Error(w, fmt.Sprintf("schema of metric storage address is no supported, address: %v", metricAddr), http.StatusInternalServerError)
 	}
 }

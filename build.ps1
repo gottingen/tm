@@ -9,11 +9,11 @@ $GO_LDFLAGS += " -X `"$PD_PKG/server.PDGitBranch=$(git rev-parse --abbrev-ref HE
 powershell.exe -File ./scripts/embed-dashboard-ui.ps1
 
 # Output binaries
-go build -ldflags $GO_LDFLAGS -o bin/pd-server.exe cmd/pd-server/main.go
-echo "bin/pd-server.exe"
-go build -ldflags $GO_LDFLAGS -o bin/pd-ctl.exe tools/pd-ctl/main.go
-echo "bin/pd-ctl.exe"
-go build -o bin/pd-tso-bench.exe tools/pd-tso-bench/main.go
-echo "bin/pd-tso-bench.exe"
-go build -o bin/pd-recover.exe tools/pd-recover/main.go
-echo "bin/pd-recover.exe"
+go build -ldflags $GO_LDFLAGS -o bin/tm-server.exe cmd/tm-server/main.go
+echo "bin/tm-server.exe"
+go build -ldflags $GO_LDFLAGS -o bin/tm-ctl.exe tools/tm-ctl/main.go
+echo "bin/tm-ctl.exe"
+go build -o bin/tm-tso-bench.exe tools/tm-tso-bench/main.go
+echo "bin/tm-tso-bench.exe"
+go build -o bin/tm-recover.exe tools/tm-recover/main.go
+echo "bin/tm-recover.exe"

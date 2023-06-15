@@ -160,16 +160,16 @@ type KeyspaceGroupManager struct {
 	// "electionNamePrefix:keyspace-group-id"
 	electionNamePrefix string
 	// legacySvcRootPath defines the legacy root path for all etcd paths which derives from
-	// the PD/API service. It's in the format of "/pd/{cluster_id}".
+	// the TM/API service. It's in the format of "/tm/{cluster_id}".
 	// The main paths for different usages include:
 	// 1. The path, used by the default keyspace group, for LoadTimestamp/SaveTimestamp in the
 	//    storage endpoint.
-	//    Key: /pd/{cluster_id}/timestamp
+	//    Key: /tm/{cluster_id}/timestamp
 	//    Value: ts(time.Time)
-	//    Key: /pd/{cluster_id}/lta/{dc-location}/timestamp
+	//    Key: /tm/{cluster_id}/lta/{dc-location}/timestamp
 	//    Value: ts(time.Time)
 	// 2. The path for storing keyspace group membership/distribution metadata.
-	//    Key: /pd/{cluster_id}/tso/keyspace_groups/membership/{group}
+	//    Key: /tm/{cluster_id}/tso/keyspace_groups/membership/{group}
 	//    Value: endpoint.KeyspaceGroup
 	// Note: The {group} is 5 digits integer with leading zeros.
 	legacySvcRootPath string
@@ -814,7 +814,7 @@ func (kgm *KeyspaceGroupManager) checkTSOSplit(
 	return kgm.finishSplitKeyspaceGroup(keyspaceGroupID)
 }
 
-const keyspaceGroupsAPIPrefix = "/pd/api/v2/tso/keyspace-groups"
+const keyspaceGroupsAPIPrefix = "/tm/api/v2/tso/keyspace-groups"
 
 // Put the code below into the critical section to prevent from sending too many HTTP requests.
 func (kgm *KeyspaceGroupManager) finishSplitKeyspaceGroup(id uint32) error {

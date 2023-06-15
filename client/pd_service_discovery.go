@@ -12,7 +12,7 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-package pd
+package tm
 
 import (
 	"context"
@@ -99,14 +99,14 @@ type tsoAllocatorEventSource interface {
 var _ ServiceDiscovery = (*pdServiceDiscovery)(nil)
 var _ tsoAllocatorEventSource = (*pdServiceDiscovery)(nil)
 
-// pdServiceDiscovery is the service discovery client of PD/API service which is quorum based
+// pdServiceDiscovery is the service discovery client of TM/API service which is quorum based
 type pdServiceDiscovery struct {
 	isInitialized bool
 
 	urls atomic.Value // Store as []string
-	// PD leader URL
+	// TM leader URL
 	leader atomic.Value // Store as string
-	// PD follower URLs
+	// TM follower URLs
 	followers atomic.Value // Store as []string
 
 	clusterID uint64
@@ -139,7 +139,7 @@ type pdServiceDiscovery struct {
 	option *option
 }
 
-// newPDServiceDiscovery returns a new PD service discovery-based client.
+// newPDServiceDiscovery returns a new TM service discovery-based client.
 func newPDServiceDiscovery(
 	ctx context.Context, cancel context.CancelFunc,
 	wg *sync.WaitGroup,
@@ -172,7 +172,7 @@ func (c *pdServiceDiscovery) Init() error {
 		c.cancel()
 		return err
 	}
-	log.Info("[pd] init cluster id", zap.Uint64("cluster-id", c.clusterID))
+	log.Info("[tm] init cluster id", zap.Uint64("cluster-id", c.clusterID))
 
 	c.updateServiceMode()
 
@@ -218,7 +218,7 @@ func (c *pdServiceDiscovery) updateMemberLoop() {
 			failpoint.Continue()
 		})
 		if err := c.updateMember(); err != nil {
-			log.Error("[pd] failed to update member", zap.Strings("urls", c.GetURLs()), errs.ZapError(err))
+			log.Error("[tm] failed to update member", zap.Strings("urls", c.GetURLs()), errs.ZapError(err))
 		}
 	}
 }
@@ -247,10 +247,10 @@ func (c *pdServiceDiscovery) updateServiceModeLoop() {
 // Close releases all resources.
 func (c *pdServiceDiscovery) Close() {
 	c.closeOnce.Do(func() {
-		log.Info("[pd] close pd service discovery client")
+		log.Info("[tm] close tm service discovery client")
 		c.clientConns.Range(func(key, cc interface{}) bool {
 			if err := cc.(*grpc.ClientConn).Close(); err != nil {
-				log.Error("[pd] failed to close grpc clientConn", errs.ZapError(errs.ErrCloseGRPCConn, err))
+				log.Error("[tm] failed to close grpc clientConn", errs.ZapError(errs.ErrCloseGRPCConn, err))
 			}
 			c.clientConns.Delete(key)
 			return true
@@ -363,7 +363,7 @@ func (c *pdServiceDiscovery) initClusterID() error {
 	for _, url := range c.GetURLs() {
 		members, err := c.getMembers(ctx, url, c.option.timeout)
 		if err != nil || members.GetHeader() == nil {
-			log.Warn("[pd] failed to get cluster id", zap.String("url", url), errs.ZapError(err))
+			log.Warn("[tm] failed to get cluster id", zap.String("url", url), errs.ZapError(err))
 			continue
 		}
 		if clusterID == 0 {
@@ -390,20 +390,20 @@ func (c *pdServiceDiscovery) updateServiceMode() {
 	leaderAddr := c.getLeaderAddr()
 	if len(leaderAddr) > 0 {
 		clusterInfo, err := c.getClusterInfo(c.ctx, leaderAddr, c.option.timeout)
-		// If the method is not supported, we set it to pd mode.
+		// If the method is not supported, we set it to tm mode.
 		if err != nil {
 			// TODO: it's a hack way to solve the compatibility issue.
 			// we need to remove this after all maintained version supports the method.
 			if strings.Contains(err.Error(), "Unimplemented") {
 				c.serviceModeUpdateCb(pdpb.ServiceMode_PD_SVC_MODE)
 			} else {
-				log.Warn("[pd] failed to get cluster info for the leader", zap.String("leader-addr", leaderAddr), errs.ZapError(err))
+				log.Warn("[tm] failed to get cluster info for the leader", zap.String("leader-addr", leaderAddr), errs.ZapError(err))
 			}
 			return
 		}
 		c.serviceModeUpdateCb(clusterInfo.ServiceModes[0])
 	} else {
-		log.Warn("[pd] no leader found")
+		log.Warn("[tm] no leader found")
 	}
 }
 
@@ -426,13 +426,13 @@ func (c *pdServiceDiscovery) updateMember() error {
 			if members.GetLeader() == nil || len(members.GetLeader().GetClientUrls()) == 0 {
 				err = errs.ErrClientGetLeader.FastGenByArgs("leader address don't exist")
 			}
-			// Still need to update TsoAllocatorLeaders, even if there is no PD leader
+			// Still need to update TsoAllocatorLeaders, even if there is no TM leader
 			errTSO = c.switchTSOAllocatorLeaders(members.GetTsoAllocatorLeaders())
 		}
 
 		// Failed to get members
 		if err != nil {
-			log.Info("[pd] cannot update member from this address",
+			log.Info("[tm] cannot update member from this address",
 				zap.String("address", url),
 				errs.ZapError(err))
 			select {
@@ -514,7 +514,7 @@ func (c *pdServiceDiscovery) updateURLs(members []*pdpb.Member) {
 			cb()
 		}
 	}
-	log.Info("[pd] update member urls", zap.Strings("old-urls", oldURLs), zap.Strings("new-urls", urls))
+	log.Info("[tm] update member urls", zap.Strings("old-urls", oldURLs), zap.Strings("new-urls", urls))
 }
 
 func (c *pdServiceDiscovery) switchLeader(addrs []string) error {
@@ -526,10 +526,10 @@ func (c *pdServiceDiscovery) switchLeader(addrs []string) error {
 	}
 
 	if _, err := c.GetOrCreateGRPCConn(addr); err != nil {
-		log.Warn("[pd] failed to connect leader", zap.String("leader", addr), errs.ZapError(err))
+		log.Warn("[tm] failed to connect leader", zap.String("leader", addr), errs.ZapError(err))
 		return err
 	}
-	// Set PD leader and Global TSO Allocator (which is also the PD leader)
+	// Set TM leader and Global TSO Allocator (which is also the TM leader)
 	c.leader.Store(addr)
 	// Run callbacks
 	if c.tsoGlobalAllocLeaderUpdatedCb != nil {
@@ -540,7 +540,7 @@ func (c *pdServiceDiscovery) switchLeader(addrs []string) error {
 	for _, cb := range c.leaderSwitchedCbs {
 		cb()
 	}
-	log.Info("[pd] switch leader", zap.String("new-leader", addr), zap.String("old-leader", oldLeader))
+	log.Info("[tm] switch leader", zap.String("new-leader", addr), zap.String("old-leader", oldLeader))
 	return nil
 }
 

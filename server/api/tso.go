@@ -38,13 +38,13 @@ func newTSOHandler(svr *server.Server, rd *render.Render) *tsoHandler {
 // @Tags     tso
 // @Summary  Transfer Local TSO Allocator
 // @Accept   json
-// @Param    name  path  string  true  "PD server name"
+// @Param    name  path  string  true  "TM server name"
 // @Param    body  body  object  true  "json params"
 // @Produce  json
 // @Success  200  {string}  string  "The transfer command is submitted."
 // @Failure  400  {string}  string  "The input is invalid."
 // @Failure  404  {string}  string  "The member does not exist."
-// @Failure  500  {string}  string  "PD server failed to proceed the request."
+// @Failure  500  {string}  string  "TM server failed to proceed the request."
 // @Router   /tso/allocator/transfer/{name} [post]
 func (h *tsoHandler) TransferLocalTSOAllocator(w http.ResponseWriter, r *http.Request) {
 	members, membersErr := getMembers(h.svr)
@@ -66,7 +66,7 @@ func (h *tsoHandler) TransferLocalTSOAllocator(w http.ResponseWriter, r *http.Re
 		}
 	}
 	if memberID == 0 {
-		h.rd.JSON(w, http.StatusNotFound, fmt.Sprintf("not found, pd: %s", name))
+		h.rd.JSON(w, http.StatusNotFound, fmt.Sprintf("not found, tm: %s", name))
 		return
 	}
 	// TODO: support local tso forward in api service mode in the future.

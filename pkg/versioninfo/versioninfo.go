@@ -83,7 +83,7 @@ func IsFeatureSupported(clusterVersion *semver.Version, f Feature) bool {
 	return IsCompatible(minSupportVersion, *clusterVersion)
 }
 
-// Log prints the version information of the PD with the specific service mode.
+// Log prints the version information of the TM with the specific service mode.
 func Log(serviceMode string) {
 	mode := strings.ToUpper(serviceMode)
 	log.Info(fmt.Sprintf("Welcome to Placement Driver (%s)", mode))
@@ -94,7 +94,7 @@ func Log(serviceMode string) {
 	log.Info(mode, zap.String("utc-build-time", PDBuildTS))
 }
 
-// Print prints the version information, without log info, of the PD with the specific service mode.
+// Print prints the version information, without log info, of the TM with the specific service mode.
 func Print() {
 	fmt.Println("Release Version:", PDReleaseVersion)
 	fmt.Println("Edition:", PDEdition)
