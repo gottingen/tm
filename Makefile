@@ -264,6 +264,7 @@ clean-test:
 	rm -rf /tmp/test_pd*
 	rm -rf /tmp/tm-tests*
 	rm -rf /tmp/test_etcd*
+	rm -rf /tmp/tm_tests*
 	go clean -testcache
 
 clean-build:

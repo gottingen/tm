@@ -17,6 +17,7 @@ package config_test
 import (
 	"context"
 	"encoding/json"
+	"fmt"
 	"os"
 	"reflect"
 	"testing"
@@ -28,7 +29,7 @@ import (
 	"github.com/gottingen/tm/server/config"
 	"github.com/gottingen/tm/tests"
 	"github.com/gottingen/tm/tests/tmctl"
-	pdctlCmd "github.com/gottingen/tm/tools/tm-ctl/tmctl"
+	tmctlCmd "github.com/gottingen/tm/tools/tm-ctl/tmctl"
 	"github.com/pingcap/kvproto/pkg/metapb"
 	"github.com/stretchr/testify/require"
 )
@@ -57,7 +58,7 @@ func TestConfig(t *testing.T) {
 	re.NoError(err)
 	cluster.WaitLeader()
 	pdAddr := cluster.GetConfig().GetClientURL()
-	cmd := pdctlCmd.GetRootCmd()
+	cmd := tmctlCmd.GetRootCmd()
 
 	store := &metapb.Store{
 		Id:    1,
@@ -293,7 +294,7 @@ func TestPlacementRules(t *testing.T) {
 	re.NoError(err)
 	cluster.WaitLeader()
 	pdAddr := cluster.GetConfig().GetClientURL()
-	cmd := pdctlCmd.GetRootCmd()
+	cmd := tmctlCmd.GetRootCmd()
 
 	store := &metapb.Store{
 		Id:            1,
@@ -360,12 +361,13 @@ func TestPlacementRules(t *testing.T) {
 	tmctl.MustPutRegion(re, cluster, 1, 1, []byte("a"), []byte("b"))
 	fit := &placement.RegionFit{}
 	// need clear up args, so create new a cobra.Command. Otherwise gourp still exists.
-	cmd2 := pdctlCmd.GetRootCmd()
+	cmd2 := tmctlCmd.GetRootCmd()
 	output, err = tmctl.ExecuteCommand(cmd2, "-u", pdAddr, "config", "placement-rules", "show", "--region=1", "--detail")
+	fmt.Println(output)
 	re.NoError(err)
 	re.NoError(json.Unmarshal(output, fit))
 	re.Len(fit.RuleFits, 3)
-	re.Equal([2]string{"tm", "default"}, fit.RuleFits[0].Rule.Key())
+	re.Equal([2]string{"tm", "default"}, fit.RuleFits[2].Rule.Key())
 
 	// test delete
 	rules[0].Count = 0
@@ -390,7 +392,7 @@ func TestPlacementRuleGroups(t *testing.T) {
 	re.NoError(err)
 	cluster.WaitLeader()
 	pdAddr := cluster.GetConfig().GetClientURL()
-	cmd := pdctlCmd.GetRootCmd()
+	cmd := tmctlCmd.GetRootCmd()
 
 	store := &metapb.Store{
 		Id:            1,
@@ -465,7 +467,7 @@ func TestPlacementRuleBundle(t *testing.T) {
 	re.NoError(err)
 	cluster.WaitLeader()
 	pdAddr := cluster.GetConfig().GetClientURL()
-	cmd := pdctlCmd.GetRootCmd()
+	cmd := tmctlCmd.GetRootCmd()
 
 	store := &metapb.Store{
 		Id:            1,
@@ -603,7 +605,7 @@ func TestReplicationMode(t *testing.T) {
 	re.NoError(err)
 	cluster.WaitLeader()
 	pdAddr := cluster.GetConfig().GetClientURL()
-	cmd := pdctlCmd.GetRootCmd()
+	cmd := tmctlCmd.GetRootCmd()
 
 	store := &metapb.Store{
 		Id:            1,
@@ -663,7 +665,7 @@ func TestUpdateDefaultReplicaConfig(t *testing.T) {
 	re.NoError(err)
 	cluster.WaitLeader()
 	pdAddr := cluster.GetConfig().GetClientURL()
-	cmd := pdctlCmd.GetRootCmd()
+	cmd := tmctlCmd.GetRootCmd()
 
 	store := &metapb.Store{
 		Id:    1,
@@ -775,7 +777,7 @@ func TestPDServerConfig(t *testing.T) {
 	re.NoError(err)
 	cluster.WaitLeader()
 	pdAddr := cluster.GetConfig().GetClientURL()
-	cmd := pdctlCmd.GetRootCmd()
+	cmd := tmctlCmd.GetRootCmd()
 
 	store := &metapb.Store{
 		Id:            1,
